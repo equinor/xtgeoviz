@@ -38,6 +38,7 @@ class CleanUp(_clean):
         ".pytest_cache",
         "docs/apiref",
         "docs/_build",
+        "result_images"
     )
 
     CLEANFOLDERSRECURSIVE = ["__pycache__", "_tmp_*", "*.egg-info"]

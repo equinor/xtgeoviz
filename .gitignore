@@ -94,5 +94,8 @@ venv.bak/
 # vscode
 .vscode/
 
+# pytest with matplotlib
+result_images/
+
 # setuptools_scm version
 src/xtgeoviz/version.py

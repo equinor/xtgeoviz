@@ -1,6 +1,6 @@
 """The baseplot module."""
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 
 from xtgeo.common import XTGeoDialog
 from . import _colortables as _ctable
@@ -18,7 +18,18 @@ class BasePlot(object):
         logger.info(clsname)
 
         self._contourlevels = 3
-        self._colormap = plt.cm.get_cmap("viridis")
+
+        # wants self._color to be LinearSegmentedColormap instance
+        vi = plt.cm.get_cmap("viridis")
+        if isinstance(vi, ListedColormap):
+
+            self._colormap = LinearSegmentedColormap.from_list(
+                "viridis", vi.colors, N=vi.N
+            )
+        elif isinstance(vi, LinearSegmentedColormap):
+            self._colormap = vi
+        else:
+            raise ValueError("Cannot initialize color attribute")
 
         self._ax = None
         self._tight = False
@@ -47,6 +58,10 @@ class BasePlot(object):
 
         if isinstance(cmap, LinearSegmentedColormap):
             self._colormap = cmap
+        elif isinstance(cmap, ListedColormap):
+            self._colormap = LinearSegmentedColormap.from_list(
+                cmap.name, cmap.colors, N=cmap.N
+            )
         elif isinstance(cmap, str):
             logger.info("Definition of a colormap from string name: %s", cmap)
             self.define_colormap(cmap)
