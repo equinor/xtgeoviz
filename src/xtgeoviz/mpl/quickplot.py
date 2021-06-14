@@ -11,50 +11,32 @@ Typically::
 
 """
 import warnings
+import pathlib
 from typing import Optional, Union
 import xtgeo
 import xtgeoviz
 
-# type: ignore
-def quickplot(  # pylint: disable=unused-argument
-    xobj: Union[xtgeo.RegularSurface],
-    filename: Optional[str] = None,
-    title="QuickPlot for Surfaces",
-    subtitle=None,
-    infotext=None,
-    minmax=(None, None),
-    xlabelrotation=None,
-    colormap="rainbow",
-    colortable=None,
-    faults=None,
-    logarithmic=False,
-):
+
+def quickplot(xobj, **kwargs):
+    """A common entry point for quickplot."""
     if isinstance(xobj, xtgeo.RegularSurface):
-        _quickplot_regularsurface(
-            xobj,
-            filename,
-            title,
-            subtitle,
-            infotext,
-            minmax,
-            xlabelrotation,
-            colormap,
-            faults,
-            logarithmic,
-        )
+        quickplot_regularsurface(xobj, **kwargs)
+
+    # elif isinstance(xobj, xtgeo.Grid):
+    #     quickplot_gridproperty(xobj, **kwargs)
 
 
-def _quickplot_regularsurface(
-    regsurf,
-    filename,
-    title,
-    subtitle,
-    infotext,
-    minmax,
-    xlabelrotation,
-    colormap,
-    faults,
-    logarithmic,
+def quickplot_regularsurface(
+    regsurf: xtgeo.RegularSurface,
+    filename: Optional[Union[str, pathlib.Path]] = None,
+    title: Optional[str] = "QuickPlot for Surface",
+    subtitle: Optional[str] = None,
+    infotext: Optional[str] = None,
+    minmax: Optional[tuple] = (None, None),
+    xlabelrotation: Optional[float] = None,
+    colormap: Optional[str] = "rainbow",
+    faults: Optional[xtgeo.Polygons] = None,
+    logarithmic: Optional[bool] = False,
 ):
     """Quickplot regularsurface."""
 
@@ -90,3 +72,28 @@ def _quickplot_regularsurface(
         mymap.show()
     else:
         mymap.savefig(filename)
+
+
+# def quickplot_gridproperty(
+#     grid,
+#     filename,
+#     propertyname: Optional[str] = None,
+#     title: Optional[str] = "QuickPlot for Surfaces",
+#     subtitle: Optional[str] = None,
+#     infotext: Optional[str] = None,
+#     minmax: Optional[tuple] = (None, None),
+#     xlabelrotation: Optional[float] = None,
+#     colormap: Optional[str] = "rainbow",
+#     faults: Optional[xtgeo.Polygons] = None,
+#     logarithmic: Optional[bool] = False,
+# ):
+#     """Quickplot grid with assosiated grid properties."""
+
+#     mymap = xtgeoviz.mpl.grid3d_slice.Grid3DSlice()
+
+#     mymap.canvas(title=title, subtitle=subtitle, infotext=infotext)
+
+#     if filename is None:
+#         mymap.show()
+#     else:
+#         mymap.savefig(filename)

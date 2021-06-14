@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-"""The XTGeoViz plot package"""
+"""The XTGeoViz plot package, mpl (i.e. using matplotlib)"""
 
-
-# flake8: noqa
+# flake8: noqa  # type: ignore
 from xtgeoviz.mpl.xsection import XSection
 from xtgeoviz.mpl.xtmap import Map
 from xtgeoviz.mpl.grid3d_slice import Grid3DSlice

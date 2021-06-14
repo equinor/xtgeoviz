@@ -1,4 +1,4 @@
-"""Setup helpers for setup.py in fmu.dataio package."""
+"""Setup helpers for setup.py in xtgeoviz package."""
 import os
 from os.path import exists
 from shutil import rmtree
@@ -38,7 +38,7 @@ class CleanUp(_clean):
         ".pytest_cache",
         "docs/apiref",
         "docs/_build",
-        "result_images"
+        "result_images",
     )
 
     CLEANFOLDERSRECURSIVE = ["__pycache__", "_tmp_*", "*.egg-info"]
