@@ -37,7 +37,7 @@ setuptools.setup(
         "Issue Tracker": "https://github.com/equinor/xtgeoviz/issues",
     },
     keywords=[],
-    license="LGPL v3.0",
+    license="LGPL-3.0",
     platforms="any",
     cmdclass=CMDCLASS,
     include_package_data=True,
@@ -52,7 +52,8 @@ setuptools.setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: LGPLv3",
+        "License :: OSI Approved :: GNU Lesser General Public "
+        "License v3 or later (LGPLv3+)",
         "Natural Language :: English",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
