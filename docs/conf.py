@@ -5,17 +5,17 @@ import os
 import sys
 
 cwd = os.getcwd()
-project_root = os.path.dirname(cwd) + "/src/fmu"
+project_root = os.path.dirname(cwd) + "/src"
 sys.path.insert(0, project_root)
 print(sys.path)
 
 from datetime import date
-import fmu.dataio
+import xtgeoviz
 
 # -- General configuration ---------------------------------------------
 
 # The full version, including alpha/beta/rc tags.
-release = fmu.dataio.__version__
+release = xtgeoviz.__version__
 
 extensions = [
     "sphinxcontrib.apidoc",
@@ -26,12 +26,12 @@ extensions = [
     "sphinx_autodoc_typehints",
 ]
 
-apidoc_module_dir = "../src/fmu/dataio"
+apidoc_module_dir = "../src/xtgeoviz"
 apidoc_output_dir = "apiref"
 apidoc_excluded_paths = ["tests"]
 apidoc_separate_modules = True
 apidoc_module_first = True
-apidoc_extra_args = ["-H", "API reference for fmu.dataio"]
+apidoc_extra_args = ["-H", "API reference for xtgeoviz"]
 
 autoclass_content = "both"
 
@@ -44,7 +44,7 @@ source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 master_doc = "index"
 
 # General information about the project.
-project = "fmu.dataio"
+project = "xtgeoviz"
 current_year = date.today().year
 copyright = "Equinor 2019 - " + str(current_year) + f" (XTGeo release {release})"
 

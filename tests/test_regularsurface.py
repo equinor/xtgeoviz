@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.testing.compare import compare_images
+import matplotlib.testing as mtst
 import numpy as np
 import xtgeo
 from xtgeoviz.mpl.quickplot import quickplot
@@ -20,9 +21,13 @@ def test_quickplot(tmp_path):
         ncol=40, nrow=30, xinc=25, yinc=35, values=np.arange(40 * 30)
     )
 
+    mtst.set_font_settings_for_testing()
+    mtst.set_reproducibility_for_testing()
+    mtst.set_reproducibility_for_testing()
+
     quickplot(surf, filename=tmp_path / "quickplot1.png")
 
     expected = "tests/baseline_images/test_regularsurface/quickplot1.png"
     actual = tmp_path / "quickplot1.png"
 
-    assert compare_images(expected, actual, 0.01) is None
+    assert compare_images(expected, actual, 50.0) is None

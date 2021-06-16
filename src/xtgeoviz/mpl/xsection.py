@@ -2,40 +2,36 @@
 
 
 from collections import OrderedDict
-
+from typing import Optional, Union
+import warnings
 import math
 import numpy.ma as ma
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from matplotlib import collections as mc
 from matplotlib.lines import Line2D
 from scipy.ndimage.filters import gaussian_filter
-
-from xtgeo.common import XTGeoDialog
-from xtgeo.xyz import Polygons
-from xtgeo.well import Well
+import xtgeo
 
 from .baseplot import BasePlot
-
-xtg = XTGeoDialog()
-logger = xtg.functionlogger(__name__)
 
 
 class XSection(BasePlot):
     """Class for plotting a cross-section of a well.
 
     Args:
-        zmin (float): Upper level of the plot (top Y axis).
+        zmin: Upper level of the plot (top Y axis).
         zmax (float): Lower level of the plot (bottom Y axis).
-        well (Well): XTGeo well object.
-        surfaces (list): List of XTGeo RegularSurface objects
-        surfacenames (list): List of surface names (str) for legend
-        cube (Cube): A XTGeo Cube instance
-        grid (Grid): A XTGeo Grid instance
-        gridproperty (GridProperty): A XTGeo GridProperty instance
-        colormap (str): Name of colormap, e.g. 'Set1'. Default is 'xtgeo'
-        outline (obj): XTGeo Polygons object
+        well: XTGeo well object.
+        surfaces: List of XTGeo RegularSurface objects
+        surfacenames: List of surface names (str) for legend
+        cube: A XTGeo Cube instance
+        grid: A XTGeo Grid instance
+        gridproperty: A XTGeo GridProperty instance
+        colormap: Name of colormap, e.g. 'Set1'. Default is 'xtgeo'
+        outline: XTGeo Polygons object
 
     """
 
@@ -43,19 +39,19 @@ class XSection(BasePlot):
 
     def __init__(
         self,
-        zmin=0,
-        zmax=9999,
-        well=None,
-        surfaces=None,
-        sampling=20,
-        nextend=5,
-        colormap=None,
-        zonelogshift=0,
-        surfacenames=None,
-        cube=None,
-        grid=None,
-        gridproperty=None,
-        outline=None,
+        zmin: Optional[float] = 0,
+        zmax: Optional[float] = 9999,
+        well: Optional[xtgeo.Well] = None,
+        surfaces: Optional[list] = None,
+        sampling: Optional[int] = 20,
+        nextend: Optional[int] = 5,
+        colormap: Optional[Union[str, LinearSegmentedColormap, ListedColormap]] = None,
+        zonelogshift: Optional[int] = 0,
+        surfacenames: Optional[list] = None,
+        cube: Optional[xtgeo.Cube] = None,
+        grid: Optional[xtgeo.Grid] = None,
+        gridproperty: Optional[xtgeo.GridProperty] = None,
+        outline: Optional[xtgeo.Polygons] = None,
     ):
         """Init method."""
         super().__init__()
@@ -104,9 +100,6 @@ class XSection(BasePlot):
 
         self._colormap_zonelog = None
         self._colormap_zonelog_dict = {idx: idx for idx in range(100)}
-
-        logger.info("Ran __init__ ...")
-        logger.debug("Colormap is %s", self._colormap)
 
     # ==================================================================================
     # Properties
@@ -536,7 +529,7 @@ class XSection(BasePlot):
             self._showok = False
             return
 
-        logger.info("ZONELOG min - max is %s - %s", zomin, zomax)
+        print(zomin, zomax)  # used for what?
 
         zshift = 0
         if self._zonelogshift != 0:
@@ -738,7 +731,7 @@ class XSection(BasePlot):
 
             text = ""
             if names:
-                text = Well.get_short_wellname(row.CWELL)
+                text = xtgeo.Well.get_short_wellname(row.CWELL)
 
             if years:
                 if names:
@@ -892,7 +885,6 @@ class XSection(BasePlot):
             alpha=alpha,
         )
 
-        logger.info("Actual VMIN and VMAX: %s", img.get_clim())
         # steer this?
         if self._colorlegend_cube:
             self._fig.colorbar(img, ax=ax)
@@ -965,7 +957,6 @@ class XSection(BasePlot):
             interpolation=interpolation,
         )
 
-        logger.info("Actual VMIN and VMAX: %s", img.get_clim())
         # steer this?
         if self._colorlegend_grid:
             self._fig.colorbar(img, ax=ax)
@@ -1166,10 +1157,11 @@ class XSection(BasePlot):
             ax.set_ylim(bottom - (expand - 1.0) * ydiff, top + (expand - 1.0) * ydiff)
         if otherwells:
             for poly in otherwells:
-                if not isinstance(poly, Polygons):
-                    xtg.warn(
+                if not isinstance(poly, xtgeo.Polygons):
+                    warnings.warn(
                         "<otherw> not a Polygons instance, but "
-                        "a {}".format(type(poly))
+                        "a {}".format(type(poly)),
+                        UserWarning,
                     )
                     continue
                 if poly.name == self._well.xwellname:
