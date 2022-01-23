@@ -11,13 +11,15 @@ Typically::
 
 """
 import warnings
-from typing import Optional, Union
+from typing import Optional
+
 import xtgeo
 import xtgeoviz
 
+
 # type: ignore
 def quickplot(  # pylint: disable=unused-argument
-    xobj: Union[xtgeo.RegularSurface],
+    xobj: xtgeo.RegularSurface,
     filename: Optional[str] = None,
     title="QuickPlot for Surfaces",
     subtitle=None,
