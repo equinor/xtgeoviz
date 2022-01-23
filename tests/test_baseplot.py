@@ -1,16 +1,15 @@
 """Test the baseplot module and class."""
 import matplotlib
-from matplotlib.testing.decorators import image_comparison
 import pytest
+from matplotlib.testing.decorators import image_comparison
 from xtgeoviz.mpl.baseplot import BasePlot
 
+# @image_comparison(baseline_images=["canvas"], remove_text=False, extensions=["png"])
+# def test_canvas():
+#     """Test the canvas function."""
 
-@image_comparison(baseline_images=["canvas"], remove_text=False, extensions=["png"])
-def test_canvas():
-    """Test the canvas function."""
-
-    myplot = BasePlot()
-    myplot.canvas(title="Hello canvas", subtitle="Hello Subtitle", infotext="Some info")
+#     myplot = BasePlot()
+#     myplot.canvas(title="Hello canvas", subtitle="Hello Subtitle", infotext="Some info")
 
 
 def test_colormap():
