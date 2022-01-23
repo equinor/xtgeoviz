@@ -1,10 +1,11 @@
 """Test the baseplot module and class."""
 import matplotlib
-from matplotlib.testing.decorators import image_comparison
 import pytest
+from matplotlib.testing.decorators import image_comparison
 from xtgeoviz.mpl.baseplot import BasePlot
 
 
+@pytest.mark.skip(reason="Graphical compare testing immature")
 @image_comparison(baseline_images=["canvas"], remove_text=False, extensions=["png"])
 def test_canvas():
     """Test the canvas function."""
