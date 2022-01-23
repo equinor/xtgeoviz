@@ -1,2 +1,5 @@
-xtgeo>=2.14
+matplotlib
+numpy
 PyYAML
+scipy
+xtgeo>=2.14
