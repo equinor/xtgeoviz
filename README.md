@@ -1,7 +1,5 @@
 # xtgeoviz
 
-This repo is under construction and is currently NOT WORKING.
-
 The intent is to replace xtgeo/plot functionality.
 
 
