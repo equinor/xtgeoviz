@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Setup for xtgeoviz package."""
 from glob import glob
-from os.path import splitext, basename
+from os.path import basename, splitext
 
 import setuptools
 
@@ -55,10 +55,9 @@ setuptools.setup(
         "License :: OSI Approved :: GNU Lesser General Public "
         "License v3 or later (LGPLv3+)",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries",
