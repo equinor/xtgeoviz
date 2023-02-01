@@ -1,33 +1,31 @@
 """The baseplot module."""
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
-
 from xtgeo.common import XTGeoDialog
+
 from . import _colortables as _ctable
+from ._libwrapper import matplotlib_colormap
 
 xtg = XTGeoDialog()
 logger = xtg.functionlogger(__name__)
 
 
 class BasePlot(object):
-    """Base class for plots, providing some functions to share."""
+    """Base class for plots, proviridisding some functions to share."""
 
     def __init__(self):
         """Init method."""
-        clsname = "{}.{}".format(type(self).__module__, type(self).__name__)
-        logger.info(clsname)
 
         self._contourlevels = 3
 
         # wants self._color to be LinearSegmentedColormap instance
-        vi = plt.cm.get_cmap("viridis")
-        if isinstance(vi, ListedColormap):
-
+        viridis = matplotlib_colormap("viridis")
+        if isinstance(viridis, ListedColormap):
             self._colormap = LinearSegmentedColormap.from_list(
-                "viridis", vi.colors, N=vi.N
+                "viridis", viridis.colors, N=viridis.N
             )
-        elif isinstance(vi, LinearSegmentedColormap):
-            self._colormap = vi
+        elif isinstance(viridis, LinearSegmentedColormap):
+            self._colormap = viridis
         else:
             raise ValueError("Cannot initialize color attribute")
 
@@ -55,7 +53,6 @@ class BasePlot(object):
 
     @colormap.setter
     def colormap(self, cmap):
-
         if isinstance(cmap, LinearSegmentedColormap):
             self._colormap = cmap
         elif isinstance(cmap, ListedColormap):

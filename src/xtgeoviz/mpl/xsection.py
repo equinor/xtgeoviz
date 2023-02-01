@@ -1,20 +1,21 @@
 """Module for fast XSection plots of wells/surfaces etc, using matplotlib."""
 
 
+import math
+import warnings
 from collections import OrderedDict
 from typing import Optional, Union
-import warnings
-import math
-import numpy.ma as ma
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap, ListedColormap
-from matplotlib import collections as mc
-from matplotlib.lines import Line2D
-from scipy.ndimage.filters import gaussian_filter
-import xtgeo
 
+import matplotlib.pyplot as plt
+import numpy as np
+import numpy.ma as ma
+import pandas as pd
+import xtgeo
+from matplotlib import collections as mc
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
+from matplotlib.lines import Line2D
+
+from ._libwrapper import scipy_gaussianfilter
 from .baseplot import BasePlot
 
 
@@ -772,7 +773,6 @@ class XSection(BasePlot):
         )
 
     def _drawlegend(self, ax, bba, title=None):
-
         leg = ax.legend(
             loc="upper left",
             bbox_to_anchor=bba,
@@ -869,7 +869,7 @@ class XSection(BasePlot):
             nnv = interpolation[-1]
             try:
                 nnv = int(nnv)
-                arr = gaussian_filter(arr, nnv)
+                arr = scipy_gaussianfilter(arr, nnv)
                 interpolation = "none"
             except ValueError:
                 interpolation = "gaussian"
@@ -1137,7 +1137,6 @@ class XSection(BasePlot):
         ax = self._ax2
 
         if self.fence is not None:
-
             xwellarray = self._well.dataframe["X_UTME"].values
             ywellarray = self._well.dataframe["Y_UTMN"].values
 
@@ -1181,7 +1180,6 @@ class XSection(BasePlot):
 
         ax = self._ax3
         if self.fence is not None:
-
             xp = self._outline.dataframe["X_UTME"].values
             yp = self._outline.dataframe["Y_UTMN"].values
             ip = self._outline.dataframe["POLY_ID"].values
