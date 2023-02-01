@@ -1,5 +1,6 @@
-sphinx
+sphinx<6,>=1.6
 sphinx-rtd-theme
 autoapi
 sphinx-autodoc-typehints
 sphinxcontrib-apidoc
+docutils<0.18

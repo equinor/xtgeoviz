@@ -1,7 +1,20 @@
 # NOTE: you have to use single-quoted strings in TOML for regular expressions.
+
+[build-system]
+requires = [
+  "pip>=19.1.1",
+  "setuptools>=45",
+  "setuptools_scm[toml]>=6.2",
+  "wheel",
+]
+
+[project]
+name = "xtgeoviz"
+dynamic = ["version"]
+
 [tool.black]
 line-length = 88
-target-version = ['py36', 'py37', 'py38', 'py39']
+target-version = ['py36', 'py37', 'py38', 'py39', 'py310']
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -11,7 +24,7 @@ exclude = '''
   | \.mypy_cache
   | \.tox
   | \.venv
-  | _build
+  | _buildsetuptools.scm
   | buck-out
   | build
   | dist
@@ -21,5 +34,5 @@ exclude = '''
 )/
 '''
 
-[build-system]
-requires = ["pip>=19.1.1", "setuptools>=28", "setuptools_scm>=3.2.0", "wheel"]
+[tool.setuptools_scm]
+write_to = "src/xtgeoviz/version.py"
