@@ -1004,7 +1004,7 @@ class XSection(BasePlot):
         slegend = []
         if surfacenames is None:
             for i in range(nlen):
-                slegend.append("Surf {}".format(i))
+                slegend.append(f"Surf {i}")
 
         else:
             # do a check
@@ -1158,8 +1158,7 @@ class XSection(BasePlot):
             for poly in otherwells:
                 if not isinstance(poly, xtgeo.Polygons):
                     warnings.warn(
-                        "<otherw> not a Polygons instance, but "
-                        "a {}".format(type(poly)),
+                        f"<otherw> not a Polygons instance, but a {type(poly)}",
                         UserWarning,
                     )
                     continue

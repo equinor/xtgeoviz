@@ -43,8 +43,7 @@ def quickplot_regularsurface(
     ncount = regsurf.values.count()
     if ncount < 5:
         warnings.warn(
-            "None or too few map nodes for plotting. Skip "
-            "output {}!".format(filename),
+            f"None or too few map nodes for plotting. Skip output {filename}!",
             UserWarning,
         )
         return
