@@ -346,7 +346,7 @@ def colorsfromfile(fname, fformat="rms"):
     if not os.path.isfile(fname):
         raise IOError(f"Color file not found: {fname}")
 
-    with open(fname) as fc:
+    with open(fname, "r", encoding="utf-8") as fc:
         for line in fc:
             if line.startswith("ColorMap.color("):
                 _key, _eq, rgb1, rgb2, rgb3 = line.split()
