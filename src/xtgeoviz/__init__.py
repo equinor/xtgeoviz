@@ -1,4 +1,6 @@
 # flake8: noqa
+from xtgeoviz.frontends import xsectplotting
+from xtgeoviz.frontends.xsectplotting import xsectplot
 from xtgeoviz.mpl.quickplot import quickplot
 
 try:

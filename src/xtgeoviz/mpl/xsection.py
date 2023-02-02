@@ -1,6 +1,7 @@
 """Module for fast XSection plots of wells/surfaces etc, using matplotlib."""
 
 
+import logging
 import math
 import warnings
 from collections import OrderedDict
@@ -17,6 +18,8 @@ from matplotlib.lines import Line2D
 
 from ._libwrapper import scipy_gaussianfilter
 from .baseplot import BasePlot
+
+logger = logging.getLogger(__name__)
 
 
 class XSection(BasePlot):
@@ -101,6 +104,7 @@ class XSection(BasePlot):
 
         self._colormap_zonelog = None
         self._colormap_zonelog_dict = {idx: idx for idx in range(100)}
+        logger.info("Initialized XSection instance")
 
     # ==================================================================================
     # Properties
@@ -530,7 +534,7 @@ class XSection(BasePlot):
             self._showok = False
             return
 
-        print(zomin, zomax)  # used for what?
+        # print(zomin, zomax)  # used for what?
 
         zshift = 0
         if self._zonelogshift != 0:
@@ -560,6 +564,7 @@ class XSection(BasePlot):
 
         ax.add_collection(lc)
 
+        legend = False
         if legend:
             zrecord = self._well.get_logrecord(zonelogname)
             zrecord = {val: zname for val, zname in zrecord.items() if val >= 0}

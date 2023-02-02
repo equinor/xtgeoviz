@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 """Module for color tables."""
 
+import logging
 import os
 import random
 
-from xtgeo.common import XTGeoDialog
-
-xtg = XTGeoDialog()
-logger = xtg.functionlogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def random40():

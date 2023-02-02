@@ -1,4 +1,6 @@
 """The baseplot module."""
+import logging
+
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from xtgeo.common import XTGeoDialog
@@ -7,7 +9,7 @@ from . import _colortables as _ctable
 from ._libwrapper import matplotlib_colormap
 
 xtg = XTGeoDialog()
-logger = xtg.functionlogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class BasePlot(object):
@@ -35,7 +37,7 @@ class BasePlot(object):
         self._fig = None
         self._pagesize = "A4"
 
-        logger.info("Ran __init__ ...")
+        logger.info("Ran __init__ for BasePlot")
 
     @property
     def contourlevels(self):
@@ -88,7 +90,7 @@ class BasePlot(object):
         """
         valid_maps = sorted(m for m in plt.cm.datad)
 
-        logger.info("Valid color maps: %s", valid_maps)
+        logger.debug("Valid color maps: %s", valid_maps)
 
         colors = []
 
