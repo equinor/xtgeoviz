@@ -7,9 +7,9 @@ import sys
 cwd = os.getcwd()
 project_root = os.path.dirname(cwd) + "/src"
 sys.path.insert(0, project_root)
-print(sys.path)
 
 from datetime import date
+
 import xtgeoviz
 
 # -- General configuration ---------------------------------------------
@@ -116,4 +116,4 @@ html_theme_options = {
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "dataio"
+htmlhelp_basename = "xtgeoviz"

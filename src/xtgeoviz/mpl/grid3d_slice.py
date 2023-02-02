@@ -1,15 +1,16 @@
 """Module for 3D Grid slice plots, using matplotlib."""
 
 
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-from matplotlib.collections import PatchCollection
+import logging
 
+import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
+from matplotlib.patches import Polygon
 from xtgeo.common import XTGeoDialog
 from xtgeo.plot.baseplot import BasePlot
 
 xtg = XTGeoDialog()
-logger = xtg.functionlogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Grid3DSlice(BasePlot):
