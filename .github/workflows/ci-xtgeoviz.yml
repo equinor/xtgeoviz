@@ -29,6 +29,9 @@ jobs:
           pip install pip -U &&
           pip install .
 
+      - run: git clone --depth 1 https://github.com/equinor/xtgeo-testdata ../xtgeo-testdata
+        shell: bash
+
       - name: Full test
         run: >
           pip install -r requirements/requirements_test.txt &&
