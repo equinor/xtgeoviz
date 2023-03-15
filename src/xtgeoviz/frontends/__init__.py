@@ -1,1 +1,1 @@
-from .xsectplotting import xsectplot
+from .xsectplotting import xsectplot  # type: ignore # noqa

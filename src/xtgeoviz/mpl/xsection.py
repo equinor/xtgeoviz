@@ -534,7 +534,7 @@ class XSection(BasePlot):
             self._showok = False
             return
 
-        # print(zomin, zomax)  # used for what?
+        logger.debug("ZOMIN, ZOMAX %s %s ?", zomin, zomax)  # used for what?
 
         zshift = 0
         if self._zonelogshift != 0:
