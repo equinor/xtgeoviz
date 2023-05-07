@@ -271,8 +271,7 @@ class XSection(BasePlot):
             plt.rcParams["xtick.color"] = (0, 0, 0, 0)
             plt.rcParams["ytick.color"] = (0, 0, 0, 0)
 
-        # self._fig, (ax1, ax2) = plt.subplots(2, figsize=(11.69, 8.27))
-        self._fig, _ = plt.subplots(figsize=(11.69 * figscaling, 8.27 * figscaling))
+        self._fig = plt.figure(figsize=(11.69 * figscaling, 8.27 * figscaling))
         ax1 = OrderedDict()
 
         ax1["main"] = plt.subplot2grid((20, 28), (0, 0), rowspan=20, colspan=23)
