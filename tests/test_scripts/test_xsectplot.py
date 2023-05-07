@@ -3,7 +3,8 @@ import pytest
 import xtgeo
 
 from xtgeoviz import xsectplot
-from xtgeoviz.frontends._xsectplotting_config import config_defaults, data_merge
+from xtgeoviz.frontends._xsectplotting_config import (config_defaults,
+                                                      data_merge)
 from xtgeoviz.frontends.xsectplotting import _Xsections, _XsectSettings
 
 # testdata (xtgeo-testdata), relative to testdir
@@ -221,6 +222,29 @@ def test_xsectplot_function_include_cube(testdir, tmp_path):
         },
         "cube": cube,
     }
+    psettings = {
+        "design": {
+            "zrange": {
+                "default": [1000, 2000],
+                "55_33.*": [1450, 1750],  # use a python regex for multiple wells
+            },
+        },
+        "wells": {
+            "zonelog": {
+                "zoneshift": 0,
+            }
+        },
+        "surfaces": {
+            "primary": {
+                "fill": False,
+            },
+        },
+        "cube": {
+            "range": [-0.33, 0.33],
+            "sampling": "trilinear",
+        },
+    }
+
     outputs = {
         "plotfolder": str(tmp_path),
         "format": "png",
