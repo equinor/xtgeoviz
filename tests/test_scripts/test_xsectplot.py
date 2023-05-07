@@ -10,6 +10,7 @@ from xtgeoviz.frontends.xsectplotting import _Xsections, _XsectSettings
 WELLSET1 = "wells/drogon/1"
 SURFACESET1 = "surfaces/drogon/1"
 OUTLINE = "polygons/reek/1/closedpoly1.pol"
+CUBE = "cubes/drogon/ampl_local_a4.segy"
 
 
 def test_xsectplotting_config_defaults():
@@ -175,6 +176,51 @@ def test_xsectplot_function_input_objectlists(testdir, tmp_path):
         },
     }
 
+    outputs = {
+        "plotfolder": str(tmp_path),
+        "format": "png",
+    }
+
+    # call the top plotter routine
+    xsectplot(inputdata=inputs, plotsettings=psettings, output=outputs)
+    myplot = tmp_path / "55_33-A-4.png"
+    assert myplot.is_file()
+
+
+def test_xsectplot_function_include_cube(testdir, tmp_path):
+    """Make plots using python input, where wells and surfaces are preloaded."""
+
+    wells = ["55_33-A-4.rmswell"]
+    surfaces = [
+        "01_topvolantis.gri",
+        "02_toptherys.gri",
+        "03_topvolon.gri",
+        "04_basevolantis.gri",
+    ]
+
+    wlist = []
+    for well in wells:
+        wlist.append(xtgeo.well_from_file(testdir / WELLSET1 / well))
+
+    slist = []
+    for surf in surfaces:
+        slist.append(xtgeo.surface_from_file(testdir / SURFACESET1 / surf))
+
+    cube = xtgeo.cube_from_file(testdir / CUBE)
+
+    inputs = {
+        "wells": {
+            "objects": wlist,
+            "zonelog": "Zone",
+        },
+        "surfaces": {
+            "primary": {
+                "objects": slist,
+                "names": ["TopVolantis", "TopTherys", "TopVolon", "BaseVolantis"],
+            },
+        },
+        "cube": cube,
+    }
     outputs = {
         "plotfolder": str(tmp_path),
         "format": "png",
