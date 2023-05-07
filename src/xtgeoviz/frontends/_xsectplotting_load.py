@@ -111,14 +111,19 @@ def load_outline(self):
 
 
 def load_cube(self):
-    """Load a cube as XTGeo Cube object."""
+    """Apply a current cube or load a cube, both as XTGeo Cube"""
 
-    cubename = self.config["input"]["cube"]
+    cube = self.config["input"]["cube"]
 
-    if cubename:
-        logger.info("Reading cube: %s", cubename)
-        self.cube = xtgeo.cube_from_file(cubename)
+    if cube and isinstance(cube, str):
+        logger.info("Reading cube: %s", cube)
+        self.cube = xtgeo.cube_from_file(cube)
         logger.info("Reading cube done")
+    elif cube and isinstance(cube, xtgeo.Cube):
+        self.cube = cube
+        logger.info("Apply an existing Cube instance: %s", type(cube))
+    else:
+        self.cube = None
 
 
 def load_grid(self):

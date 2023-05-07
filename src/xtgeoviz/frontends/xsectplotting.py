@@ -288,7 +288,7 @@ def xsectplot(
     # load what to xsect (and show):
     app.load_wells()
     app.load_surfaces()
-    # app.load_cube()
+    app.load_cube()
     # app.load_grid()
     app.load_outline()
 
