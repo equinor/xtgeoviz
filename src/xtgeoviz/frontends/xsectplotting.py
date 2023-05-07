@@ -6,7 +6,7 @@ import logging
 import os.path
 import sys
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import xtgeo
 import yaml
@@ -40,7 +40,7 @@ class _XsectSettings:
     general_engine: str = "matplotlib"
 
     design_style: int = 1
-    design_zrange: tuple = (1000, 2000)
+    design_zrange: Union[tuple, list, dict] = (1000, 2000)
     design_gridlines: str = "both"
     design_subtitle: Optional[str] = None
     design_legendsize: int = 6

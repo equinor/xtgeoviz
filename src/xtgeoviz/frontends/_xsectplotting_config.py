@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Config option for xsections"""
 import logging
+import re
 from copy import deepcopy
 from typing import Optional, Union
 
@@ -248,13 +249,30 @@ def config_complete(self):
 
     # PROCESSING SMARTIES
     # ----------------------------------------------------------------------------------
-    if not newcfg_plt["design"]["zrange"]:
-        newcfg_plt["design"]["zrange"] = _config_smart0_zrange(prm)
+    _zrange = deepcopy(newcfg_plt["design"]["zrange"])
+    if not _zrange:
+        _zrange = "smart0"
 
-    if newcfg_plt["design"]["zrange"] == "smart1":
-        newcfg_plt["design"]["zrange"] = _config_smart1_zrange(self.wells["wlist"], prm)
+    if isinstance(_zrange, str):
+        if _zrange == "smart0":
+            newcfg_plt["design"]["zrange"] = _config_smart0_zrange(prm)
+        elif _zrange == "smart1":
+            newcfg_plt["design"]["zrange"] = _config_smart1_zrange(
+                self.wells["wlist"], prm
+            )
+    elif isinstance(_zrange, dict):
+        # process zrange per well, with a global default
+        newcfg_plt["design"]["zrange"] = _config_userdefined_zrange(
+            self.wells["wlist"], _zrange
+        )
 
-    # RANGES
+    elif isinstance(_zrange, list) and len(_zrange) == 2:
+        logger.info("Keep zrange as is")
+
+    else:
+        raise RuntimeError("Cannot process/understand the zrange for unknown reasons")
+
+    # Z RANGES
     # ----------------------------------------------------------------------------------
     if self.cube and not newcfg_plt["cube"]["range"]:
         newcfg_plt["cube"]["range"] = [self.cube.values.min(), self.cube.values.max()]
@@ -298,6 +316,29 @@ def _config_smart1_zrange(wlist, primary):
         maxv = maxwell
 
     return [minv, maxv]
+
+
+def _config_userdefined_zrange(wlist: list, _zrange: dict) -> dict:
+    zrange_dict = {}
+
+    # first set default
+    for well in wlist:
+        zrange_dict[well.name] = _zrange["default"]
+        logger.info("Default: set %s zrange to %s", well.name, _zrange["default"])
+
+    # well name may be a regular expression
+    for wreg, intv in _zrange.items():
+        for well in wlist:
+            if re.match(wreg + "$", well.name):
+                zrange_dict[well.name] = intv
+                logger.info(
+                    "Override default: set %s zrange to %s, based on regex (%s$)",
+                    well.name,
+                    intv,
+                    wreg,
+                )
+
+    return zrange_dict
 
 
 def _config_default_surf_names(primary):

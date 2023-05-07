@@ -42,9 +42,15 @@ def _plotting_mpl(self, pset):
 
     for well in self.wells["wlist"]:
         logger.info("Plot cross section for well %s", well.name)
+
+        if isinstance(pset.design_zrange, dict):
+            zrange_min, zrange_max = pset.design_zrange[well.name]
+        else:
+            zrange_min, zrange_max = pset.design_zrange
+
         xplot = XSection(
-            zmin=pset.design_zrange[0],
-            zmax=pset.design_zrange[1],
+            zmin=zrange_min,
+            zmax=zrange_max,
             well=well,
             surfaces=self.surfaces["primary"],
             zonelogshift=pset.wells_zonelog_zoneshift,
