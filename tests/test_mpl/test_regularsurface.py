@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
-from matplotlib.testing.compare import compare_images
 import matplotlib.testing as mtst
 import numpy as np
 import xtgeo
+from matplotlib.testing.compare import compare_images
+
 from xtgeoviz.mpl.quickplot import quickplot
 
 
