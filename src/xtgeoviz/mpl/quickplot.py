@@ -10,10 +10,12 @@ Typically::
     quickplot(surf)
 
 """
-import warnings
 import pathlib
+import warnings
 from typing import Optional, Union
+
 import xtgeo
+
 import xtgeoviz
 
 
