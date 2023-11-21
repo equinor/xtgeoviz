@@ -1,38 +1,44 @@
-# build and test some end points
 name: Build and test xtgeoviz
 
-# on: [push, pull_request]
-
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
+  release:
+    types:
+      - published
+  schedule:
+    # Run nightly to check that tests are working with latest dependencies
+    - cron: "0 0 * * *"
 
 jobs:
-  build_pywheels:
-    name: PY ${{ matrix.python-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  test:
     strategy:
       matrix:
-        python-version: [3.8, 3.9, "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
         os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install library
-        run: >
-          pip install pip -U &&
-          pip install .
+      - name: Clone xtgeo-testdata
+        run: git clone --depth 1 https://github.com/equinor/xtgeo-testdata ../xtgeo-testdata
 
-      - run: git clone --depth 1 https://github.com/equinor/xtgeo-testdata ../xtgeo-testdata
-        shell: bash
+      - name: Install
+        run: |
+          pip install -U pip
+          pip install ".[tests]"
 
-      - name: Full test
-        run: >
-          pip install -r requirements/requirements_test.txt &&
-          pytest --disable-warnings -x
+      - name: Run tests
+        run: pytest -n auto --disable-warnings
