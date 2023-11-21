@@ -1,38 +1,108 @@
-# NOTE: you have to use single-quoted strings in TOML for regular expressions.
-
 [build-system]
 requires = [
-  "pip>=19.1.1",
   "setuptools>=45",
   "setuptools_scm[toml]>=6.2",
-  "wheel",
 ]
-
-[project]
-name = "xtgeoviz"
-dynamic = ["version"]
-
-[tool.black]
-line-length = 88
-target-version = ['py36', 'py37', 'py38', 'py39', 'py310']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _buildsetuptools.scm
-  | buck-out
-  | build
-  | dist
-  # The following are specific to Black, you probably don't want those.
-  | blib2to3
-  | profiling
-)/
-'''
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
 write_to = "src/xtgeoviz/version.py"
+
+[project]
+name = "xtgeoviz"
+description = "Plotting library for xtgeo objects"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Equinor", email = "fg_fmu-atlas@equinor.com" },
+]
+keywords = [
+    "energy",
+    "subsurface",
+    "reservoir",
+    "scientific",
+    "engineering",
+    "maps",
+    "xtgeo",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers", 
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Natural Language :: English",
+    "License :: OSI Approved :: GNU Lesser General Public",
+    "License v3 or later (LGPLv3+)",
+]
+dynamic = ["version"]
+dependencies = [
+    "xtgeo>=2.14",
+    "PyYAML",
+    "scipy>=1.5.3",
+    "matplotlib>=3.3.2",
+    "numpy>=1.19.2",
+]
+
+[project.optional-dependencies]
+tests = [
+    "black",
+    "coverage>=4.1",
+    "flake8",
+    "isort",
+    "mypy",
+    "pylint",
+    "pytest",
+    "pytest-cov",
+    "pytest-runner",
+    "pytest-mock",
+    "pytest-xdist",
+    "rstcheck",
+    "types-PyYAML",
+]
+docs = [
+    "sphinx",
+    "autoapi",
+    "sphinxcontrib-apidoc",
+    "sphinx-argparse",
+    "sphinx-autodoc-typehints",
+    "sphinx-copybutton",
+    "sphinx-togglebutton",
+    "sphinx_rtd_theme",
+]
+
+[project.urls]
+Homepage = "https://github.com/equinor/xtgeoviz"
+Repository = "https://github.com/equinor/xtgeoviz"
+Documentation = "https://github.com/equinor/xtgeoviz"
+Issues = "https://github.com/equinor/xtgeoviz/issues"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--verbose"
+log_cli = "False"
+log_cli_format = "%(levelname)8s (%(relativeCreated)6.0fms) %(filename)44s [%(funcName)40s()] %(lineno)4d >>   %(message)s"
+log_cli_level = "INFO"
+testpaths = "tests"
+markers = [
+    "integration: Integration tests",
+]
