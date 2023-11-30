@@ -1,18 +1,17 @@
 """The baseplot module."""
 import logging
+import warnings
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
-from xtgeo.common import XTGeoDialog
 
 from . import _colortables as _ctable
 from ._libwrapper import matplotlib_colormap
 
-xtg = XTGeoDialog()
 logger = logging.getLogger(__name__)
 
 
-class BasePlot(object):
+class BasePlot:
     """Base class for plots, proviridisding some functions to share."""
 
     def __init__(self):
@@ -37,7 +36,7 @@ class BasePlot(object):
         self._fig = None
         self._pagesize = "A4"
 
-        logger.info("Ran __init__ for BasePlot")
+        logger.debug("Ran __init__ for BasePlot")
 
     @property
     def contourlevels(self):
@@ -62,12 +61,12 @@ class BasePlot(object):
                 cmap.name, cmap.colors, N=cmap.N
             )
         elif isinstance(cmap, str):
-            logger.info("Definition of a colormap from string name: %s", cmap)
+            logger.debug("Definition of a colormap from string name: %s", cmap)
             self.define_colormap(cmap)
         else:
             raise ValueError("Input incorrect")
 
-        logger.info("Colormap: %s", self._colormap)
+        logger.debug("Colormap: %s", self._colormap)
 
     @property
     def pagesize(self):
@@ -123,9 +122,11 @@ class BasePlot(object):
             for i in range(cmap.N):
                 colors.append(cmap(i))
         else:
-            xtg.warnuser(
+            warnings.warn(
                 "Trying to access as color map not installed in "
-                "this version of matplotlib: <{}>. Revert to <rainbow>".format(cfile)
+                f"this version of matplotlib: <{cfile}>. Revert to <rainbow>",
+                UserWarning,
+                stacklevel=2,
             )
             cmap = plt.get_cmap("rainbow")
             for i in range(cmap.N):
@@ -174,7 +175,7 @@ class BasePlot(object):
                 from 0 index. Default is just keep the linear sequence as is.
 
         """
-        logger.info("Defining colormap")
+        logger.debug("Defining colormap")
 
         cmap = self.define_any_colormap(cfile, colorlist=colorlist)
 
@@ -213,7 +214,7 @@ class BasePlot(object):
             self._fig.tight_layout()
 
         if self._showok:
-            logger.info("Calling plt show method...")
+            logger.debug("Calling plt show method...")
             plt.show()
             return True
 

@@ -1,15 +1,12 @@
 """Module for 3D Grid slice plots, using matplotlib."""
-
-
 import logging
 
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
-from xtgeo.common import XTGeoDialog
-from xtgeo.plot.baseplot import BasePlot
 
-xtg = XTGeoDialog()
+from .baseplot import BasePlot
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,11 +36,6 @@ class Grid3DSlice(BasePlot):
         self._active = True
         self._minvalue = None
         self._maxvalue = None
-
-    # ==================================================================================
-    # Functions methods (public)
-    # Beware general methods in base class also!
-    # ==================================================================================
 
     def plot_gridslice(
         self,
@@ -106,51 +98,6 @@ class Grid3DSlice(BasePlot):
             pass  # self._plot_row()
         else:
             self._plot_layer()
-
-    # def _plot_row(self):
-
-    #     geomlist = self._geomlist
-
-    #     if self._window is None:
-    #         xmin = geomlist[3] - 0.05 * (abs(geomlist[4] - geomlist[3]))
-    #         xmax = geomlist[4] + 0.05 * (abs(geomlist[4] - geomlist[3]))
-    #         zmin = geomlist[7] - 0.05 * (abs(geomlist[8] - geomlist[7]))
-    #         zmax = geomlist[8] + 0.05 * (abs(geomlist[8] - geomlist[7]))
-    #     else:
-    #         xmin, xmax, zmin, zmax = self._window
-
-    #     # now some numpy operations, numbering is intended
-    #     clist = self._clist
-    #     xz0 = np.column_stack((clist[0].values1d, clist[2].values1d))
-    #     xz1 = np.column_stack((clist[3].values1d, clist[5].values1d))
-    #     xz2 = np.column_stack((clist[15].values1d, clist[17].values1d))
-    #     xz3 = np.column_stack((clist[12].values1d, clist[14].values1d))
-
-    #     xyc = np.column_stack((xz0, xz1, xz2, xz3))
-    #     xyc = xyc.reshape(self._grid.nlay, self._grid.ncol * self._grid.nrow, 4, 2)
-
-    #     patches = []
-
-    #     for pos in range(self._grid.nrow * self._grid.nlay):
-    #         nppol = xyc[self._index - 1, pos, :, :]
-    #         if nppol.mean() > 0.0:
-    #             polygon = Polygon(nppol, True)
-    #             patches.append(polygon)
-
-    #     black = (0, 0, 0, 1)
-    #     patchcoll = PatchCollection(patches, edgecolors=(black,), cmap=self.colormap)
-
-    #     # patchcoll.set_array(np.array(pvalues))
-
-    #     # patchcoll.set_clim([minvalue, maxvalue])
-
-    #     im = self._ax.add_collection(patchcoll)
-    #     self._ax.set_xlim((xmin, xmax))
-    #     self._ax.set_ylim((zmin, zmax))
-    #     self._ax.invert_yaxis()
-    #     self._fig.colorbar(im)
-
-    #     # plt.gca().set_aspect("equal", adjustable="box")
 
     def _plot_layer(self):
         xyc, ibn = self._grid.get_layer_slice(self._index, activeonly=self._active)

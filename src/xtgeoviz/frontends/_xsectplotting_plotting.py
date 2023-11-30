@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Private routines for plotting of xsections."""
 import logging
 import os
@@ -7,11 +6,8 @@ import shutil
 import subprocess
 
 import pandas as pd
-from xtgeo.common import XTGeoDialog
 
 from xtgeoviz.mpl import XSection
-
-xtg = XTGeoDialog()
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,4 @@
 """Module for map plots of surfaces, using matplotlib."""
-
-
 import logging
 
 import matplotlib.patches as mplp
@@ -8,11 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.ma as ma
 from matplotlib import ticker
-from xtgeo.common import XTGeoDialog
 
 from .baseplot import BasePlot
 
-xtg = XTGeoDialog()
 logger = logging.getLogger(__name__)
 
 
@@ -22,9 +18,6 @@ class Map(BasePlot):
     def __init__(self):
         """The constructor method for a Map object."""
         super().__init__()
-
-        clsname = f"{type(self).__module__}.{type(self).__name__}"
-        logger.info(clsname)
 
         self._wells = None
         self._surface = None
@@ -59,7 +52,7 @@ class Map(BasePlot):
         """Input a surface and plot it."""
         # need a deep copy to avoid changes in the original surf
 
-        logger.info("The key contourlevels %s is not in use", contourlevels)
+        logger.debug("The key contourlevels %s is not in use", contourlevels)
 
         usesurf = surf.copy()
         if usesurf.yflip < 0:
@@ -106,7 +99,7 @@ class Map(BasePlot):
 
             self._fig.text(0.99, 0.02, notetxt, ha="right", va="center", fontsize=8)
 
-        logger.info("Legendticks: %s", legendticks)
+        logger.debug("Legendticks: %s", legendticks)
 
         if minvalue is None:
             minvalue = usesurf.values.min()
@@ -125,10 +118,8 @@ class Map(BasePlot):
 
         plt.setp(self._ax.xaxis.get_majorticklabels(), rotation=xlabelrotation)
 
-        # zi = ma.masked_where(zimask, zi)
-        # zi = ma.masked_greater(zi, xtgeo.UNDEF_LIMIT)
-        logger.info("Current colormap is %s, requested is %s", self.colormap, colormap)
-        logger.info("Current colormap name is %s", self.colormap.name)
+        logger.debug("Current colormap is %s, requested is %s", self.colormap, colormap)
+        logger.debug("Current colormap name is %s", self.colormap.name)
 
         if ma.std(zi) > 1e-07:
             uselevels = levels
@@ -144,7 +135,7 @@ class Map(BasePlot):
                 )
 
             else:
-                logger.info("use LogLocator")
+                logger.debug("use LogLocator")
                 locator = ticker.LogLocator()
                 ticks = None
                 uselevels = None

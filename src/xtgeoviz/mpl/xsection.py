@@ -1,6 +1,4 @@
 """Module for fast XSection plots of wells/surfaces etc, using matplotlib."""
-
-
 import logging
 import math
 import warnings
@@ -104,7 +102,7 @@ class XSection(BasePlot):
 
         self._colormap_zonelog = None
         self._colormap_zonelog_dict = {idx: idx for idx in range(100)}
-        logger.info("Initialized XSection instance")
+        logger.debug("Initialized XSection instance")
 
     # ==================================================================================
     # Properties
@@ -184,11 +182,6 @@ class XSection(BasePlot):
     def colormap_facies_dict(self, xdict):
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
-
-        # if not all(isinstance(item, int) for item in list(xdict.values)):
-        #     raise ValueError('Dict values is a list, but some elems are '
-        #                      'not ints!')
-
         self._colormap_facies_dict = xdict
 
     @property
@@ -200,11 +193,6 @@ class XSection(BasePlot):
     def colormap_perf_dict(self, xdict):
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
-
-        # if not all(isinstance(item, int) for item in list(xdict.values)):
-        #     raise ValueError('Dict values is a list, but some elems are '
-        #                      'not ints!')
-
         self._colormap_perf_dict = xdict
 
     @property
@@ -216,11 +204,6 @@ class XSection(BasePlot):
     def colormap_zonelog_dict(self, xdict):
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
-
-        # if not all(isinstance(item, int) for item in list(xdict.values)):
-        #     raise ValueError('Dict values is a list, but some elems are '
-        #                      'not ints!')
-
         self._colormap_zonelog_dict = xdict
 
     @property
@@ -861,9 +844,6 @@ class XSection(BasePlot):
 
         h1, h2, v1, v2, arr = zvv
 
-        # if vmin is not None or vmax is not None:
-        #     arr = np.clip(arr, vmin, vmax)
-
         if self._colormap_cube is None:
             if colormap is None:
                 colormap = "seismic"
@@ -935,9 +915,6 @@ class XSection(BasePlot):
         )
 
         h1, h2, v1, v2, arr = zvv
-
-        # if vmin is not None or vmax is not None:
-        #     arr = np.clip(arr, vmin, vmax)
 
         if self._colormap_grid is None:
             if colormap is None:
