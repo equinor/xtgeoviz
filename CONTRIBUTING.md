@@ -4,7 +4,8 @@ All contributions are welcome. You can contribute in many ways.
 
 ## Report Bugs
 
-Report bugs at https://github.com/equinor/xtgeoviz/issues.
+Report bugs at
+[https://github.com/equinor/xtgeoviz/issues](https://github.com/equinor/xtgeoviz/issues).
 When reporting a bug please include:
 
 - Your operating system name and version
@@ -32,7 +33,7 @@ official xtgeoviz documentation pages or in docstrings.
 ## Submit Feedback
 
 The best way to send feedback is to create an issue at
-https://github.com/equinor/xtgeoviz/issues.
+[https://github.com/equinor/xtgeoviz/issues](https://github.com/equinor/xtgeoviz/issues).
 
 If you are proposing a feature:
 
@@ -48,35 +49,35 @@ Ready to contribute? Here's how to set up `xtgeoviz` for local development.
 1. Fork this repository to your GitHub account
 2. Clone your fork locally:
    ```sh
-        git clone git@github.com:<your-user>/xtgeoviz.git
+    git clone git@github.com:<your-user>/xtgeoviz.git
     ```
 3. Install your local copy into a virtual environment:
     ```sh
-        python -m venv your-venv
-        source your-venv/bin/activate
-        cd xtgeoviz/
-        pip install ".[dev,docs]"
+    python -m venv your-venv
+    source your-venv/bin/activate
+    cd xtgeoviz/
+    pip install ".[dev,docs]"
     ```
 4. Create a feature branch for local development:
     ```sh
-        git checkout -b name-of-your-bugfix-or-feature
+    git checkout -b name-of-your-bugfix-or-feature
     ```
    Now you can make your changes locally.
 5. When you're done making changes, check that your changes pass flake8,
    black, isort, mypy, and the tests:
    ```sh
-       black src tests
-       isort src tests
-       flake8 src tests
-       mypy src
-       pytest
-    ```
+   black src tests
+   isort src tests
+   flake8 src tests
+   mypy src
+   pytest
+   ```
 6. Commit your changes and push your branch to GitHub:
    ```sh
-       git add your-changed file-names
-       git commit -m "Your detailed description of your changes."
-       git push origin name-of-your-bugfix-or-feature
-    ```
+   git add your-changed file-names
+   git commit -m "Your detailed description of your changes."
+   git push origin name-of-your-bugfix-or-feature
+   ```
 7. Create a pull request
 
 ## Pull Request Guidelines

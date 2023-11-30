@@ -70,8 +70,9 @@ tests = [
     "types-PyYAML",
 ]
 docs = [
-    "sphinx",
     "autoapi",
+    "myst-parser",
+    "sphinx",
     "sphinxcontrib-apidoc",
     "sphinx-argparse",
     "sphinx-autodoc-typehints",
