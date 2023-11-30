@@ -1,4 +1,6 @@
 """Module for 3D Grid slice plots, using matplotlib."""
+from __future__ import annotations
+
 import logging
 
 import matplotlib.pyplot as plt
