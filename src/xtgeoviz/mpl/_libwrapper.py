@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 """Compatibility wrapper when major libs changes API."""
-
 import matplotlib
 import scipy
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Config option for xsections"""
 import logging
 import re

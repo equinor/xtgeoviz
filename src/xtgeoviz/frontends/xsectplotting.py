@@ -1,5 +1,4 @@
 """Making cross sections (plots), primarely wells."""
-
 import argparse
 import json
 import logging
@@ -8,18 +7,13 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Union
 
-import xtgeo
 import yaml
-
-import xtgeoviz
 
 from . import _xsectplotting_config as _cfg
 from . import _xsectplotting_load as _load
 from . import _xsectplotting_plotting as _plt
 
 APPNAME = "xtgeoviz.xsectplot"
-
-xtg = xtgeo.common.XTGeoDialog()
 
 logger = logging.getLogger(__name__)
 
@@ -188,10 +182,9 @@ class _Xsections:
         dconfig = yaml.safe_load(ydefaults)
 
         if not os.path.isfile(inputfile):
-            xtg.error(f"STOP! No such config file exists: {inputfile}")
-            raise SystemExit
+            raise OSError(f"No such config file exists: {inputfile}")
 
-        with open(inputfile, "r", encoding="utf-8") as stream:
+        with open(inputfile, encoding="utf-8") as stream:
             config = yaml.safe_load(stream)
 
         # merge config with defaults:
@@ -289,7 +282,6 @@ def xsectplot(
     app.load_wells()
     app.load_surfaces()
     app.load_cube()
-    # app.load_grid()
     app.load_outline()
 
     app.config_complete()
@@ -300,5 +292,4 @@ def xsectplot(
 
 
 if __name__ == "__main__":
-    xtgeo.common.XTGeoDialog.print_xtgeo_header(APPNAME, xtgeoviz.__version__)
     xsectplot()

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 """Module for color tables."""
-
 import logging
 import os
 import random
@@ -338,13 +336,13 @@ def xtgeocolors():
 def colorsfromfile(fname, fformat="rms"):
     """Read a color table from a file."""
 
-    logger.info("Default style is %s", fformat)
+    logger.debug("Default style is %s", fformat)
     ctable = []
 
     if not os.path.isfile(fname):
         raise IOError(f"Color file not found: {fname}")
 
-    with open(fname, "r", encoding="utf-8") as fc:
+    with open(fname, encoding="utf-8") as fc:
         for line in fc:
             if line.startswith("ColorMap.color("):
                 _key, _eq, rgb1, rgb2, rgb3 = line.split()
