@@ -3,7 +3,7 @@ import matplotlib
 import pytest
 from matplotlib.testing.decorators import image_comparison
 
-from xtgeoviz.mpl.baseplot import BasePlot
+from xtgeoviz.plot.baseplot import BasePlot
 
 
 @pytest.mark.skip(reason="Graphical compare testing immature")

@@ -94,7 +94,7 @@ class _Xsections:
     inputdata: dict = field(default_factory=dict)
     psettings: dict = field(default_factory=dict)
     output: dict = field(default_factory=dict)
-    verbosity: str = None
+    verbosity: str | None = None
 
     config: dict = field(default_factory=dict, init=False)  # resulting YAML config
     polylines: list = field(default_factory=list, init=False)
