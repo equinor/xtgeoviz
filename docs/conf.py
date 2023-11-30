@@ -18,6 +18,7 @@ import xtgeoviz
 release = xtgeoviz.__version__
 
 extensions = [
+    "myst_parser",
     "sphinxcontrib.apidoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",

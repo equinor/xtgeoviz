@@ -18,12 +18,11 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    runs-on: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -38,7 +37,34 @@ jobs:
       - name: Install
         run: |
           pip install -U pip
-          pip install ".[tests]"
+          pip install ".[tests,docs]"
 
       - name: Run tests
-        run: pytest -n auto --disable-warnings
+        run: pytest --disable-warnings
+
+      - name: Build documentation
+        if: ${{ always() }}
+        run: sphinx-build -b html docs build/docs/html
+
+      - name: Update GitHub pages
+        if: github.repository_owner == 'equinor' && github.ref == 'refs/heads/main' && matrix.python-version == '3.8'
+        run: |
+          cp -R ./build/docs/html ../html
+
+          git config --local user.email "xtgeoviz-github-action"
+          git config --local user.name "xtgeoviz-github-action"
+          git fetch origin gh-pages
+          git checkout --track origin/gh-pages
+          git clean -f -f -d -x  # Double -f is intentional
+          git rm -r *
+
+          cp -R ../html/* .
+          touch .nojekyll  # If not, github pages ignores _* directories.
+          git add .
+
+          if git diff-index --quiet HEAD; then
+            echo "No changes in documentation. Skip documentation deploy."
+          else
+            git commit -m "Update Github Pages"
+            git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          fi
