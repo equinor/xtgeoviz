@@ -9,7 +9,7 @@ import subprocess
 
 import pandas as pd
 
-from xtgeoviz.mpl import XSection
+from xtgeoviz.plot import XSection
 
 logger = logging.getLogger(__name__)
 

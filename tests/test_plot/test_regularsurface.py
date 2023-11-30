@@ -4,7 +4,7 @@ import numpy as np
 import xtgeo
 from matplotlib.testing.compare import compare_images
 
-from xtgeoviz.mpl.quickplot import quickplot
+from xtgeoviz.plot.quickplot import quickplot
 
 
 def test_very_basic_to_file(tmp_path):
