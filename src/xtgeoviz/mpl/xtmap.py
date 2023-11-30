@@ -1,4 +1,6 @@
 """Module for map plots of surfaces, using matplotlib."""
+from __future__ import annotations
+
 import logging
 
 import matplotlib.patches as mplp

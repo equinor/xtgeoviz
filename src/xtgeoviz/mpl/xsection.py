@@ -1,4 +1,6 @@
 """Module for fast XSection plots of wells/surfaces etc, using matplotlib."""
+from __future__ import annotations
+
 import logging
 import math
 import warnings
