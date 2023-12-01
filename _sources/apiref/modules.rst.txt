@@ -1,0 +1,7 @@
+API reference for xtgeoviz
+==========================
+
+.. toctree::
+   :maxdepth: 4
+
+   xtgeoviz

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>xtgeoviz.mpl.grid3d_slice &mdash; xtgeoviz 0.0.10.dev4+g10e53cc.d20231130 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=026a9aac"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #C0C0C0" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            xtgeoviz
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">xtgeoviz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apiref/modules.html">API reference for xtgeoviz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #C0C0C0" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xtgeoviz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">xtgeoviz.mpl.grid3d_slice</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for xtgeoviz.mpl.grid3d_slice</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module for 3D Grid slice plots, using matplotlib.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">PatchCollection</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Polygon</span>
+
+<span class="kn">from</span> <span class="nn">.baseplot</span> <span class="kn">import</span> <span class="n">BasePlot</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Grid3DSlice">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.grid3d_slice.html#xtgeoviz.mpl.grid3d_slice.Grid3DSlice">[docs]</a>
+<span class="k">class</span> <span class="nc">Grid3DSlice</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting a row, a column, or a layer, using matplotlib.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct an instance for a Grid3DSlice object.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wells</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tight</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wfence</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_legendtitle</span> <span class="o">=</span> <span class="s2">&quot;Map&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="s2">&quot;rainbow&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linecolor</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prop</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_geomlist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_actnum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_minvalue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maxvalue</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Grid3DSlice.plot_gridslice">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.grid3d_slice.html#xtgeoviz.mpl.grid3d_slice.Grid3DSlice.plot_gridslice">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_gridslice</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">grid</span><span class="p">,</span>
+        <span class="n">prop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;layer&quot;</span><span class="p">,</span>
+        <span class="n">minvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">maxvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">linecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">activeonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a row slice, column slice or layer slice of a grid.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            grid (Grid): The XTGeo grid object</span>
+<span class="sd">            prop (GridProperty, optional): The XTGeo grid property object</span>
+<span class="sd">            mode (str): Choose between &#39;column&#39;, &#39;row&#39;, &#39;layer&#39; (default)</span>
+<span class="sd">            minvalue (float): Minimum level color scale (default: from data)</span>
+<span class="sd">            maxvalue (float): Maximum level color scale (default: from data)</span>
+<span class="sd">            index (int): Index to plot e.g layer number if layer slice (first=1)</span>
+<span class="sd">            colormap: Color map to use for cells, e.g. &#39;rainbow&#39; or an rmscol file</span>
+<span class="sd">            linecolor (str or tuple): Color of grid lines (black/white/grey</span>
+<span class="sd">                or a tuple with 4 numbers on valid matplotlib format)</span>
+<span class="sd">            activeonly (bool): If only use active cells</span>
+<span class="sd">            window (str): Some window</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">colormap</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linecolor</span> <span class="o">=</span> <span class="n">linecolor</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">linecolor</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="n">linecolor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;grey&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value of linecolor is invalid&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clist</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_xyz_corners</span><span class="p">()</span>  <span class="c1"># get XYZ for each corner, 24 arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prop</span> <span class="o">=</span> <span class="n">prop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="o">=</span> <span class="n">window</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_geomlist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># returns (xori, yori, zori, xmin, xmax, ymin, ymax, zmin, zmax,...)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_geomlist</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_geometrics</span><span class="p">(</span><span class="n">allcells</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cellcenter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="n">activeonly</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_minvalue</span> <span class="o">=</span> <span class="n">minvalue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maxvalue</span> <span class="o">=</span> <span class="n">maxvalue</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;column&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># self._plot_row()</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;row&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># self._plot_row()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_layer</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_plot_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">xyc</span><span class="p">,</span> <span class="n">ibn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">get_layer_slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">,</span> <span class="n">activeonly</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_active</span><span class="p">)</span>
+
+        <span class="n">xval</span> <span class="o">=</span> <span class="n">xyc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">yval</span> <span class="o">=</span> <span class="n">xyc</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">xvmin</span> <span class="o">=</span> <span class="n">xval</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">xvmax</span> <span class="o">=</span> <span class="n">xval</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">yvmin</span> <span class="o">=</span> <span class="n">yval</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">yvmax</span> <span class="o">=</span> <span class="n">yval</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">xmin</span> <span class="o">=</span> <span class="n">xvmin</span> <span class="o">-</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xvmax</span> <span class="o">-</span> <span class="n">xvmin</span><span class="p">))</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">xvmax</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xvmax</span> <span class="o">-</span> <span class="n">xvmin</span><span class="p">))</span>
+            <span class="n">ymin</span> <span class="o">=</span> <span class="n">yvmin</span> <span class="o">-</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">yvmax</span> <span class="o">-</span> <span class="n">yvmin</span><span class="p">))</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">yvmax</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">yvmax</span> <span class="o">-</span> <span class="n">yvmin</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span>
+
+        <span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ibn</span><span class="p">)):</span>
+            <span class="n">nppol</span> <span class="o">=</span> <span class="n">xyc</span><span class="p">[</span><span class="n">pos</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="n">nppol</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">polygon</span> <span class="o">=</span> <span class="n">Polygon</span><span class="p">(</span><span class="n">nppol</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+
+        <span class="n">patchcoll</span> <span class="o">=</span> <span class="n">PatchCollection</span><span class="p">(</span>
+            <span class="n">patches</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_linecolor</span><span class="p">,),</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colormap</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop</span><span class="p">:</span>
+            <span class="n">pvalues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">pvalues</span> <span class="o">=</span> <span class="n">pvalues</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">pvalues</span> <span class="o">=</span> <span class="n">pvalues</span><span class="p">[</span><span class="o">~</span><span class="n">pvalues</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span>
+
+            <span class="n">patchcoll</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">pvalues</span><span class="p">)</span>
+
+            <span class="n">pmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minvalue</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_minvalue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pmin</span> <span class="o">=</span> <span class="n">pvalues</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+            <span class="n">pmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxvalue</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxvalue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pmax</span> <span class="o">=</span> <span class="n">pvalues</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+            <span class="n">patchcoll</span><span class="o">.</span><span class="n">set_clim</span><span class="p">([</span><span class="n">pmin</span><span class="p">,</span> <span class="n">pmax</span><span class="p">])</span>
+
+        <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">patchcoll</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev4+g10e53cc.d20231130).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

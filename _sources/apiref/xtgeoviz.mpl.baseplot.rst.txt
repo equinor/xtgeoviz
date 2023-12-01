@@ -1,0 +1,7 @@
+xtgeoviz.mpl.baseplot module
+============================
+
+.. automodule:: xtgeoviz.mpl.baseplot
+   :members:
+   :undoc-members:
+   :show-inheritance:

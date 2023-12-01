@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>xtgeoviz.mpl.xsection &mdash; xtgeoviz 0.0.10.dev4+g10e53cc.d20231130 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=026a9aac"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #C0C0C0" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            xtgeoviz
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">xtgeoviz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apiref/modules.html">API reference for xtgeoviz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #C0C0C0" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xtgeoviz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">xtgeoviz.mpl.xsection</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for xtgeoviz.mpl.xsection</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module for fast XSection plots of wells/surfaces etc, using matplotlib.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xtgeo</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">collections</span> <span class="k">as</span> <span class="n">mc</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">LinearSegmentedColormap</span><span class="p">,</span> <span class="n">ListedColormap</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+
+<span class="kn">from</span> <span class="nn">._libwrapper</span> <span class="kn">import</span> <span class="n">scipy_gaussianfilter</span>
+<span class="kn">from</span> <span class="nn">.baseplot</span> <span class="kn">import</span> <span class="n">BasePlot</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="XSection">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection">[docs]</a>
+<span class="k">class</span> <span class="nc">XSection</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting a cross-section of a well.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        zmin: Upper level of the plot (top Y axis).</span>
+<span class="sd">        zmax (float): Lower level of the plot (bottom Y axis).</span>
+<span class="sd">        well: XTGeo well object.</span>
+<span class="sd">        surfaces: List of XTGeo RegularSurface objects</span>
+<span class="sd">        surfacenames: List of surface names (str) for legend</span>
+<span class="sd">        cube: A XTGeo Cube instance</span>
+<span class="sd">        grid: A XTGeo Grid instance</span>
+<span class="sd">        gridproperty: A XTGeo GridProperty instance</span>
+<span class="sd">        colormap: Name of colormap, e.g. &#39;Set1&#39;. Default is &#39;xtgeo&#39;</span>
+<span class="sd">        outline: XTGeo Polygons object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">zmin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">zmax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9999</span><span class="p">,</span>
+        <span class="n">well</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">xtgeo</span><span class="o">.</span><span class="n">Well</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">surfaces</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">nextend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">LinearSegmentedColormap</span><span class="p">,</span> <span class="n">ListedColormap</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">zonelogshift</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">surfacenames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cube</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">xtgeo</span><span class="o">.</span><span class="n">Cube</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">xtgeo</span><span class="o">.</span><span class="n">Grid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gridproperty</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">xtgeo</span><span class="o">.</span><span class="n">GridProperty</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">outline</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">xtgeo</span><span class="o">.</span><span class="n">Polygons</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span> <span class="o">=</span> <span class="n">zmin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zmax</span> <span class="o">=</span> <span class="n">zmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_well</span> <span class="o">=</span> <span class="n">well</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nextend</span> <span class="o">=</span> <span class="n">nextend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sampling</span> <span class="o">=</span> <span class="n">sampling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surfaces</span> <span class="o">=</span> <span class="n">surfaces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surfacenames</span> <span class="o">=</span> <span class="n">surfacenames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cube</span> <span class="o">=</span> <span class="n">cube</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gridproperty</span> <span class="o">=</span> <span class="n">gridproperty</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zonelogshift</span> <span class="o">=</span> <span class="n">zonelogshift</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span> <span class="o">=</span> <span class="n">outline</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_axes</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pagesize</span> <span class="o">=</span> <span class="s2">&quot;A4&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_legendtitle</span> <span class="o">=</span> <span class="s2">&quot;Zones&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_legendsize</span> <span class="o">=</span> <span class="mi">5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax3</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_cube</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colorlegend_cube</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_grid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colorlegend_grid</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">define_colormap</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="s2">&quot;xtgeo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="s2">&quot;xtgeo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">idx</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)}</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initialized XSection instance&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ==================================================================================</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># Notice additonal props in base class</span>
+    <span class="c1"># ==================================================================================</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pagesize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns page size.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pagesize</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">legendsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns or set the legend size.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_legendsize</span>
+
+    <span class="nd">@legendsize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">legendsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lsize</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_legendsize</span> <span class="o">=</span> <span class="n">lsize</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns or set the legends.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span>
+
+    <span class="nd">@has_legend</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">has_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input is not a bool&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns or set the axes status.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_axes</span>
+
+    <span class="nd">@has_axes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">has_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input is not a bool&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_axes</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colormap_facies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or get the facies colormap.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies</span>
+
+    <span class="nd">@colormap_facies</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colormap_facies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colormap_zonelog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or get the zonelog colormap.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog</span>
+
+    <span class="nd">@colormap_zonelog</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colormap_zonelog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colormap_perf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or get the perforations colormap.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf</span>
+
+    <span class="nd">@colormap_perf</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colormap_perf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colormap_facies_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or get the facies colormap actual dict table.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies_dict</span>
+
+    <span class="nd">@colormap_facies_dict</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colormap_facies_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input is not a dict&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies_dict</span> <span class="o">=</span> <span class="n">xdict</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colormap_perf_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or get the perf colormap actual dict table.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf_dict</span>
+
+    <span class="nd">@colormap_perf_dict</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colormap_perf_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input is not a dict&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf_dict</span> <span class="o">=</span> <span class="n">xdict</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colormap_zonelog_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or get the zonelog colormap actual dict table.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog_dict</span>
+
+    <span class="nd">@colormap_zonelog_dict</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colormap_zonelog_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input is not a dict&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog_dict</span> <span class="o">=</span> <span class="n">xdict</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or get the fence spesification.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">wfence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_fence_polyline</span><span class="p">(</span>
+                    <span class="n">sampling</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sampling</span><span class="p">,</span> <span class="n">nextend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_nextend</span><span class="p">,</span> <span class="n">tvdmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span> <span class="o">=</span> <span class="n">wfence</span>
+
+                <span class="k">if</span> <span class="n">wfence</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input well is None&quot;</span><span class="p">)</span>  <span class="c1"># should be more flexible</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span>
+
+    <span class="nd">@fence</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">fence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">myfence</span><span class="p">):</span>
+        <span class="c1"># this can be extended with checks and various types of input...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span> <span class="o">=</span> <span class="n">myfence</span>
+
+    <span class="c1"># ==================================================================================</span>
+    <span class="c1"># Functions methods (public)</span>
+    <span class="c1"># ==================================================================================</span>
+
+<div class="viewcode-block" id="XSection.canvas">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.canvas">[docs]</a>
+    <span class="k">def</span> <span class="nf">canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infotext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figscaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the canvas to plot on, with title and subtitle.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title (str, optional): Title of plot.</span>
+<span class="sd">            subtitle (str, optional): Sub title of plot.</span>
+<span class="sd">            infotext (str, optional): Text to be written as info string.</span>
+<span class="sd">            figscaling (str, optional): Figure scaling, default is 1.0</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># overriding the base class canvas</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.xmargin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># fill the plot margins</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_axes</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.titlecolor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.edgecolor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.labelcolor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.titlecolor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;xtick.color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">11.69</span> <span class="o">*</span> <span class="n">figscaling</span><span class="p">,</span> <span class="mf">8.27</span> <span class="o">*</span> <span class="n">figscaling</span><span class="p">))</span>
+        <span class="n">ax1</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">rowspan</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">colspan</span><span class="o">=</span><span class="mi">23</span><span class="p">)</span>
+
+        <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">(</span>
+            <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="n">rowspan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">colspan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">frame_on</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span>
+        <span class="p">)</span>
+
+        <span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">(</span>
+            <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="n">rowspan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">colspan</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">frame_on</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span><span class="p">:</span>
+            <span class="c1"># indicate A to B</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="mf">0.02</span><span class="p">,</span>
+                <span class="mf">0.98</span><span class="p">,</span>
+                <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="mf">0.98</span><span class="p">,</span>
+                <span class="mf">0.98</span><span class="p">,</span>
+                <span class="s2">&quot;B&quot;</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># title here:</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="mf">0.5</span><span class="p">,</span>
+                <span class="mf">1.09</span><span class="p">,</span>
+                <span class="n">title</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">subtitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">subtitle</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">infotext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="o">-</span><span class="mf">0.11</span><span class="p">,</span>
+                <span class="o">-</span><span class="mf">0.11</span><span class="p">,</span>
+                <span class="n">infotext</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+                <span class="n">fontsize</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Depth&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mf">12.0</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Length along well&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+        <span class="n">ax2</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+            <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+            <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+            <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labeltop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labelright</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">ax3</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+            <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+            <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
+            <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labeltop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labelright</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># need these also, a bug in functions above?</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullFormatter</span><span class="p">())</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullFormatter</span><span class="p">())</span>
+        <span class="n">ax3</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullFormatter</span><span class="p">())</span>
+        <span class="n">ax3</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullFormatter</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax1</span> <span class="o">=</span> <span class="n">ax1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax2</span> <span class="o">=</span> <span class="n">ax2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax3</span> <span class="o">=</span> <span class="n">ax3</span></div>
+
+
+<div class="viewcode-block" id="XSection.plot_well">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_well">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_well</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">zonelogname</span><span class="o">=</span><span class="s2">&quot;ZONELOG&quot;</span><span class="p">,</span>
+        <span class="n">facieslogname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">perflogname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wellcrossings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wellcrossingnames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">wellcrossingyears</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">welltrajcolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+        <span class="n">welltrajwidth</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input an XTGeo Well object and plot it.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">wo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span>
+
+        <span class="c1"># reduce the well data by Pandas operations</span>
+        <span class="n">dfr</span> <span class="o">=</span> <span class="n">wo</span><span class="o">.</span><span class="n">dataframe</span>
+        <span class="n">wo</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">dfr</span><span class="p">[</span><span class="n">dfr</span><span class="p">[</span><span class="s2">&quot;Z_TVDSS&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">]</span>
+
+        <span class="c1"># Create a relative XYLENGTH vector (0.0 where well starts)</span>
+        <span class="n">wo</span><span class="o">.</span><span class="n">create_relative_hlen</span><span class="p">()</span>
+
+        <span class="n">dfr</span> <span class="o">=</span> <span class="n">wo</span><span class="o">.</span><span class="n">dataframe</span>
+        <span class="k">if</span> <span class="n">dfr</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_showok</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+
+        <span class="c1"># get the well trajectory (numpies) as copy</span>
+        <span class="n">zv</span> <span class="o">=</span> <span class="n">dfr</span><span class="p">[</span><span class="s2">&quot;Z_TVDSS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">hv</span> <span class="o">=</span> <span class="n">dfr</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># plot the perflog, if any, first</span>
+        <span class="k">if</span> <span class="n">perflogname</span><span class="p">:</span>
+            <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;perf&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_well_perflog</span><span class="p">(</span><span class="n">dfr</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">perflogname</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span><span class="p">)</span>
+
+        <span class="c1"># plot the facies, if any, behind the trajectory; ie. first or second</span>
+        <span class="k">if</span> <span class="n">facieslogname</span><span class="p">:</span>
+            <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;facies&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_well_faclog</span><span class="p">(</span><span class="n">dfr</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">facieslogname</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span><span class="p">)</span>
+
+        <span class="n">axx</span><span class="p">,</span> <span class="n">_bbxa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;well&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_well_traj</span><span class="p">(</span>
+            <span class="n">axx</span><span class="p">,</span> <span class="n">zv</span><span class="p">,</span> <span class="n">hv</span><span class="p">,</span> <span class="n">welltrajcolor</span><span class="o">=</span><span class="n">welltrajcolor</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">welltrajwidth</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">zonelogname</span><span class="p">:</span>
+            <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_well_zlog</span><span class="p">(</span><span class="n">dfr</span><span class="p">,</span> <span class="n">axx</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">zonelogname</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_legend</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">wellcrossings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">wellcrossings</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">wellcrossings</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">wellcrossings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_well_crossings</span><span class="p">(</span>
+                <span class="n">dfr</span><span class="p">,</span> <span class="n">axx</span><span class="p">,</span> <span class="n">wellcrossings</span><span class="p">,</span> <span class="n">wellcrossingnames</span><span class="p">,</span> <span class="n">wellcrossingyears</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XSection.set_xaxis_md">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.set_xaxis_md">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_xaxis_md</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gridlines</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set x-axis labels to measured depth.&quot;&quot;&quot;</span>
+        <span class="n">md_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">md_start_round</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">md_start</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">md_start_delta</span> <span class="o">=</span> <span class="n">md_start</span> <span class="o">-</span> <span class="n">md_start_round</span>
+
+        <span class="n">auto_ticks</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">()</span>
+        <span class="n">auto_ticks_delta</span> <span class="o">=</span> <span class="n">auto_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">auto_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">ax</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+        <span class="n">lim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+
+        <span class="n">new_ticks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_tick_labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">tick</span> <span class="ow">in</span> <span class="n">auto_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">new_ticks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">tick</span><span class="p">)</span> <span class="o">-</span> <span class="n">md_start_delta</span><span class="p">))</span>
+            <span class="n">new_tick_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">md_start_round</span> <span class="o">+</span> <span class="n">delta</span><span class="p">))</span>
+            <span class="n">delta</span> <span class="o">+=</span> <span class="n">auto_ticks_delta</span>
+
+        <span class="c1"># Set new xticks and labels</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">new_ticks</span><span class="p">,</span> <span class="n">new_tick_labels</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gridlines</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Restore xaxis limits and set axis title</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">lim</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;TVD MSL [m]&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mf">12.0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Measured Depth [m]&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_plot_well_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">zv</span><span class="p">,</span> <span class="n">hv</span><span class="p">,</span> <span class="n">welltrajcolor</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the trajectory as a black line.&quot;&quot;&quot;</span>
+        <span class="n">zv_copy</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">zv</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">,</span> <span class="n">zv</span><span class="p">)</span>
+        <span class="n">hv_copy</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">zv</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">,</span> <span class="n">hv</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">hv_copy</span><span class="p">,</span> <span class="n">zv_copy</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">welltrajcolor</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_line_segments_colors</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ctable</span><span class="p">,</span> <span class="n">logname</span><span class="p">,</span> <span class="n">fillnavalue</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get segment and color array for plotting matplotlib lineCollection.&quot;&quot;&quot;</span>
+        <span class="n">df_idx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;idx_log&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="s2">&quot;idx_color&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">values</span><span class="p">())}</span>
+        <span class="p">)</span>
+
+        <span class="n">df_ctable</span> <span class="o">=</span> <span class="n">df_idx</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;ctable&quot;</span><span class="p">:</span> <span class="n">ctable</span><span class="p">}),</span>
+            <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+            <span class="n">left_on</span><span class="o">=</span><span class="s2">&quot;idx_color&quot;</span><span class="p">,</span>
+            <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">dff</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df_ctable</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="n">logname</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s2">&quot;idx_log&quot;</span><span class="p">)</span>
+
+        <span class="n">dff</span><span class="p">[</span><span class="s2">&quot;point&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dff</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">],</span> <span class="n">dff</span><span class="p">[</span><span class="s2">&quot;Z_TVDSS&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># find line segments</span>
+        <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">segments_i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">colorlist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">previous_color</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">point</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dff</span><span class="p">[</span><span class="s2">&quot;point&quot;</span><span class="p">],</span> <span class="n">dff</span><span class="p">[</span><span class="s2">&quot;ctable&quot;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">color</span><span class="p">)):</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">fillnavalue</span>
+
+            <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="n">previous_color</span><span class="p">:</span>
+                <span class="n">segments</span><span class="p">[</span><span class="n">segments_i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+                <span class="n">previous_color</span> <span class="o">=</span> <span class="n">color</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># add endpoint to current segment</span>
+                <span class="k">if</span> <span class="n">segments_i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">segments</span><span class="p">[</span><span class="n">segments_i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+
+                <span class="c1"># start new segment</span>
+                <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">point</span><span class="p">])</span>
+                <span class="n">colorlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+
+                <span class="n">previous_color</span> <span class="o">=</span> <span class="n">color</span>
+                <span class="n">segments_i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">colorlist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">colorlist</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">segments</span><span class="p">,</span> <span class="n">colorlist</span>
+
+    <span class="k">def</span> <span class="nf">_plot_well_zlog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">zonelogname</span><span class="p">,</span> <span class="n">logwidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the zone log as colored segments.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">zonelogname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">zomin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">zomax</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">zomin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">zonelogname</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+            <span class="n">zomax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">zonelogname</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_showok</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ZOMIN, ZOMAX </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> ?&quot;</span><span class="p">,</span> <span class="n">zomin</span><span class="p">,</span> <span class="n">zomax</span><span class="p">)</span>  <span class="c1"># used for what?</span>
+
+        <span class="n">zshift</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zonelogshift</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">zshift</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zonelogshift</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap_zonelog</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap_zonelog</span>
+            <span class="n">ctable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_any_colormap_as_table</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ctable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_colormap_as_table</span><span class="p">()</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap_zonelog_dict</span>
+
+        <span class="c1"># adjust for zoneshift.</span>
+        <span class="n">idx_zshift</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">:</span>
+            <span class="n">idx_zshift</span><span class="p">[</span><span class="n">key</span> <span class="o">-</span> <span class="n">zshift</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="n">fillnavalue</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+        <span class="n">segments</span><span class="p">,</span> <span class="n">segments_colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_line_segments_colors</span><span class="p">(</span>
+            <span class="n">df</span><span class="p">,</span> <span class="n">idx_zshift</span><span class="p">,</span> <span class="n">ctable</span><span class="p">,</span> <span class="n">zonelogname</span><span class="p">,</span> <span class="n">fillnavalue</span>
+        <span class="p">)</span>
+
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">LineCollection</span><span class="p">(</span>
+            <span class="n">segments</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">segments_colors</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">logwidth</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">202</span>
+        <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
+
+        <span class="n">legend</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
+            <span class="n">zrecord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_logrecord</span><span class="p">(</span><span class="n">zonelogname</span><span class="p">)</span>
+            <span class="n">zrecord</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span> <span class="n">zname</span> <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">zname</span> <span class="ow">in</span> <span class="n">zrecord</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">}</span>
+
+            <span class="n">zcolors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">zone</span> <span class="ow">in</span> <span class="n">zrecord</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">zone</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">zone</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">ctable</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">zone</span><span class="p">]]</span>
+
+                <span class="n">zcolors</span><span class="p">[</span><span class="n">zrecord</span><span class="p">[</span><span class="n">zone</span><span class="p">]]</span> <span class="o">=</span> <span class="n">color</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drawproxylegend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">zcolors</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Zonelog&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_plot_well_faclog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">facieslogname</span><span class="p">,</span> <span class="n">logwidth</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the facies log as colored segments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (dataframe): The Well dataframe.</span>
+<span class="sd">            ax (axes): The ax plot object.</span>
+<span class="sd">            bba: Bounding box</span>
+<span class="sd">            facieslogname (str): name of the facies log.</span>
+<span class="sd">            logwidth (int): Log linewidth.</span>
+<span class="sd">            legend (bool): Plot log legend?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">facieslogname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap_facies</span>
+        <span class="n">ctable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_any_colormap_as_table</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap_facies_dict</span>
+
+        <span class="n">fillnavalue</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># transparent</span>
+        <span class="n">segments</span><span class="p">,</span> <span class="n">segments_colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_line_segments_colors</span><span class="p">(</span>
+            <span class="n">df</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ctable</span><span class="p">,</span> <span class="n">facieslogname</span><span class="p">,</span> <span class="n">fillnavalue</span>
+        <span class="p">)</span>
+
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">LineCollection</span><span class="p">(</span>
+            <span class="n">segments</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">segments_colors</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">logwidth</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">201</span>
+        <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
+            <span class="n">frecord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_logrecord</span><span class="p">(</span><span class="n">facieslogname</span><span class="p">)</span>
+            <span class="n">frecord</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span> <span class="n">fname</span> <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">frecord</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">}</span>
+
+            <span class="n">fcolors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">facies</span> <span class="ow">in</span> <span class="n">frecord</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">facies</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">facies</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">ctable</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">facies</span><span class="p">]]</span>
+
+                <span class="n">fcolors</span><span class="p">[</span><span class="n">frecord</span><span class="p">[</span><span class="n">facies</span><span class="p">]]</span> <span class="o">=</span> <span class="n">color</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drawproxylegend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">fcolors</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Facies&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_plot_well_perflog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">perflogname</span><span class="p">,</span> <span class="n">logwidth</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the perforation log as colored segments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (dataframe): The Well dataframe.</span>
+<span class="sd">            ax (axes): The ax plot object.</span>
+<span class="sd">            zv (ndarray): The numpy Z TVD array.</span>
+<span class="sd">            bba: Boundinng box</span>
+<span class="sd">            hv (ndarray): The numpy Length  array.</span>
+<span class="sd">            perflogname (str): name of the perforation log.</span>
+<span class="sd">            logwidth (int): Log linewidth.</span>
+<span class="sd">            legend (bool): Plot log legend?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">perflogname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap_perf</span>
+        <span class="n">ctable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_any_colormap_as_table</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap_perf_dict</span>
+
+        <span class="n">fillnavalue</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># transparent</span>
+        <span class="n">segments</span><span class="p">,</span> <span class="n">segments_colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_line_segments_colors</span><span class="p">(</span>
+            <span class="n">df</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ctable</span><span class="p">,</span> <span class="n">perflogname</span><span class="p">,</span> <span class="n">fillnavalue</span>
+        <span class="p">)</span>
+
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">LineCollection</span><span class="p">(</span>
+            <span class="n">segments</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">segments_colors</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">logwidth</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">200</span>
+        <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
+            <span class="n">precord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_logrecord</span><span class="p">(</span><span class="n">perflogname</span><span class="p">)</span>
+            <span class="n">precord</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="p">:</span> <span class="n">pname</span> <span class="k">for</span> <span class="n">val</span><span class="p">,</span> <span class="n">pname</span> <span class="ow">in</span> <span class="n">precord</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">}</span>
+
+            <span class="n">pcolors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">perf</span> <span class="ow">in</span> <span class="n">precord</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="n">perf</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[</span><span class="n">perf</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">ctable</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="n">perf</span><span class="p">]]</span>
+
+                <span class="n">pcolors</span><span class="p">[</span><span class="n">precord</span><span class="p">[</span><span class="n">perf</span><span class="p">]]</span> <span class="o">=</span> <span class="n">color</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drawproxylegend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">pcolors</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Perforations&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_plot_well_crossings</span><span class="p">(</span><span class="n">dfr</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">wcross</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">years</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot well crossing based on dataframe (wcross).</span>
+
+<span class="sd">        The well crossing coordinates are identified for this well,</span>
+<span class="sd">        and then it is looking for the closest coordinate. Given this</span>
+<span class="sd">        coordinate, a position is chosen.</span>
+
+<span class="sd">        The pandas dataframe wcross shall have the following columns:</span>
+
+<span class="sd">        * Name of crossing wells named CWELL</span>
+<span class="sd">        * Coordinate X named X_UTME</span>
+<span class="sd">        * Coordinate Y named Y_UTMN</span>
+<span class="sd">        * Coordinate Z named Z_TVDSS</span>
+
+<span class="sd">        Optional column:</span>
+<span class="sd">        * Drilled year of crossing well named CYEAR</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dfr: Well dataframe</span>
+<span class="sd">            ax: current axis</span>
+<span class="sd">            wcross: A pandas dataframe with precomputed well crossings</span>
+<span class="sd">            names: Display the names of the crossed wells</span>
+<span class="sd">            years: Display the drilled year of the crossed wells</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">placings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">),</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">wcross</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">xcoord</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">X_UTME</span>
+            <span class="n">ycoord</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">Y_UTMN</span>
+
+            <span class="n">dfrc</span> <span class="o">=</span> <span class="n">dfr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+            <span class="n">dfrc</span><span class="p">[</span><span class="s2">&quot;DLEN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span>
+                <span class="nb">pow</span><span class="p">(</span><span class="n">dfrc</span><span class="o">.</span><span class="n">X_UTME</span> <span class="o">-</span> <span class="n">xcoord</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nb">pow</span><span class="p">(</span><span class="n">dfrc</span><span class="o">.</span><span class="n">Y_UTMN</span> <span class="o">-</span> <span class="n">ycoord</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mf">0.5</span>
+            <span class="p">)</span>
+
+            <span class="n">minindx</span> <span class="o">=</span> <span class="n">dfrc</span><span class="o">.</span><span class="n">DLEN</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">dfrc</span><span class="o">.</span><span class="n">R_HLEN</span><span class="p">[</span><span class="n">minindx</span><span class="p">],</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">Z_TVDSS</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">s</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="n">dfrc</span><span class="o">.</span><span class="n">R_HLEN</span><span class="p">[</span><span class="n">minindx</span><span class="p">],</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">Z_TVDSS</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+                <span class="n">s</span><span class="o">=</span><span class="mi">38</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">302</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">modulo</span> <span class="o">=</span> <span class="n">index</span> <span class="o">%</span> <span class="mi">5</span>
+
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">xtgeo</span><span class="o">.</span><span class="n">Well</span><span class="o">.</span><span class="n">get_short_wellname</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">CWELL</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">years</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="n">CYEAR</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">CYEAR</span>
+
+            <span class="k">if</span> <span class="n">names</span> <span class="ow">or</span> <span class="n">years</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
+                    <span class="n">text</span><span class="p">,</span>
+                    <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                    <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">dfrc</span><span class="o">.</span><span class="n">R_HLEN</span><span class="p">[</span><span class="n">minindx</span><span class="p">],</span> <span class="n">row</span><span class="o">.</span><span class="n">Z_TVDSS</span><span class="p">),</span>
+                    <span class="n">xytext</span><span class="o">=</span><span class="n">placings</span><span class="p">[</span><span class="n">modulo</span><span class="p">],</span>
+                    <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
+                    <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                        <span class="n">arrowstyle</span><span class="o">=</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">connectionstyle</span><span class="o">=</span><span class="s2">&quot;angle3,angleA=0,angleB=90&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_drawproxylegend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">proxies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+            <span class="n">proxies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+            <span class="n">proxies</span><span class="p">,</span>
+            <span class="n">labels</span><span class="p">,</span>
+            <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span>
+            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="n">bba</span><span class="p">,</span>
+            <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_legendsize</span><span class="p">},</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">handlelength</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_drawlegend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">leg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+            <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span>
+            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="n">bba</span><span class="p">,</span>
+            <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_legendsize</span><span class="p">},</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">handlelength</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">myleg</span> <span class="ow">in</span> <span class="n">leg</span><span class="o">.</span><span class="n">get_lines</span><span class="p">():</span>
+            <span class="n">myleg</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_currentax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Keep track of current axis; is needed as one new legend need one new axis.&quot;&quot;&quot;</span>
+        <span class="c1"># for multiple legends, bba is dynamic</span>
+        <span class="n">bbapos</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;main&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.22</span><span class="p">,</span> <span class="mf">1.12</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;contacts&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.12</span><span class="p">),</span>
+            <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.22</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span>
+            <span class="s2">&quot;facies&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.00</span><span class="p">),</span>
+            <span class="s2">&quot;perf&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.22</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">ax1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax1</span>
+
+        <span class="k">if</span> <span class="n">axisname</span> <span class="o">!=</span> <span class="s2">&quot;main&quot;</span><span class="p">:</span>
+            <span class="n">ax1</span><span class="p">[</span><span class="n">axisname</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax1</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+
+            <span class="c1"># invert min,max to invert the Y axis</span>
+            <span class="n">ax1</span><span class="p">[</span><span class="n">axisname</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_zmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">])</span>
+
+            <span class="n">ax1</span><span class="p">[</span><span class="n">axisname</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+            <span class="n">ax1</span><span class="p">[</span><span class="n">axisname</span><span class="p">]</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax1</span><span class="p">[</span><span class="n">axisname</span><span class="p">]</span>
+
+        <span class="n">bba</span> <span class="o">=</span> <span class="n">bbapos</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">axisname</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.22</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span>
+
+<div class="viewcode-block" id="XSection.plot_cube">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_cube">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_cube</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a cube backdrop.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            colormap (ColorMap): Name of color map (default &#39;seismic&#39;)</span>
+<span class="sd">            vmin (float): Minimum value in plot.</span>
+<span class="sd">            vmax (float); Maximum value in plot</span>
+<span class="sd">            alpha (float): Alpah blending number beween 0 and 1.</span>
+<span class="sd">            interpolation (str): Interpolation for plotting, cf. matplotlib</span>
+<span class="sd">                documentation on this. Also gaussianN is allowed, where</span>
+<span class="sd">                N = 1..9.</span>
+<span class="sd">            sampling (str): &#39;nearest&#39; (default) or &#39;trilinear&#39; (more precise)</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: No cube is loaded</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cube</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Ask for plot cube, but noe cube is loaded&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+
+        <span class="n">zinc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cube</span><span class="o">.</span><span class="n">zinc</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+        <span class="n">zvv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cube</span><span class="o">.</span><span class="n">get_randomline</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">,</span>
+            <span class="n">zmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">,</span>
+            <span class="n">zmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zmax</span><span class="p">,</span>
+            <span class="n">zincrement</span><span class="o">=</span><span class="n">zinc</span><span class="p">,</span>
+            <span class="n">sampling</span><span class="o">=</span><span class="n">sampling</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">zvv</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_cube</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">colormap</span> <span class="o">=</span> <span class="s2">&quot;seismic&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_cube</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;gaussian&quot;</span> <span class="ow">in</span> <span class="n">interpolation</span><span class="p">:</span>  <span class="c1"># allow gaussian3 etc</span>
+            <span class="n">nnv</span> <span class="o">=</span> <span class="n">interpolation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">nnv</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nnv</span><span class="p">)</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">scipy_gaussianfilter</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">nnv</span><span class="p">)</span>
+                <span class="n">interpolation</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">interpolation</span> <span class="o">=</span> <span class="s2">&quot;gaussian&quot;</span>
+
+        <span class="n">img</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+            <span class="n">arr</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_colormap_cube</span><span class="p">,</span>
+            <span class="n">interpolation</span><span class="o">=</span><span class="n">interpolation</span><span class="p">,</span>
+            <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+            <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+            <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v1</span><span class="p">),</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># steer this?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorlegend_cube</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XSection.plot_grid3d">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_grid3d">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_grid3d</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;rainbow&quot;</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">zinc</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a sampled grid with gridproperty backdrop.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            colormap (ColorMap): Name of color map (default &#39;rainbow&#39;)</span>
+<span class="sd">            vmin (float): Minimum value in plot.</span>
+<span class="sd">            vmax (float); Maximum value in plot</span>
+<span class="sd">            alpha (float): Alpha blending number beween 0 and 1.</span>
+<span class="sd">            zinc (float): Sampling vertically, default is 0.5</span>
+<span class="sd">            interpolation (str): Interpolation for plotting, cf. matplotlib</span>
+<span class="sd">                documentation on this. &quot;auto&quot; uses &quot;nearest&quot; for discrete</span>
+<span class="sd">                parameters and &quot;antialiased&quot; for floats.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: No grid or gridproperty is loaded</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gridproperty</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Ask for plot of grid, but no grid is loaded&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">,</span> <span class="n">_bba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+
+        <span class="n">zvv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">get_randomline</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gridproperty</span><span class="p">,</span>
+            <span class="n">zmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">,</span>
+            <span class="n">zmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zmax</span><span class="p">,</span>
+            <span class="n">zincrement</span><span class="o">=</span><span class="n">zinc</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">zvv</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">colormap</span> <span class="o">=</span> <span class="s2">&quot;rainbow&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">interpolation</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gridproperty</span><span class="o">.</span><span class="n">isdiscrete</span><span class="p">:</span>
+                <span class="n">interpolation</span> <span class="o">=</span> <span class="s2">&quot;nearest&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">interpolation</span> <span class="o">=</span> <span class="s2">&quot;antialiased&quot;</span>
+
+        <span class="n">img</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+            <span class="n">arr</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_colormap_grid</span><span class="p">,</span>
+            <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+            <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+            <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v1</span><span class="p">),</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">interpolation</span><span class="o">=</span><span class="n">interpolation</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># steer this?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorlegend_grid</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XSection.plot_surfaces">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_surfaces">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_surfaces</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">surfaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">surfacenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">onecolor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+        <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">legendtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">fancyline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+        <span class="n">gridlines</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=too-many-branches, too-many-statements</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input a surface list (ordered from top to base) , and plot them.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="n">axisname</span><span class="p">)</span>
+
+        <span class="c1"># either use surfaces from __init__, or override with surfaces</span>
+        <span class="c1"># speciefied here</span>
+        <span class="k">if</span> <span class="n">surfaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">surfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surfaces</span>
+            <span class="n">surfacenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surfacenames</span>
+
+        <span class="n">surfacenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">surf</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">surf</span> <span class="ow">in</span> <span class="n">surfaces</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">legendtitle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">legendtitle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_legendtitle</span>
+
+        <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">colormap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">define_colormap</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
+
+        <span class="n">nlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">surfaces</span><span class="p">)</span>
+
+        <span class="c1"># legend</span>
+        <span class="n">slegend</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">surfacenames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nlen</span><span class="p">):</span>
+                <span class="n">slegend</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Surf </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># do a check</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">surfacenames</span><span class="p">)</span> <span class="o">!=</span> <span class="n">nlen</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Wrong number of entries in surfacenames! &quot;</span>
+                    <span class="s2">&quot;Number of names is </span><span class="si">{}</span><span class="s2"> while number of files &quot;</span>
+                    <span class="s2">&quot;is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">surfacenames</span><span class="p">),</span> <span class="n">nlen</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="n">slegend</span> <span class="o">=</span> <span class="n">surfacenames</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span><span class="o">.</span><span class="n">N</span> <span class="o">&lt;</span> <span class="n">nlen</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Too few colors in color table (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span><span class="o">.</span><span class="n">N</span><span class="si">}</span><span class="s2">) &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;vs number of surfaces (</span><span class="si">{</span><span class="n">nlen</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># sample the horizon to the fence:</span>
+        <span class="n">colortable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_colormap_as_table</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nlen</span><span class="p">):</span>
+            <span class="n">usecolor</span> <span class="o">=</span> <span class="n">colortable</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">onecolor</span><span class="p">:</span>
+                <span class="n">usecolor</span> <span class="o">=</span> <span class="n">onecolor</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">fill</span><span class="p">:</span>
+                <span class="n">hfence</span> <span class="o">=</span> <span class="n">surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_randomline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">)</span>
+                <span class="n">xcol</span> <span class="o">=</span> <span class="s2">&quot;white&quot;</span>
+                <span class="k">if</span> <span class="n">fancyline</span><span class="p">:</span>
+                    <span class="n">cxx</span> <span class="o">=</span> <span class="n">usecolor</span>
+                    <span class="k">if</span> <span class="n">cxx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">cxx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cxx</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.5</span><span class="p">:</span>
+                        <span class="n">xcol</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                        <span class="n">hfence</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">hfence</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">linewidth</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">xcol</span>
+                    <span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">hfence</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="n">hfence</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span>
+                    <span class="n">c</span><span class="o">=</span><span class="n">usecolor</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">slegend</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">fancyline</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                        <span class="n">hfence</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">hfence</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">linewidth</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">xcol</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># need copy() .. why?? found by debugging...</span>
+                <span class="n">hfence1</span> <span class="o">=</span> <span class="n">surfaces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_randomline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">hfence1</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">y1</span> <span class="o">=</span> <span class="n">hfence1</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">nlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">hfence2</span> <span class="o">=</span> <span class="n">surfaces</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_randomline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="n">y2</span> <span class="o">=</span> <span class="n">hfence2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">y2</span> <span class="o">=</span> <span class="n">y1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">linewidth</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span>
+                <span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">colortable</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">slegend</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="c1"># invert min,max to invert the Y axis</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_zmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_drawlegend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">bba</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">legendtitle</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">axisname</span> <span class="o">!=</span> <span class="s2">&quot;main&quot;</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;in&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">axisname</span> <span class="o">==</span> <span class="s2">&quot;main&quot;</span> <span class="ow">and</span> <span class="n">gridlines</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XSection.plot_md_data">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_md_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_md_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">zorder</span><span class="o">=</span><span class="mi">350</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot MD vs TVD data as lines and/or markers.</span>
+
+<span class="sd">        The input pandas dataframe points shall have the following columns:</span>
+<span class="sd">        * Name of well(s) named WELL</span>
+<span class="sd">        * Coordinate X named MDEPTH</span>
+<span class="sd">        * Coordinate Y named Z_TVDSS</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_currentax</span><span class="p">(</span><span class="n">axisname</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+
+        <span class="n">well</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span>
+        <span class="n">data_well</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">data_well</span> <span class="o">=</span> <span class="n">data_well</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;WELL&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">well</span><span class="o">.</span><span class="n">xwellname</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;WELL&quot;</span><span class="p">]</span>
+
+        <span class="n">md_start</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span>
+        <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">md_start</span><span class="p">)</span>
+
+        <span class="n">data_well</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Z_TVDSS&quot;</span><span class="p">,</span>
+            <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span>
+            <span class="n">markersize</span><span class="o">=</span><span class="n">markersize</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=</span><span class="n">zorder</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XSection.plot_wellmap">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_wellmap">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_wellmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otherwells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot well map as local view, optionally with nearby wells.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            otherwells (list of Polygons): List of surrounding wells to plot,</span>
+<span class="sd">                these wells are repr as Polygons instances, one per well.</span>
+<span class="sd">            expand (float): Plot axis expand factor (default is 1); larger</span>
+<span class="sd">                values may be used if other wells are plotted.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax2</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">xwellarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">ywellarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xwellarray</span><span class="p">,</span> <span class="n">ywellarray</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;datalim&quot;</span><span class="p">)</span>
+
+            <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+            <span class="n">xdiff</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="n">left</span>
+            <span class="n">bottom</span><span class="p">,</span> <span class="n">top</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+            <span class="n">ydiff</span> <span class="o">=</span> <span class="n">top</span> <span class="o">-</span> <span class="n">bottom</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">left</span> <span class="o">-</span> <span class="p">(</span><span class="n">expand</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">xdiff</span><span class="p">,</span> <span class="n">right</span> <span class="o">+</span> <span class="p">(</span><span class="n">expand</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">xdiff</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">bottom</span> <span class="o">-</span> <span class="p">(</span><span class="n">expand</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">ydiff</span><span class="p">,</span> <span class="n">top</span> <span class="o">+</span> <span class="p">(</span><span class="n">expand</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">ydiff</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">otherwells</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="n">otherwells</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span> <span class="n">xtgeo</span><span class="o">.</span><span class="n">Polygons</span><span class="p">):</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;&lt;otherw&gt; not a Polygons instance, but a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="ne">UserWarning</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">poly</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">xwellname</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">xwp</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="n">poly</span><span class="o">.</span><span class="n">xname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">ywp</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="n">poly</span><span class="o">.</span><span class="n">yname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xwp</span><span class="p">,</span> <span class="n">ywp</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xwp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ywp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XSection.plot_map">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_map">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot well location map as an overall view (with field outline).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax3</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">xp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">yp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;POLY_ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fence</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ip</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">ip</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">xpc</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">copy</span><span class="p">()[</span><span class="n">ip</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">ypc</span> <span class="o">=</span> <span class="n">yp</span><span class="o">.</span><span class="n">copy</span><span class="p">()[</span><span class="n">ip</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xpc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xpc</span><span class="p">,</span> <span class="n">ypc</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;datalim&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev4+g10e53cc.d20231130).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>xtgeoviz.mpl.xsection module &mdash; xtgeoviz 0.0.10.dev4+g10e53cc.d20231130 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=026a9aac"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="xtgeoviz.mpl.xtmap module" href="xtgeoviz.mpl.xtmap.html" />
+    <link rel="prev" title="xtgeoviz.mpl.quickplot module" href="xtgeoviz.mpl.quickplot.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #C0C0C0" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            xtgeoviz
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">xtgeoviz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API reference for xtgeoviz</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="xtgeoviz.html">xtgeoviz package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="xtgeoviz.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="xtgeoviz.frontends.html">xtgeoviz.frontends package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="xtgeoviz.mpl.html">xtgeoviz.mpl package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="xtgeoviz.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #C0C0C0" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">xtgeoviz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">API reference for xtgeoviz</a></li>
+          <li class="breadcrumb-item"><a href="xtgeoviz.html">xtgeoviz package</a></li>
+          <li class="breadcrumb-item"><a href="xtgeoviz.mpl.html">xtgeoviz.mpl package</a></li>
+      <li class="breadcrumb-item active">xtgeoviz.mpl.xsection module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/apiref/xtgeoviz.mpl.xsection.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-xtgeoviz.mpl.xsection">
+<span id="xtgeoviz-mpl-xsection-module"></span><h1>xtgeoviz.mpl.xsection module<a class="headerlink" href="#module-xtgeoviz.mpl.xsection" title="Link to this heading"></a></h1>
+<p>Module for fast XSection plots of wells/surfaces etc, using matplotlib.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xtgeoviz.mpl.xsection.</span></span><span class="sig-name descname"><span class="pre">XSection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">well</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nextend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zonelogshift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfacenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridproperty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot" title="xtgeoviz.mpl.baseplot.BasePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePlot</span></code></a></p>
+<p>Class for plotting a cross-section of a well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zmin</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Upper level of the plot (top Y axis).</p></li>
+<li><p><strong>zmax</strong> (<em>float</em>) – Lower level of the plot (bottom Y axis).</p></li>
+<li><p><strong>well</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Well</span></code>]) – XTGeo well object.</p></li>
+<li><p><strong>surfaces</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – List of XTGeo RegularSurface objects</p></li>
+<li><p><strong>surfacenames</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – List of surface names (str) for legend</p></li>
+<li><p><strong>cube</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Cube</span></code>]) – A XTGeo Cube instance</p></li>
+<li><p><strong>grid</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code>]) – A XTGeo Grid instance</p></li>
+<li><p><strong>gridproperty</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">GridProperty</span></code>]) – A XTGeo GridProperty instance</p></li>
+<li><p><strong>colormap</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">LinearSegmentedColormap</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListedColormap</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – Name of colormap, e.g. ‘Set1’. Default is ‘xtgeo’</p></li>
+<li><p><strong>outline</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Polygons</span></code>]) – XTGeo Polygons object</p></li>
+</ul>
+</dd>
+</dl>
+<p>Init method.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.pagesize">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pagesize</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.pagesize" title="Link to this definition"></a></dt>
+<dd><p>Returns page size.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.legendsize">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">legendsize</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.legendsize" title="Link to this definition"></a></dt>
+<dd><p>Returns or set the legend size.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.has_legend">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_legend</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.has_legend" title="Link to this definition"></a></dt>
+<dd><p>Returns or set the legends.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.has_axes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_axes</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.has_axes" title="Link to this definition"></a></dt>
+<dd><p>Returns or set the axes status.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.colormap_facies">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap_facies</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.colormap_facies" title="Link to this definition"></a></dt>
+<dd><p>Set or get the facies colormap.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.colormap_zonelog">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap_zonelog</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.colormap_zonelog" title="Link to this definition"></a></dt>
+<dd><p>Set or get the zonelog colormap.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.colormap_perf">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap_perf</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.colormap_perf" title="Link to this definition"></a></dt>
+<dd><p>Set or get the perforations colormap.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.colormap_facies_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap_facies_dict</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.colormap_facies_dict" title="Link to this definition"></a></dt>
+<dd><p>Set or get the facies colormap actual dict table.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.colormap_perf_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap_perf_dict</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.colormap_perf_dict" title="Link to this definition"></a></dt>
+<dd><p>Set or get the perf colormap actual dict table.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.colormap_zonelog_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap_zonelog_dict</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.colormap_zonelog_dict" title="Link to this definition"></a></dt>
+<dd><p>Set or get the zonelog colormap actual dict table.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.fence">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fence</span></span><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.fence" title="Link to this definition"></a></dt>
+<dd><p>Set or get the fence spesification.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.canvas">
+<span class="sig-name descname"><span class="pre">canvas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infotext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figscaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.canvas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.canvas" title="Link to this definition"></a></dt>
+<dd><p>Prepare the canvas to plot on, with title and subtitle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – Title of plot.</p></li>
+<li><p><strong>subtitle</strong> (<em>str</em><em>, </em><em>optional</em>) – Sub title of plot.</p></li>
+<li><p><strong>infotext</strong> (<em>str</em><em>, </em><em>optional</em>) – Text to be written as info string.</p></li>
+<li><p><strong>figscaling</strong> (<em>str</em><em>, </em><em>optional</em>) – Figure scaling, default is 1.0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.plot_well">
+<span class="sig-name descname"><span class="pre">plot_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zonelogname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ZONELOG'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facieslogname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perflogname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellcrossings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellcrossingnames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellcrossingyears</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">welltrajcolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">welltrajwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.plot_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.plot_well" title="Link to this definition"></a></dt>
+<dd><p>Input an XTGeo Well object and plot it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.set_xaxis_md">
+<span class="sig-name descname"><span class="pre">set_xaxis_md</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridlines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.set_xaxis_md"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.set_xaxis_md" title="Link to this definition"></a></dt>
+<dd><p>Set x-axis labels to measured depth.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.plot_cube">
+<span class="sig-name descname"><span class="pre">plot_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.plot_cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.plot_cube" title="Link to this definition"></a></dt>
+<dd><p>Plot a cube backdrop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>colormap</strong> (<em>ColorMap</em>) – Name of color map (default ‘seismic’)</p></li>
+<li><p><strong>vmin</strong> (<em>float</em>) – Minimum value in plot.</p></li>
+<li><p><strong>vmax</strong> (<em>float</em>) – </p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Alpah blending number beween 0 and 1.</p></li>
+<li><p><strong>interpolation</strong> (<em>str</em>) – Interpolation for plotting, cf. matplotlib
+documentation on this. Also gaussianN is allowed, where
+N = 1..9.</p></li>
+<li><p><strong>sampling</strong> (<em>str</em>) – ‘nearest’ (default) or ‘trilinear’ (more precise)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – No cube is loaded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.plot_grid3d">
+<span class="sig-name descname"><span class="pre">plot_grid3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rainbow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zinc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.plot_grid3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.plot_grid3d" title="Link to this definition"></a></dt>
+<dd><p>Plot a sampled grid with gridproperty backdrop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>colormap</strong> (<em>ColorMap</em>) – Name of color map (default ‘rainbow’)</p></li>
+<li><p><strong>vmin</strong> (<em>float</em>) – Minimum value in plot.</p></li>
+<li><p><strong>vmax</strong> (<em>float</em>) – </p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Alpha blending number beween 0 and 1.</p></li>
+<li><p><strong>zinc</strong> (<em>float</em>) – Sampling vertically, default is 0.5</p></li>
+<li><p><strong>interpolation</strong> (<em>str</em>) – Interpolation for plotting, cf. matplotlib
+documentation on this. “auto” uses “nearest” for discrete
+parameters and “antialiased” for floats.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – No grid or gridproperty is loaded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.plot_surfaces">
+<span class="sig-name descname"><span class="pre">plot_surfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfacenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legendtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fancyline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axisname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'main'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridlines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.plot_surfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.plot_surfaces" title="Link to this definition"></a></dt>
+<dd><p>Input a surface list (ordered from top to base) , and plot them.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.plot_md_data">
+<span class="sig-name descname"><span class="pre">plot_md_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.plot_md_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.plot_md_data" title="Link to this definition"></a></dt>
+<dd><p>Plot MD vs TVD data as lines and/or markers.</p>
+<p>The input pandas dataframe points shall have the following columns:
+* Name of well(s) named WELL
+* Coordinate X named MDEPTH
+* Coordinate Y named Z_TVDSS</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.plot_wellmap">
+<span class="sig-name descname"><span class="pre">plot_wellmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">otherwells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.plot_wellmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.plot_wellmap" title="Link to this definition"></a></dt>
+<dd><p>Plot well map as local view, optionally with nearby wells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>otherwells</strong> (<em>list</em><em> of </em><em>Polygons</em>) – List of surrounding wells to plot,
+these wells are repr as Polygons instances, one per well.</p></li>
+<li><p><strong>expand</strong> (<em>float</em>) – Plot axis expand factor (default is 1); larger
+values may be used if other wells are plotted.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.mpl.xsection.XSection.plot_map">
+<span class="sig-name descname"><span class="pre">plot_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/mpl/xsection.html#XSection.plot_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.mpl.xsection.XSection.plot_map" title="Link to this definition"></a></dt>
+<dd><p>Plot well location map as an overall view (with field outline).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="xtgeoviz.mpl.quickplot.html" class="btn btn-neutral float-left" title="xtgeoviz.mpl.quickplot module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="xtgeoviz.mpl.xtmap.html" class="btn btn-neutral float-right" title="xtgeoviz.mpl.xtmap module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev4+g10e53cc.d20231130).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

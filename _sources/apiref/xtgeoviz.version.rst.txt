@@ -1,0 +1,7 @@
+xtgeoviz.version module
+=======================
+
+.. automodule:: xtgeoviz.version
+   :members:
+   :undoc-members:
+   :show-inheritance:

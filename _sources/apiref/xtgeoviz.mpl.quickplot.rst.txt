@@ -1,0 +1,7 @@
+xtgeoviz.mpl.quickplot module
+=============================
+
+.. automodule:: xtgeoviz.mpl.quickplot
+   :members:
+   :undoc-members:
+   :show-inheritance:

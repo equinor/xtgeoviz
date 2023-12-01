@@ -1,0 +1,19 @@
+xtgeoviz.mpl package
+====================
+
+.. automodule:: xtgeoviz.mpl
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   xtgeoviz.mpl.baseplot
+   xtgeoviz.mpl.grid3d_slice
+   xtgeoviz.mpl.quickplot
+   xtgeoviz.mpl.xsection
+   xtgeoviz.mpl.xtmap

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>xtgeoviz.mpl.xtmap &mdash; xtgeoviz 0.0.10.dev4+g10e53cc.d20231130 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=026a9aac"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #C0C0C0" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            xtgeoviz
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">xtgeoviz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apiref/modules.html">API reference for xtgeoviz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #C0C0C0" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xtgeoviz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">xtgeoviz.mpl.xtmap</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for xtgeoviz.mpl.xtmap</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module for map plots of surfaces, using matplotlib.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mplp</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">ticker</span>
+
+<span class="kn">from</span> <span class="nn">.baseplot</span> <span class="kn">import</span> <span class="n">BasePlot</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Map">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xtmap.html#xtgeoviz.mpl.xtmap.Map">[docs]</a>
+<span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting a map, using matplotlib.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The constructor method for a Map object.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wells</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tight</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wfence</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_showok</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># to indicate if plot is OK to show</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_legendtitle</span> <span class="o">=</span> <span class="s2">&quot;Map&quot;</span>
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># =========================================================================</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pagesize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns page size.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pagesize</span>
+
+    <span class="c1"># =========================================================================</span>
+    <span class="c1"># Functions methods (public)</span>
+    <span class="c1"># =========================================================================</span>
+
+<div class="viewcode-block" id="Map.plot_surface">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xtmap.html#xtgeoviz.mpl.xtmap.Map.plot_surface">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_surface</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">surf</span><span class="p">,</span>
+        <span class="n">minvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">maxvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">contourlevels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">xlabelrotation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">logarithmic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=too-many-statements</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input a surface and plot it.&quot;&quot;&quot;</span>
+        <span class="c1"># need a deep copy to avoid changes in the original surf</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;The key contourlevels </span><span class="si">%s</span><span class="s2"> is not in use&quot;</span><span class="p">,</span> <span class="n">contourlevels</span><span class="p">)</span>
+
+        <span class="n">usesurf</span> <span class="o">=</span> <span class="n">surf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">usesurf</span><span class="o">.</span><span class="n">yflip</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">usesurf</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">surf</span><span class="o">.</span><span class="n">rotation</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">:</span>
+            <span class="n">usesurf</span><span class="o">.</span><span class="n">unrotate</span><span class="p">()</span>
+
+        <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span> <span class="o">=</span> <span class="n">usesurf</span><span class="o">.</span><span class="n">get_xyz_values</span><span class="p">()</span>
+
+        <span class="n">zimask</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">getmaskarray</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># yes need a copy!</span>
+
+        <span class="n">legendticks</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">minvalue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">maxvalue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">minv</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">minvalue</span><span class="p">)</span>
+            <span class="n">maxv</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">maxvalue</span><span class="p">)</span>
+
+            <span class="n">step</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxv</span> <span class="o">-</span> <span class="n">minv</span><span class="p">)</span> <span class="o">/</span> <span class="mf">10.0</span>
+            <span class="n">legendticks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">llabel</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">minv</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i</span><span class="si">:</span><span class="s2">9.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">legendticks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">llabel</span><span class="p">)</span>
+
+            <span class="n">zi</span><span class="o">.</span><span class="n">unshare_mask</span><span class="p">()</span>
+            <span class="n">zi</span><span class="p">[</span><span class="n">zi</span> <span class="o">&lt;</span> <span class="n">minv</span><span class="p">]</span> <span class="o">=</span> <span class="n">minv</span>
+            <span class="n">zi</span><span class="p">[</span><span class="n">zi</span> <span class="o">&gt;</span> <span class="n">maxv</span><span class="p">]</span> <span class="o">=</span> <span class="n">maxv</span>
+
+            <span class="c1"># need to restore the mask:</span>
+            <span class="n">zi</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">zimask</span>
+
+            <span class="c1"># note use surf.min, not usesurf.min here ...</span>
+            <span class="n">notetxt</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Note: map values are truncated from [&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">surf</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+                <span class="o">+</span> <span class="s2">&quot;, &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">surf</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+                <span class="o">+</span> <span class="s2">&quot;] &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;to interval [&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">minvalue</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;, &quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">maxvalue</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.99</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">notetxt</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Legendticks: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">legendticks</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">minvalue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">minvalue</span> <span class="o">=</span> <span class="n">usesurf</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">maxvalue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">maxvalue</span> <span class="o">=</span> <span class="n">usesurf</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="c1"># this will override current instance colormap locally, and is</span>
+        <span class="c1"># therefore reset afterwards</span>
+        <span class="n">keepcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span>
+        <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">colormap</span>
+
+        <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">minvalue</span><span class="p">,</span> <span class="n">maxvalue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contourlevels</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Number of contour levels: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">levels</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_majorticklabels</span><span class="p">(),</span> <span class="n">rotation</span><span class="o">=</span><span class="n">xlabelrotation</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Current colormap is </span><span class="si">%s</span><span class="s2">, requested is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="p">,</span> <span class="n">colormap</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Current colormap name is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ma</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-07</span><span class="p">:</span>
+            <span class="n">uselevels</span> <span class="o">=</span> <span class="n">levels</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">uselevels</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">logarithmic</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">locator</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">ticks</span> <span class="o">=</span> <span class="n">legendticks</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span>
+                    <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">uselevels</span><span class="p">,</span> <span class="n">locator</span><span class="o">=</span><span class="n">locator</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colormap</span>
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;use LogLocator&quot;</span><span class="p">)</span>
+                <span class="n">locator</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">LogLocator</span><span class="p">()</span>
+                <span class="n">ticks</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">uselevels</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">,</span> <span class="n">locator</span><span class="o">=</span><span class="n">locator</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not make plot: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">keepcolor</span></div>
+
+
+<div class="viewcode-block" id="Map.plot_faults">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xtmap.html#xtgeoviz.mpl.xtmap.Map.plot_faults">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_faults</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fpoly</span><span class="p">,</span>
+        <span class="n">idname</span><span class="o">=</span><span class="s2">&quot;POLY_ID&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the faults.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fpoly (object): A XTGeo Polygons object</span>
+<span class="sd">            idname (str): Name of column which has the faults ID</span>
+<span class="sd">            color (c): Fill color model c according to Matplotlib_</span>
+<span class="sd">            edgecolor (c): Edge color according to Matplotlib_</span>
+<span class="sd">            alpha (float): Degree of opacity</span>
+<span class="sd">            linewidth (float): Line width</span>
+
+<span class="sd">        .. _Matplotlib: http://matplotlib.org/api/colors_api.html</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">aff</span> <span class="o">=</span> <span class="n">fpoly</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">idname</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_group</span> <span class="ow">in</span> <span class="n">aff</span><span class="p">:</span>
+            <span class="c1"># make a dataframe sorted on faults (groupname)</span>
+            <span class="n">myfault</span> <span class="o">=</span> <span class="n">aff</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="c1"># make a list [(X,Y) ...];</span>
+            <span class="n">af</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">myfault</span><span class="p">[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">myfault</span><span class="p">[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+
+            <span class="n">px</span> <span class="o">=</span> <span class="n">mplp</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="n">edgecolor</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">px</span><span class="o">.</span><span class="n">get_closed</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">px</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A polygon is not closed: </span><span class="si">{</span><span class="n">px</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Map.plot_polygons">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xtmap.html#xtgeoviz.mpl.xtmap.Map.plot_polygons">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpoly</span><span class="p">,</span> <span class="n">idname</span><span class="o">=</span><span class="s2">&quot;POLY_ID&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a polygons instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fpoly (object): A XTGeo Polygons object</span>
+<span class="sd">            idname (str): Name of column which has the faults ID</span>
+<span class="sd">            color (c): Line color model c according to Matplotlib_</span>
+<span class="sd">            linewidth (float): Line width</span>
+
+<span class="sd">        .. _Matplotlib: http://matplotlib.org/api/colors_api.html</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">aff</span> <span class="o">=</span> <span class="n">fpoly</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">idname</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">aff</span><span class="p">:</span>
+            <span class="c1"># make a dataframe sorted on groupname</span>
+            <span class="n">pname</span> <span class="o">=</span> <span class="n">fpoly</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="n">xarr</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="n">fpoly</span><span class="o">.</span><span class="n">xname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">yarr</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="n">fpoly</span><span class="o">.</span><span class="n">yname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xarr</span><span class="p">,</span> <span class="n">yarr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">pname</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Map.plot_points">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xtmap.html#xtgeoviz.mpl.xtmap.Map.plot_points">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot a points set on the map.</span>
+
+<span class="sd">        This can be be useful e.g. for plotting the underlying point set</span>
+<span class="sd">        that makes a gridded map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            points (Points): A XTGeo Points object X Y VALUE</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This function is &quot;in prep&quot;</span>
+
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">dataframe</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+            <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Map.plot_wells">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xtmap.html#xtgeoviz.mpl.xtmap.Map.plot_wells">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_wells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wells</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot wells on the map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wells (Wells): A XTGeo Wells object (contains a number of Well</span>
+<span class="sd">                instances).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">well</span> <span class="ow">in</span> <span class="n">wells</span><span class="o">.</span><span class="n">wells</span><span class="p">:</span>
+            <span class="n">dataframe</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">dataframe</span>
+
+            <span class="n">xval</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">yval</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xval</span><span class="p">,</span> <span class="n">yval</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">well</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xval</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yval</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev4+g10e53cc.d20231130).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

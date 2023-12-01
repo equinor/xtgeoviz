@@ -1,0 +1,7 @@
+xtgeoviz.mpl.xtmap module
+=========================
+
+.. automodule:: xtgeoviz.mpl.xtmap
+   :members:
+   :undoc-members:
+   :show-inheritance:

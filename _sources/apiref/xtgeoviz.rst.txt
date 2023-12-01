@@ -1,0 +1,24 @@
+xtgeoviz package
+================
+
+.. automodule:: xtgeoviz
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   xtgeoviz.frontends
+   xtgeoviz.mpl
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   xtgeoviz.version

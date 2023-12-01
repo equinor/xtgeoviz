@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>xtgeoviz.mpl.baseplot &mdash; xtgeoviz 0.0.10.dev4+g10e53cc.d20231130 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=026a9aac"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #C0C0C0" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            xtgeoviz
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">xtgeoviz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../apiref/modules.html">API reference for xtgeoviz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #C0C0C0" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">xtgeoviz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">xtgeoviz.mpl.baseplot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for xtgeoviz.mpl.baseplot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;The baseplot module.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">LinearSegmentedColormap</span><span class="p">,</span> <span class="n">ListedColormap</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_colortables</span> <span class="k">as</span> <span class="n">_ctable</span>
+<span class="kn">from</span> <span class="nn">._libwrapper</span> <span class="kn">import</span> <span class="n">matplotlib_colormap</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BasePlot">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot">[docs]</a>
+<span class="k">class</span> <span class="nc">BasePlot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for plots, proviridisding some functions to share.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init method.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contourlevels</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="c1"># wants self._color to be LinearSegmentedColormap instance</span>
+        <span class="n">viridis</span> <span class="o">=</span> <span class="n">matplotlib_colormap</span><span class="p">(</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">viridis</span><span class="p">,</span> <span class="n">ListedColormap</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span>
+                <span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="n">viridis</span><span class="o">.</span><span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">viridis</span><span class="o">.</span><span class="n">N</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">viridis</span><span class="p">,</span> <span class="n">LinearSegmentedColormap</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">viridis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot initialize color attribute&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tight</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_showok</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pagesize</span> <span class="o">=</span> <span class="s2">&quot;A4&quot;</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Ran __init__ for BasePlot&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">contourlevels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the number of contour levels.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contourlevels</span>
+
+    <span class="nd">@contourlevels</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">contourlevels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contourlevels</span> <span class="o">=</span> <span class="n">num</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the color table as a matplot cmap object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span>
+
+    <span class="nd">@colormap</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">LinearSegmentedColormap</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">cmap</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">ListedColormap</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span>
+                <span class="n">cmap</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Definition of a colormap from string name: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">define_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input incorrect&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Colormap: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pagesize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns page size.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pagesize</span>
+
+<div class="viewcode-block" id="BasePlot.define_any_colormap">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.define_any_colormap">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">define_any_colormap</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Defines any color map from file or a predefined name.</span>
+
+<span class="sd">        This is a static method, which returns a matplotlib CM object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cfile (str): File name (RMS format) or an alias for a predefined</span>
+<span class="sd">                map name, e.g. &#39;xtgeo&#39;, or one of matplotlibs numerous tables.</span>
+<span class="sd">            colorlist (list, int, optional): List of integers redefining</span>
+<span class="sd">                color entries per zone and/or well, which starts</span>
+<span class="sd">                from 0 index. Default is just keep the linear sequence as is.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">valid_maps</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">datad</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Valid color maps: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">valid_maps</span><span class="p">)</span>
+
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;rainbow&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cfile</span> <span class="o">=</span> <span class="s2">&quot;rainbow&quot;</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;rainbow&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">cfile</span> <span class="o">==</span> <span class="s2">&quot;xtgeo&quot;</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="n">_ctable</span><span class="o">.</span><span class="n">xtgeocolors</span><span class="p">()</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+            <span class="n">cmap</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;xtgeo&quot;</span>
+        <span class="k">elif</span> <span class="n">cfile</span> <span class="o">==</span> <span class="s2">&quot;random40&quot;</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="n">_ctable</span><span class="o">.</span><span class="n">random40</span><span class="p">()</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+            <span class="n">cmap</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;random40&quot;</span>
+
+        <span class="k">elif</span> <span class="n">cfile</span> <span class="o">==</span> <span class="s2">&quot;randomc&quot;</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="n">_ctable</span><span class="o">.</span><span class="n">randomc</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+            <span class="n">cmap</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;randomc&quot;</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;rms&quot;</span> <span class="ow">in</span> <span class="n">cfile</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="n">_ctable</span><span class="o">.</span><span class="n">colorsfromfile</span><span class="p">(</span><span class="n">cfile</span><span class="p">)</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="s2">&quot;rms&quot;</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+            <span class="n">cmap</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">cfile</span>
+        <span class="k">elif</span> <span class="n">cfile</span> <span class="ow">in</span> <span class="n">valid_maps</span><span class="p">:</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">cfile</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmap</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Trying to access as color map not installed in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;this version of matplotlib: &lt;</span><span class="si">{</span><span class="n">cfile</span><span class="si">}</span><span class="s2">&gt;. Revert to &lt;rainbow&gt;&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">&quot;rainbow&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmap</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="n">ctable</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">colorlist</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">colorlist</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entry</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">):</span>
+                    <span class="n">ctable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="n">entry</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Color list out of range&quot;</span><span class="p">)</span>
+                    <span class="n">ctable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">ctable</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+            <span class="n">cmap</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+
+        <span class="k">return</span> <span class="n">cmap</span></div>
+
+
+<div class="viewcode-block" id="BasePlot.get_any_colormap_as_table">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.get_any_colormap_as_table">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_any_colormap_as_table</span><span class="p">(</span><span class="n">cmap</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the given color map cmap as a list of RGB tuples.&quot;&quot;&quot;</span>
+        <span class="n">cmaplist</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmap</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">cmaplist</span></div>
+
+
+<div class="viewcode-block" id="BasePlot.set_colortable">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.set_colortable">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_colortable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cname</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is actually deprecated...&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">colorlist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">cname</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">define_colormap</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="n">colorlist</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BasePlot.get_colormap_as_table">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.get_colormap_as_table">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_colormap_as_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current color map as a list of RGB tuples.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_any_colormap_as_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BasePlot.define_colormap">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.define_colormap">[docs]</a>
+    <span class="k">def</span> <span class="nf">define_colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfile</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Defines a color map from file or a predefined name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cfile (str): File name (RMS format) or an alias for a predefined</span>
+<span class="sd">                map name, e.g. &#39;xtgeo&#39;, or one of matplotlibs numerous tables.</span>
+<span class="sd">            colorlist (list, int, optional): List of integers redefining</span>
+<span class="sd">                color entries per zone and/or well, which starts</span>
+<span class="sd">                from 0 index. Default is just keep the linear sequence as is.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Defining colormap&quot;</span><span class="p">)</span>
+
+        <span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="n">colorlist</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">contourlevels</span> <span class="o">=</span> <span class="n">cmap</span><span class="o">.</span><span class="n">N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">cmap</span></div>
+
+
+<div class="viewcode-block" id="BasePlot.canvas">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.canvas">[docs]</a>
+    <span class="k">def</span> <span class="nf">canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infotext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figscaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the canvas to plot on, with title and subtitle.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            title (str, optional): Title of plot.</span>
+<span class="sd">            subtitle (str, optional): Sub title of plot.</span>
+<span class="sd">            infotext (str, optional): Text to be written as info string.</span>
+<span class="sd">            figscaling (str, optional): Figure scaling, default is 1.0</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self._fig, (ax1, ax2) = plt.subplots(2, figsize=(11.69, 8.27))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">11.69</span> <span class="o">*</span> <span class="n">figscaling</span><span class="p">,</span> <span class="mf">8.27</span> <span class="o">*</span> <span class="n">figscaling</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subtitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">subtitle</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">infotext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">infotext</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BasePlot.show">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.show">[docs]</a>
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call to matplotlib.pyplot show method.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True of plotting is done; otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tight</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_showok</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Calling plt show method...&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Nothing to plot (well outside Z range?)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="BasePlot.savefig">
+<a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.baseplot.html#xtgeoviz.mpl.baseplot.BasePlot.savefig">[docs]</a>
+    <span class="k">def</span> <span class="nf">savefig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call to matplotlib.pyplot savefig method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str): File to plot to</span>
+<span class="sd">            fformat (str): Plot format, e.g. png (default), jpg, svg</span>
+<span class="sd">            last (bool): Default is true, meaning that memory will be cleared;</span>
+<span class="sd">                however if several plot types for the same instance, let last</span>
+<span class="sd">                be False fora all except the last plots.</span>
+<span class="sd">            kwargs: Additional keyword arguments that are passed</span>
+<span class="sd">                to matplotlib when saving the figure</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True of plotting is done; otherwise False</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            myplot.savefig(&#39;TMP/layerslice.svg&#39;, fformat=&#39;svg&#39;, last=False)</span>
+<span class="sd">            myplot.savefig(&#39;TMP/layerslice.png&#39;)</span>
+
+<span class="sd">        .. versionchanged:: 2.4 added kwargs option</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tight</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_showok</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">fformat</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">last</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Nothing to plot (well outside Z range?)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev4+g10e53cc.d20231130).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
