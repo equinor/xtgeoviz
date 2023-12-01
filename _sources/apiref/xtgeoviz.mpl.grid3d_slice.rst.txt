@@ -1,7 +1,0 @@
-xtgeoviz.mpl.grid3d\_slice module
-=================================
-
-.. automodule:: xtgeoviz.mpl.grid3d_slice
-   :members:
-   :undoc-members:
-   :show-inheritance:

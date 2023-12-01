@@ -1,7 +1,7 @@
-xtgeoviz.mpl.quickplot module
+xtgeoviz.plot.xsection module
 =============================
 
-.. automodule:: xtgeoviz.mpl.quickplot
+.. automodule:: xtgeoviz.plot.xsection
    :members:
    :undoc-members:
    :show-inheritance:

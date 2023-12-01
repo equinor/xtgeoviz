@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.mpl.grid3d_slice &mdash; xtgeoviz 0.0.10.dev5+g58ec771 documentation</title>
+  <title>xtgeoviz.plot.grid3d_slice &mdash; xtgeoviz 0.0.10.dev6+gc1e82a1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=90fdfeed"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=6a6bbd8e"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -63,7 +63,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">xtgeoviz.mpl.grid3d_slice</li>
+      <li class="breadcrumb-item active">xtgeoviz.plot.grid3d_slice</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -72,7 +72,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for xtgeoviz.mpl.grid3d_slice</h1><div class="highlight"><pre>
+  <h1>Source code for xtgeoviz.plot.grid3d_slice</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Module for 3D Grid slice plots, using matplotlib.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
@@ -87,7 +87,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Grid3DSlice"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.grid3d_slice.html#xtgeoviz.mpl.grid3d_slice.Grid3DSlice">[docs]</a><span class="k">class</span> <span class="nc">Grid3DSlice</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
+<div class="viewcode-block" id="Grid3DSlice"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.grid3d_slice.html#xtgeoviz.plot.grid3d_slice.Grid3DSlice">[docs]</a><span class="k">class</span> <span class="nc">Grid3DSlice</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting a row, a column, or a layer, using matplotlib.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -114,7 +114,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_minvalue</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maxvalue</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Grid3DSlice.plot_gridslice"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.grid3d_slice.html#xtgeoviz.mpl.grid3d_slice.Grid3DSlice.plot_gridslice">[docs]</a>    <span class="k">def</span> <span class="nf">plot_gridslice</span><span class="p">(</span>
+<div class="viewcode-block" id="Grid3DSlice.plot_gridslice"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.grid3d_slice.html#xtgeoviz.plot.grid3d_slice.Grid3DSlice.plot_gridslice">[docs]</a>    <span class="k">def</span> <span class="nf">plot_gridslice</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">grid</span><span class="p">,</span>
         <span class="n">prop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -239,7 +239,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev5+g58ec771).</p>
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev6+gc1e82a1).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

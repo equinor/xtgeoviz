@@ -13,7 +13,7 @@ Subpackages
    :maxdepth: 4
 
    xtgeoviz.frontends
-   xtgeoviz.mpl
+   xtgeoviz.plot
 
 Submodules
 ----------

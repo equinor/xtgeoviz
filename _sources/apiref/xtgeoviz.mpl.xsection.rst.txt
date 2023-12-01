@@ -1,7 +1,0 @@
-xtgeoviz.mpl.xsection module
-============================
-
-.. automodule:: xtgeoviz.mpl.xsection
-   :members:
-   :undoc-members:
-   :show-inheritance:

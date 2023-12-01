@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.mpl.xsection &mdash; xtgeoviz 0.0.10.dev5+g58ec771 documentation</title>
+  <title>xtgeoviz.plot.xsection &mdash; xtgeoviz 0.0.10.dev6+gc1e82a1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=90fdfeed"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=6a6bbd8e"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -63,7 +63,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">xtgeoviz.mpl.xsection</li>
+      <li class="breadcrumb-item active">xtgeoviz.plot.xsection</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -72,7 +72,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for xtgeoviz.mpl.xsection</h1><div class="highlight"><pre>
+  <h1>Source code for xtgeoviz.plot.xsection</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Module for fast XSection plots of wells/surfaces etc, using matplotlib.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
@@ -97,7 +97,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="XSection"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection">[docs]</a><span class="k">class</span> <span class="nc">XSection</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
+<div class="viewcode-block" id="XSection"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection">[docs]</a><span class="k">class</span> <span class="nc">XSection</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting a cross-section of a well.</span>
 
 <span class="sd">    Args:</span>
@@ -308,7 +308,7 @@
     <span class="c1"># Functions methods (public)</span>
     <span class="c1"># ==================================================================================</span>
 
-<div class="viewcode-block" id="XSection.canvas"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.canvas">[docs]</a>    <span class="k">def</span> <span class="nf">canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infotext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figscaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="XSection.canvas"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.canvas">[docs]</a>    <span class="k">def</span> <span class="nf">canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infotext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figscaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the canvas to plot on, with title and subtitle.</span>
 
 <span class="sd">        Args:</span>
@@ -430,7 +430,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ax2</span> <span class="o">=</span> <span class="n">ax2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ax3</span> <span class="o">=</span> <span class="n">ax3</span></div>
 
-<div class="viewcode-block" id="XSection.plot_well"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_well">[docs]</a>    <span class="k">def</span> <span class="nf">plot_well</span><span class="p">(</span>
+<div class="viewcode-block" id="XSection.plot_well"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.plot_well">[docs]</a>    <span class="k">def</span> <span class="nf">plot_well</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">zonelogname</span><span class="o">=</span><span class="s2">&quot;ZONELOG&quot;</span><span class="p">,</span>
         <span class="n">facieslogname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -490,7 +490,7 @@
                 <span class="n">dfr</span><span class="p">,</span> <span class="n">axx</span><span class="p">,</span> <span class="n">wellcrossings</span><span class="p">,</span> <span class="n">wellcrossingnames</span><span class="p">,</span> <span class="n">wellcrossingyears</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="XSection.set_xaxis_md"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.set_xaxis_md">[docs]</a>    <span class="k">def</span> <span class="nf">set_xaxis_md</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gridlines</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="XSection.set_xaxis_md"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.set_xaxis_md">[docs]</a>    <span class="k">def</span> <span class="nf">set_xaxis_md</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gridlines</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set x-axis labels to measured depth.&quot;&quot;&quot;</span>
         <span class="n">md_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">md_start_round</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">md_start</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
@@ -876,7 +876,7 @@
 
         <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bba</span>
 
-<div class="viewcode-block" id="XSection.plot_cube"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_cube">[docs]</a>    <span class="k">def</span> <span class="nf">plot_cube</span><span class="p">(</span>
+<div class="viewcode-block" id="XSection.plot_cube"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.plot_cube">[docs]</a>    <span class="k">def</span> <span class="nf">plot_cube</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
         <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -950,7 +950,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorlegend_cube</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XSection.plot_grid3d"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_grid3d">[docs]</a>    <span class="k">def</span> <span class="nf">plot_grid3d</span><span class="p">(</span>
+<div class="viewcode-block" id="XSection.plot_grid3d"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.plot_grid3d">[docs]</a>    <span class="k">def</span> <span class="nf">plot_grid3d</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;rainbow&quot;</span><span class="p">,</span>
         <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1019,7 +1019,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colorlegend_grid</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XSection.plot_surfaces"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_surfaces">[docs]</a>    <span class="k">def</span> <span class="nf">plot_surfaces</span><span class="p">(</span>
+<div class="viewcode-block" id="XSection.plot_surfaces"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.plot_surfaces">[docs]</a>    <span class="k">def</span> <span class="nf">plot_surfaces</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">surfaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1140,7 +1140,7 @@
         <span class="k">if</span> <span class="n">axisname</span> <span class="o">==</span> <span class="s2">&quot;main&quot;</span> <span class="ow">and</span> <span class="n">gridlines</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XSection.plot_md_data"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_md_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_md_data</span><span class="p">(</span>
+<div class="viewcode-block" id="XSection.plot_md_data"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.plot_md_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_md_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -1181,7 +1181,7 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="XSection.plot_wellmap"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_wellmap">[docs]</a>    <span class="k">def</span> <span class="nf">plot_wellmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otherwells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="XSection.plot_wellmap"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.plot_wellmap">[docs]</a>    <span class="k">def</span> <span class="nf">plot_wellmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otherwells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot well map as local view, optionally with nearby wells.</span>
 
 <span class="sd">        Args:</span>
@@ -1227,7 +1227,7 @@
                 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xwp</span><span class="p">,</span> <span class="n">ywp</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xwp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ywp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="XSection.plot_map"><a class="viewcode-back" href="../../../apiref/xtgeoviz.mpl.xsection.html#xtgeoviz.mpl.xsection.XSection.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="XSection.plot_map"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.plot_map">[docs]</a>    <span class="k">def</span> <span class="nf">plot_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot well location map as an overall view (with field outline).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
@@ -1259,7 +1259,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev5+g58ec771).</p>
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev6+gc1e82a1).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
