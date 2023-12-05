@@ -125,7 +125,7 @@ class Grid3DSlice(BasePlot):
         for pos in range(len(ibn)):
             nppol = xyc[pos, :, :]
             if nppol.mean() > 0.0:
-                polygon = Polygon(nppol, True)
+                polygon = Polygon(nppol)
                 patches.append(polygon)
 
         patchcoll = PatchCollection(
