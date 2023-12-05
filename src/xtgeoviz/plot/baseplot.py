@@ -36,6 +36,7 @@ class BasePlot:
         self._tight = False
         self._showok = True
         self._fig = None
+        self._allfigs = []
         self._pagesize = "A4"
 
         logger.debug("Ran __init__ for BasePlot")
@@ -155,13 +156,6 @@ class BasePlot:
         cmaplist = [cmap(i) for i in range(cmap.N)]
         return cmaplist
 
-    def set_colortable(self, cname, colorlist=None):
-        """This is actually deprecated..."""
-        if colorlist is None:
-            self.colormap = cname
-        else:
-            self.define_colormap(cname, colorlist=colorlist)
-
     def get_colormap_as_table(self):
         """Get the current color map as a list of RGB tuples."""
         return self.get_any_colormap_as_table(self._colormap)
@@ -195,10 +189,10 @@ class BasePlot:
 
 
         """
-        # self._fig, (ax1, ax2) = plt.subplots(2, figsize=(11.69, 8.27))
         self._fig, self._ax = plt.subplots(
             figsize=(11.69 * figscaling, 8.27 * figscaling)
         )
+        self._allfigs.append(self._fig)
         if title is not None:
             self._fig.suptitle(title, fontsize=18)
         if subtitle is not None:
@@ -223,15 +217,22 @@ class BasePlot:
         logger.warning("Nothing to plot (well outside Z range?)")
         return False
 
+    def close(self):
+        """
+        Explicitly closes the plot, meaning that memory will be cleared.
+        After close is called, no more operations can be performed on the plot.
+        """
+        for fig in self._allfigs:
+            plt.close(fig)
+
     def savefig(self, filename, fformat="png", last=True, **kwargs):
         """Call to matplotlib.pyplot savefig method.
 
         Args:
             filename (str): File to plot to
             fformat (str): Plot format, e.g. png (default), jpg, svg
-            last (bool): Default is true, meaning that memory will be cleared;
-                however if several plot types for the same instance, let last
-                be False fora all except the last plots.
+            last (bool): Default is true, calls close on the plot, let last
+                be False for all except the last plots.
             kwargs: Additional keyword arguments that are passed
                 to matplotlib when saving the figure
 
@@ -252,7 +253,7 @@ class BasePlot:
         if self._showok:
             plt.savefig(filename, format=fformat, **kwargs)
             if last:
-                plt.close(self._fig)
+                self.close()
             return True
 
         logger.warning("Nothing to plot (well outside Z range?)")

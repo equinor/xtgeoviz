@@ -4,7 +4,6 @@ from __future__ import annotations
 import logging
 import math
 import warnings
-from collections import OrderedDict
 from typing import Optional, Union
 
 import matplotlib.pyplot as plt
@@ -16,7 +15,7 @@ from matplotlib import collections as mc
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from matplotlib.lines import Line2D
 
-from ._libwrapper import scipy_gaussianfilter
+from ._libwrapper import matplotlib_colormap, scipy_gaussianfilter
 from .baseplot import BasePlot
 
 logger = logging.getLogger(__name__)
@@ -84,6 +83,7 @@ class XSection(BasePlot):
         self._ax1 = None
         self._ax2 = None
         self._ax3 = None
+        self._allfigs = []
 
         self._colormap_cube = None
         self._colorlegend_cube = False
@@ -92,7 +92,7 @@ class XSection(BasePlot):
         self._colorlegend_grid = False
 
         if colormap is None:
-            self._colormap = plt.cm.get_cmap("viridis")
+            self._colormap = matplotlib_colormap("viridis")
         else:
             self.define_colormap(colormap)
 
@@ -257,9 +257,11 @@ class XSection(BasePlot):
             plt.rcParams["ytick.color"] = (0, 0, 0, 0)
 
         self._fig = plt.figure(figsize=(11.69 * figscaling, 8.27 * figscaling))
-        ax1 = OrderedDict()
+        self._allfigs.append(self._fig)
 
-        ax1["main"] = plt.subplot2grid((20, 28), (0, 0), rowspan=20, colspan=23)
+        ax1 = {
+            "main": plt.subplot2grid((20, 28), (0, 0), rowspan=20, colspan=23),
+        }
 
         ax2 = plt.subplot2grid(
             (20, 28), (10, 23), rowspan=5, colspan=5, frame_on=self._has_legend
@@ -548,7 +550,6 @@ class XSection(BasePlot):
 
         ax.add_collection(lc)
 
-        legend = False
         if legend:
             zrecord = self._well.get_logrecord(zonelogname)
             zrecord = {val: zname for val, zname in zrecord.items() if val >= 0}
@@ -597,7 +598,7 @@ class XSection(BasePlot):
             frecord = self._well.get_logrecord(facieslogname)
             frecord = {val: fname for val, fname in frecord.items() if val >= 0}
 
-            fcolors = dict()
+            fcolors = {}
             for facies in frecord:
                 if isinstance(idx[facies], str):
                     color = idx[facies]
@@ -643,7 +644,7 @@ class XSection(BasePlot):
             precord = self._well.get_logrecord(perflogname)
             precord = {val: pname for val, pname in precord.items() if val >= 0}
 
-            pcolors = dict()
+            pcolors = {}
             for perf in precord:
                 if isinstance(idx[perf], str):
                     color = idx[perf]
