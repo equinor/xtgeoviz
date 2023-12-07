@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.plot.baseplot module &mdash; xtgeoviz 0.0.10.dev6+gc1e82a1 documentation</title>
+  <title>xtgeoviz.plot.baseplot module &mdash; xtgeoviz 0.0.10.dev7+g755206c documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=6a6bbd8e"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=998a6207"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/js/theme.js"></script>
@@ -141,12 +141,6 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.set_colortable">
-<span class="sig-name descname"><span class="pre">set_colortable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorlist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.set_colortable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.set_colortable" title="Permalink to this definition"></a></dt>
-<dd><p>This is actually deprecated…</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.get_colormap_as_table">
 <span class="sig-name descname"><span class="pre">get_colormap_as_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.get_colormap_as_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.get_colormap_as_table" title="Permalink to this definition"></a></dt>
 <dd><p>Get the current color map as a list of RGB tuples.</p>
@@ -197,6 +191,13 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.close" title="Permalink to this definition"></a></dt>
+<dd><p>Explicitly closes the plot, meaning that memory will be cleared.
+After close is called, no more operations can be performed on the plot.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.savefig">
 <span class="sig-name descname"><span class="pre">savefig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fformat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.savefig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.savefig" title="Permalink to this definition"></a></dt>
 <dd><p>Call to matplotlib.pyplot savefig method.</p>
@@ -205,9 +206,8 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> (<em>str</em>) – File to plot to</p></li>
 <li><p><strong>fformat</strong> (<em>str</em>) – Plot format, e.g. png (default), jpg, svg</p></li>
-<li><p><strong>last</strong> (<em>bool</em>) – Default is true, meaning that memory will be cleared;
-however if several plot types for the same instance, let last
-be False fora all except the last plots.</p></li>
+<li><p><strong>last</strong> (<em>bool</em>) – Default is true, calls close on the plot, let last
+be False for all except the last plots.</p></li>
 <li><p><strong>kwargs</strong> – Additional keyword arguments that are passed
 to matplotlib when saving the figure</p></li>
 </ul>
@@ -241,7 +241,7 @@ to matplotlib when saving the figure</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev6+gc1e82a1).</p>
+    <p>&#169; Copyright Equinor 2019 - 2023 (XTGeo release 0.0.10.dev7+g755206c).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
