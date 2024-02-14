@@ -153,8 +153,7 @@ class BasePlot:
     @staticmethod
     def get_any_colormap_as_table(cmap):
         """Returns the given color map cmap as a list of RGB tuples."""
-        cmaplist = [cmap(i) for i in range(cmap.N)]
-        return cmaplist
+        return [cmap(i) for i in range(cmap.N)]
 
     def get_colormap_as_table(self):
         """Get the current color map as a list of RGB tuples."""

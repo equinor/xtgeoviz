@@ -2,7 +2,6 @@ import pathlib
 from os.path import join
 
 import xtgeo
-
 from xtgeoviz.plot import Map
 
 TPATH = pathlib.Path("../xtgeo-testdata")

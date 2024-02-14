@@ -1,6 +1,7 @@
 """Private routines for plotting of xsections."""
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import os.path
@@ -182,7 +183,7 @@ def _save_fig(well, pset, xplot):
 
 
 def _collect_pdf(pset, plotfiles):
-    if not pset.output_format == "pdf":
+    if pset.output_format != "pdf":
         return
 
     if pset.output_pdfjoin:
@@ -215,10 +216,8 @@ def _folder_work(pset):
 
     if pset.output_cleanup:
         logger.info("Removing previous files in %s", pset.output_plotfolder)
-        try:
+        with contextlib.suppress(Exception):
             shutil.rmtree(pset.output_plotfolder + "/*")
-        except Exception:  # pylint: disable=broad-except
-            pass
 
 
 def _compute_wellcrossings(pset):

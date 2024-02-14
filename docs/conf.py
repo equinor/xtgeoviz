@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-# noqa # pylint: skip-file
 import os
 import sys
+from datetime import date
+
+import xtgeoviz
 
 cwd = os.getcwd()
 project_root = os.path.dirname(cwd) + "/src"
 sys.path.insert(0, project_root)
 
-from datetime import date
-
-import xtgeoviz
 
 # -- General configuration ---------------------------------------------
 
