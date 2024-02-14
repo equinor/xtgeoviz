@@ -12,13 +12,15 @@ Typically::
 """
 from __future__ import annotations
 
-import pathlib
 import warnings
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import xtgeo
 
 from .xtmap import Map
+
+if TYPE_CHECKING:
+    import pathlib
 
 
 def quickplot(xobj, **kwargs):

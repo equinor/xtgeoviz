@@ -46,39 +46,37 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "xtgeo",
     "PyYAML",
-    "scipy>=1.5.3",
     "matplotlib>=3.3.2",
     "numpy<2",
+    "scipy>=1.5.3",
+    "xtgeo",
 ]
 
 [project.optional-dependencies]
 tests = [
-    "black",
     "coverage>=4.1",
-    "flake8",
-    "isort",
     "mypy",
     "pylint",
     "pytest",
     "pytest-cov",
-    "pytest-runner",
     "pytest-mock",
+    "pytest-runner",
     "pytest-xdist",
     "rstcheck",
+    "ruff",
     "types-PyYAML",
 ]
 docs = [
     "autoapi",
     "myst-parser",
     "sphinx",
-    "sphinxcontrib-apidoc",
     "sphinx-argparse",
     "sphinx-autodoc-typehints",
     "sphinx-copybutton",
     "sphinx-togglebutton",
     "sphinx_rtd_theme",
+    "sphinxcontrib-apidoc",
 ]
 
 [project.urls]
@@ -87,11 +85,30 @@ Repository = "https://github.com/equinor/xtgeoviz"
 Documentation = "https://github.com/equinor/xtgeoviz"
 Issues = "https://github.com/equinor/xtgeoviz/issues"
 
-[tool.black]
+[tool.ruff]
 line-length = 88
 
-[tool.isort]
-profile = "black"
+[tool.ruff.lint]
+ignore = [
+    "C901",
+]
+select = [
+    "C",
+    "E",
+    "F",
+    "I",
+    "PIE",
+    "Q",
+    "RET",
+    "RSE",
+    "SIM",
+    "TCH",
+    "TID",
+    "W",
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
 
 [tool.mypy]
 ignore_missing_imports = true

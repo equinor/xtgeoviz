@@ -58,7 +58,7 @@ def _load_surfaces_generic(self, case="primary"):
     Note the surface.name attribute is used to store the display surface name.
     """
     config = self.config
-    sdict = dict()
+    sdict = {}
     names = config["input"]["surfaces"][case]["names"]
 
     if config["input"]["surfaces"][case]["objects"]:

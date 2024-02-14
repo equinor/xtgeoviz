@@ -134,8 +134,6 @@ output:
 class ConfigError(Exception):
     """Exception for config reading error."""
 
-    ...
-
 
 def config_defaults(as_yaml: Optional[bool] = True) -> Union[str, dict]:
     """The YAML file full spec with defaults!

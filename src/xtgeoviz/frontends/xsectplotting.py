@@ -11,9 +11,11 @@ from typing import Any, Dict, Optional, Union
 
 import yaml
 
-from . import _xsectplotting_config as _cfg
-from . import _xsectplotting_load as _load
-from . import _xsectplotting_plotting as _plt
+from . import (
+    _xsectplotting_config as _cfg,
+    _xsectplotting_load as _load,
+    _xsectplotting_plotting as _plt,
+)
 
 APPNAME = "xtgeoviz.xsectplot"
 

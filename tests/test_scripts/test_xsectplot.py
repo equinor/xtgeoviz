@@ -1,7 +1,6 @@
 """Module for testing stand-alone scripts and/or entrypoints functions."""
 import pytest
 import xtgeo
-
 from xtgeoviz import xsectplot
 from xtgeoviz.frontends._xsectplotting_config import config_defaults, data_merge
 from xtgeoviz.frontends.xsectplotting import _Xsections, _XsectSettings

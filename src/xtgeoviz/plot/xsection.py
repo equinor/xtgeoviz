@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import math
 import warnings
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,11 +12,14 @@ import numpy.ma as ma
 import pandas as pd
 import xtgeo
 from matplotlib import collections as mc
-from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from matplotlib.lines import Line2D
 
 from ._libwrapper import matplotlib_colormap, scipy_gaussianfilter
 from .baseplot import BasePlot
+
+if TYPE_CHECKING:
+    from matplotlib.colors import LinearSegmentedColormap, ListedColormap
+
 
 logger = logging.getLogger(__name__)
 
@@ -535,7 +538,7 @@ class XSection(BasePlot):
         idx = self.colormap_zonelog_dict
 
         # adjust for zoneshift.
-        idx_zshift = dict()
+        idx_zshift = {}
         for key in idx:
             idx_zshift[key - zshift + 1] = idx[key]
 
@@ -554,14 +557,11 @@ class XSection(BasePlot):
             zrecord = self._well.get_logrecord(zonelogname)
             zrecord = {val: zname for val, zname in zrecord.items() if val >= 0}
 
-            zcolors = dict()
+            zcolors = {}
             for zone in zrecord:
-                if isinstance(idx[zone], str):
-                    color = idx[zone]
-                else:
-                    color = ctable[idx[zone]]
-
-                zcolors[zrecord[zone]] = color
+                zcolors[zrecord[zone]] = (
+                    idx[zone] if isinstance(idx[zone], str) else ctable[idx[zone]]
+                )
 
             self._drawproxylegend(ax, bba, items=zcolors, title="Zonelog")
 
@@ -646,12 +646,9 @@ class XSection(BasePlot):
 
             pcolors = {}
             for perf in precord:
-                if isinstance(idx[perf], str):
-                    color = idx[perf]
-                else:
-                    color = ctable[idx[perf]]
-
-                pcolors[precord[perf]] = color
+                pcolors[precord[perf]] = (
+                    idx[perf] if isinstance(idx[perf], str) else ctable[idx[perf]]
+                )
 
             self._drawproxylegend(ax, bba, items=pcolors, title="Perforations")
 
@@ -725,10 +722,7 @@ class XSection(BasePlot):
                 text = xtgeo.Well.get_short_wellname(row.CWELL)
 
             if years:
-                if names:
-                    text = text + "\n" + row.CYEAR
-                else:
-                    text = row.CYEAR
+                text = text + "\n" + row.CYEAR if names else row.CYEAR
 
             if names or years:
                 ax.annotate(
@@ -737,9 +731,10 @@ class XSection(BasePlot):
                     xy=(dfrc.R_HLEN[minindx], row.Z_TVDSS),
                     xytext=placings[modulo],
                     textcoords="offset points",
-                    arrowprops=dict(
-                        arrowstyle="->", connectionstyle="angle3,angleA=0,angleB=90"
-                    ),
+                    arrowprops={
+                        "arrowstyle": "->",
+                        "connectionstyle": "angle3,angleA=0,angleB=90",
+                    },
                     color="black",
                 )
 
@@ -1002,7 +997,7 @@ class XSection(BasePlot):
 
             slegend = surfacenames
 
-        if self._colormap.N < nlen:
+        if nlen > self._colormap.N:
             raise ValueError(
                 f"Too few colors in color table ({self._colormap.N}) "
                 f"vs number of surfaces ({nlen})"
