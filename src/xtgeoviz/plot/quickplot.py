@@ -10,6 +10,7 @@ Typically::
     quickplot(surf)
 
 """
+
 from __future__ import annotations
 
 import warnings

@@ -1,4 +1,5 @@
 """Config option for xsections"""
+
 from __future__ import annotations
 
 import logging

@@ -1,4 +1,5 @@
 """Test the baseplot module and class."""
+
 import matplotlib
 import pytest
 from matplotlib.testing.decorators import image_comparison

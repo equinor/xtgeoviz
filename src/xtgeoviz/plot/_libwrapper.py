@@ -1,4 +1,5 @@
 """Compatibility wrapper when major libs changes API."""
+
 from __future__ import annotations
 
 import matplotlib
