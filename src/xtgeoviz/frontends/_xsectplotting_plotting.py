@@ -1,4 +1,5 @@
 """Private routines for plotting of xsections."""
+
 from __future__ import annotations
 
 import contextlib

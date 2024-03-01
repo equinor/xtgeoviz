@@ -1,4 +1,5 @@
 """Module for testing stand-alone scripts and/or entrypoints functions."""
+
 import pytest
 import xtgeo
 from xtgeoviz import xsectplot

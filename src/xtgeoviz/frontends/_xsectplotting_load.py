@@ -1,4 +1,5 @@
 """Various helper functions for xsectplotting."""
+
 from __future__ import annotations
 
 import logging
