@@ -410,7 +410,7 @@ class XSection(BasePlot):
         )
 
         if zonelogname:
-            ax, bba = self._currentax(axisname="main")
+            ax, bba = self._currentax(axisname="well")
             self._plot_well_zlog(dfr, axx, bba, zonelogname, legend=self._has_legend)
 
         if wellcrossings is not None and wellcrossings.empty:
@@ -558,13 +558,15 @@ class XSection(BasePlot):
             zrecord = self._well.get_logrecord(zonelogname)
             zrecord = {val: zname for val, zname in zrecord.items() if val >= 0}
 
-            zcolors = {}
+            zcolors = {"zero/undef": fillnavalue}  # not optimal; need more work!
             for zone in zrecord:
-                zcolors[zrecord[zone]] = (
-                    idx[zone] if isinstance(idx[zone], str) else ctable[idx[zone]]
-                )
-
-            self._drawproxylegend(ax, bba, items=zcolors, title="Zonelog")
+                if zone > 0:
+                    zcolors[zrecord[zone]] = (
+                        idx_zshift[zone]
+                        if isinstance(idx_zshift[zone], str)
+                        else ctable[idx_zshift[zone]]
+                    )
+                self._drawproxylegend(ax, bba, items=zcolors, title="Zonelog")
 
     def _plot_well_faclog(self, df, ax, bba, facieslogname, logwidth=9, legend=True):
         """Plot the facies log as colored segments.
@@ -774,11 +776,11 @@ class XSection(BasePlot):
         """Keep track of current axis; is needed as one new legend need one new axis."""
         # for multiple legends, bba is dynamic
         bbapos = {
-            "main": (1.22, 1.12, 1, 0),
-            "contacts": (1.01, 1.12),
-            "second": (1.22, 0.50),
-            "facies": (1.01, 1.00),
-            "perf": (1.22, 0.45),
+            "main": (1.01, 1.12, 1, 0),
+            "well": (1.22, 1.12),
+            "facies": (1.22, 0.7),
+            "perf": (1.22, 0.40),
+            "contacts": (1.22, 0.2),
         }
 
         ax1 = self._ax1
