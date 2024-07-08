@@ -4,6 +4,12 @@ import pathlib
 import pytest
 
 
+def pytest_configure(config):
+    import matplotlib as mpl
+
+    mpl.use("Agg")
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--testdatapath",
