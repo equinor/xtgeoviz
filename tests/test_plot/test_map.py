@@ -35,9 +35,8 @@ def test_map_plot_with_points(tmpdir, generate_plot):
 
     mypoints = xtgeo.points_from_surface(mysurf)
 
-    df = mypoints.dataframe.copy()
-    df = df[::20]
-    mypoints.dataframe = df
+    df = mypoints.get_dataframe()
+    mypoints.set_dataframe(df[::20])
 
     # just make the instance, with a lot of defaults behind the scene
     myplot = Map()
