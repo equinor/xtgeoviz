@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.plot.xsection &mdash; xtgeoviz 0.1.1.dev3+g00e1931 documentation</title>
+  <title>xtgeoviz.plot.xsection &mdash; xtgeoviz 0.1.1.dev7+gc256789 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -14,7 +14,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=dcaaaa65"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=c212f02b"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -451,16 +451,14 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="n">wo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span>
-
         <span class="c1"># reduce the well data by Pandas operations</span>
-        <span class="n">dfr</span> <span class="o">=</span> <span class="n">wo</span><span class="o">.</span><span class="n">dataframe</span>
-        <span class="n">wo</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">dfr</span><span class="p">[</span><span class="n">dfr</span><span class="p">[</span><span class="s2">&quot;Z_TVDSS&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">]</span>
+        <span class="n">dfr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">dfr</span> <span class="o">=</span> <span class="n">dfr</span><span class="p">[</span><span class="n">dfr</span><span class="p">[</span><span class="s2">&quot;Z_TVDSS&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zmin</span><span class="p">]</span>
 
         <span class="c1"># Create a relative XYLENGTH vector (0.0 where well starts)</span>
-        <span class="n">wo</span><span class="o">.</span><span class="n">create_relative_hlen</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">create_relative_hlen</span><span class="p">()</span>
 
-        <span class="n">dfr</span> <span class="o">=</span> <span class="n">wo</span><span class="o">.</span><span class="n">dataframe</span>
+        <span class="n">dfr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dfr</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_showok</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span>
@@ -498,7 +496,7 @@
 
 <div class="viewcode-block" id="XSection.set_xaxis_md"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xsection.html#xtgeoviz.plot.xsection.XSection.set_xaxis_md">[docs]</a>    <span class="k">def</span> <span class="nf">set_xaxis_md</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gridlines</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set x-axis labels to measured depth.&quot;&quot;&quot;</span>
-        <span class="n">md_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">md_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">md_start_round</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">md_start</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="n">md_start_delta</span> <span class="o">=</span> <span class="n">md_start</span> <span class="o">-</span> <span class="n">md_start_round</span>
 
@@ -1161,7 +1159,7 @@
         <span class="n">data_well</span> <span class="o">=</span> <span class="n">data_well</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;WELL&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">well</span><span class="o">.</span><span class="n">xwellname</span><span class="p">]</span>
         <span class="k">del</span> <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;WELL&quot;</span><span class="p">]</span>
 
-        <span class="n">md_start</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">md_start</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;MDEPTH&quot;</span><span class="p">]</span>
         <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_well</span><span class="p">[</span><span class="s2">&quot;R_HLEN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">md_start</span><span class="p">)</span>
 
@@ -1192,8 +1190,8 @@
         <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax2</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">xwellarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">ywellarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">xwellarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">ywellarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xwellarray</span><span class="p">,</span> <span class="n">ywellarray</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;cyan&quot;</span><span class="p">)</span>
 
@@ -1219,8 +1217,8 @@
                     <span class="k">continue</span>
                 <span class="k">if</span> <span class="n">poly</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_well</span><span class="o">.</span><span class="n">xwellname</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="n">xwp</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="n">poly</span><span class="o">.</span><span class="n">xname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-                <span class="n">ywp</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="n">poly</span><span class="o">.</span><span class="n">yname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">xwp</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">poly</span><span class="o">.</span><span class="n">xname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="n">ywp</span> <span class="o">=</span> <span class="n">poly</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="n">poly</span><span class="o">.</span><span class="n">yname</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xwp</span><span class="p">,</span> <span class="n">ywp</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">poly</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xwp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ywp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span></div>
 
@@ -1234,9 +1232,9 @@
 
         <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax3</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fence</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">xp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">yp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;POLY_ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">xp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;X_UTME&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">yp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;Y_UTMN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outline</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s2">&quot;POLY_ID&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fence</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
 
@@ -1256,7 +1254,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2024 (XTGeo release 0.1.1.dev3+g00e1931).</p>
+    <p>&#169; Copyright Equinor 2019 - 2024 (XTGeo release 0.1.1.dev7+gc256789).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
