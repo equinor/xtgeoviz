@@ -3,6 +3,7 @@ import pathlib
 
 import pytest
 import xtgeo
+
 from xtgeoviz.plot import Grid3DSlice
 
 TPATH = pathlib.Path("../xtgeo-testdata")

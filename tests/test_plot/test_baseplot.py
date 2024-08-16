@@ -3,6 +3,7 @@
 import matplotlib
 import pytest
 from matplotlib.testing.decorators import image_comparison
+
 from xtgeoviz.plot.baseplot import BasePlot
 
 
