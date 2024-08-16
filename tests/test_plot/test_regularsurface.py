@@ -3,6 +3,7 @@ import matplotlib.testing as mtst
 import numpy as np
 import xtgeo
 from matplotlib.testing.compare import compare_images
+
 from xtgeoviz.plot.quickplot import quickplot
 
 
