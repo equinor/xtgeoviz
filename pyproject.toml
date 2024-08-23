@@ -48,7 +48,7 @@ dynamic = ["version"]
 dependencies = [
     "PyYAML",
     "matplotlib>=3.3.2",
-    "numpy<2",
+    "numpy",
     "scipy>=1.5.3",
     "xtgeo",
 ]
