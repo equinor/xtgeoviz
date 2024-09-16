@@ -378,7 +378,7 @@ class XSection(BasePlot):
 
         # reduce the well data by Pandas operations
         dfr = self._well.get_dataframe(copy=False)
-        dfr = dfr[dfr["Z_TVDSS"] > self._zmin]
+        self._well.set_dataframe(dfr[dfr["Z_TVDSS"] > self._zmin])
 
         # Create a relative XYLENGTH vector (0.0 where well starts)
         self._well.create_relative_hlen()
