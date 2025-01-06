@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>xtgeoviz.plot.baseplot &mdash; xtgeoviz 0.1.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -73,24 +73,24 @@
   <h1>Source code for xtgeoviz.plot.baseplot</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;The baseplot module.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">LinearSegmentedColormap</span><span class="p">,</span> <span class="n">ListedColormap</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearSegmentedColormap</span><span class="p">,</span> <span class="n">ListedColormap</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_colortables</span> <span class="k">as</span> <span class="n">_ctable</span>
-<span class="kn">from</span> <span class="nn">._libwrapper</span> <span class="kn">import</span> <span class="n">matplotlib_colormap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_colortables</span> <span class="k">as</span> <span class="n">_ctable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._libwrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">matplotlib_colormap</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="BasePlot"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot">[docs]</a><span class="k">class</span> <span class="nc">BasePlot</span><span class="p">:</span>
+<div class="viewcode-block" id="BasePlot"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BasePlot</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for plots, proviridisding some functions to share.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Init method.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_contourlevels</span> <span class="o">=</span> <span class="mi">3</span>
@@ -116,21 +116,21 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Ran __init__ for BasePlot&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">contourlevels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contourlevels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the number of contour levels.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contourlevels</span>
 
     <span class="nd">@contourlevels</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">contourlevels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contourlevels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_contourlevels</span> <span class="o">=</span> <span class="n">num</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the color table as a matplot cmap object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span>
 
     <span class="nd">@colormap</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">LinearSegmentedColormap</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">cmap</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">ListedColormap</span><span class="p">):</span>
@@ -146,12 +146,12 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Colormap: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">pagesize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pagesize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns page size.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pagesize</span>
 
 <div class="viewcode-block" id="BasePlot.define_any_colormap"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.define_any_colormap">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">define_any_colormap</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">define_any_colormap</span><span class="p">(</span><span class="n">cfile</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Defines any color map from file or a predefined name.</span>
 
 <span class="sd">        This is a static method, which returns a matplotlib CM object.</span>
@@ -225,15 +225,15 @@
         <span class="k">return</span> <span class="n">cmap</span></div>
 
 <div class="viewcode-block" id="BasePlot.get_any_colormap_as_table"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.get_any_colormap_as_table">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_any_colormap_as_table</span><span class="p">(</span><span class="n">cmap</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_any_colormap_as_table</span><span class="p">(</span><span class="n">cmap</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the given color map cmap as a list of RGB tuples.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">cmap</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="BasePlot.get_colormap_as_table"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.get_colormap_as_table">[docs]</a>    <span class="k">def</span> <span class="nf">get_colormap_as_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasePlot.get_colormap_as_table"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.get_colormap_as_table">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_colormap_as_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current color map as a list of RGB tuples.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_any_colormap_as_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasePlot.define_colormap"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.define_colormap">[docs]</a>    <span class="k">def</span> <span class="nf">define_colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfile</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BasePlot.define_colormap"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.define_colormap">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">define_colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfile</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Defines a color map from file or a predefined name.</span>
 
 <span class="sd">        Args:</span>
@@ -251,7 +251,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">contourlevels</span> <span class="o">=</span> <span class="n">cmap</span><span class="o">.</span><span class="n">N</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">cmap</span></div>
 
-<div class="viewcode-block" id="BasePlot.canvas"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.canvas">[docs]</a>    <span class="k">def</span> <span class="nf">canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infotext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figscaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="BasePlot.canvas"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.canvas">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">infotext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">figscaling</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the canvas to plot on, with title and subtitle.</span>
 
 <span class="sd">        Args:</span>
@@ -273,7 +273,7 @@
         <span class="k">if</span> <span class="n">infotext</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">infotext</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasePlot.show"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasePlot.show"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.show">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call to matplotlib.pyplot show method.</span>
 
 <span class="sd">        Returns:</span>
@@ -290,7 +290,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Nothing to plot (well outside Z range?)&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="BasePlot.close"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BasePlot.close"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Explicitly closes the plot, meaning that memory will be cleared.</span>
 <span class="sd">        After close is called, no more operations can be performed on the plot.</span>
@@ -298,7 +298,7 @@
         <span class="k">for</span> <span class="n">fig</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allfigs</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasePlot.savefig"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.savefig">[docs]</a>    <span class="k">def</span> <span class="nf">savefig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="BasePlot.savefig"><a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot.savefig">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">savefig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">fformat</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call to matplotlib.pyplot savefig method.</span>
 
 <span class="sd">        Args:</span>
