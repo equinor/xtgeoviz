@@ -1,21 +1,21 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.plot.xtmap module &mdash; xtgeoviz 0.1.3 documentation</title>
+  <title>xtgeoviz.plot.xtmap module &mdash; xtgeoviz 0.1.4.dev1+g6ba3fb9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=14711e05"></script>
-      <script src="../_static/doctools.js?v=888ff710"></script>
-      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/documentation_options.js?v=65c06007"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -88,29 +88,29 @@
            <div itemprop="articleBody">
              
   <section id="module-xtgeoviz.plot.xtmap">
-<span id="xtgeoviz-plot-xtmap-module"></span><h1>xtgeoviz.plot.xtmap module<a class="headerlink" href="#module-xtgeoviz.plot.xtmap" title="Permalink to this heading"></a></h1>
+<span id="xtgeoviz-plot-xtmap-module"></span><h1>xtgeoviz.plot.xtmap module<a class="headerlink" href="#module-xtgeoviz.plot.xtmap" title="Link to this heading"></a></h1>
 <p>Module for map plots of surfaces, using matplotlib.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="xtgeoviz.plot.xtmap.Map">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xtgeoviz.plot.xtmap.</span></span><span class="sig-name descname"><span class="pre">Map</span></span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xtgeoviz.plot.xtmap.</span></span><span class="sig-name descname"><span class="pre">Map</span></span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="xtgeoviz.plot.baseplot.html#xtgeoviz.plot.baseplot.BasePlot" title="xtgeoviz.plot.baseplot.BasePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePlot</span></code></a></p>
 <p>Class for plotting a map, using matplotlib.</p>
 <p>The constructor method for a Map object.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="xtgeoviz.plot.xtmap.Map.pagesize">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pagesize</span></span><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.pagesize" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pagesize</span></span><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.pagesize" title="Link to this definition"></a></dt>
 <dd><p>Returns page size.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.xtmap.Map.plot_surface">
-<span class="sig-name descname"><span class="pre">plot_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contourlevels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabelrotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logarithmic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_surface" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contourlevels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabelrotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logarithmic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_surface" title="Link to this definition"></a></dt>
 <dd><p>Input a surface and plot it.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.xtmap.Map.plot_faults">
-<span class="sig-name descname"><span class="pre">plot_faults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpoly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'POLY_ID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_faults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_faults" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_faults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpoly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'POLY_ID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_faults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_faults" title="Link to this definition"></a></dt>
 <dd><p>Plot the faults.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -128,7 +128,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.xtmap.Map.plot_polygons">
-<span class="sig-name descname"><span class="pre">plot_polygons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpoly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'POLY_ID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_polygons" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_polygons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpoly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'POLY_ID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_polygons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_polygons" title="Link to this definition"></a></dt>
 <dd><p>Plot a polygons instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -144,7 +144,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.xtmap.Map.plot_points">
-<span class="sig-name descname"><span class="pre">plot_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_points" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_points" title="Link to this definition"></a></dt>
 <dd><p>Plot a points set on the map.</p>
 <p>This can be be useful e.g. for plotting the underlying point set
 that makes a gridded map.</p>
@@ -157,7 +157,7 @@ that makes a gridded map.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.xtmap.Map.plot_wells">
-<span class="sig-name descname"><span class="pre">plot_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wells</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_wells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_wells" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_wells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wells</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/xtmap.html#Map.plot_wells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.xtmap.Map.plot_wells" title="Link to this definition"></a></dt>
 <dd><p>Plot wells on the map.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -182,7 +182,7 @@ instances).</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2025 (XTGeo release 0.1.3).</p>
+    <p>&#169; Copyright Equinor 2019 - 2025 (XTGeo release 0.1.4.dev1+g6ba3fb9).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
