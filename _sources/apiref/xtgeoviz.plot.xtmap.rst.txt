@@ -3,5 +3,5 @@ xtgeoviz.plot.xtmap module
 
 .. automodule:: xtgeoviz.plot.xtmap
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

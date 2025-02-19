@@ -3,5 +3,5 @@ xtgeoviz.plot.baseplot module
 
 .. automodule:: xtgeoviz.plot.baseplot
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

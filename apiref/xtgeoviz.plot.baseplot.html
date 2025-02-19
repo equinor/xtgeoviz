@@ -92,31 +92,31 @@
 <p>The baseplot module.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xtgeoviz.plot.baseplot.</span></span><span class="sig-name descname"><span class="pre">BasePlot</span></span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xtgeoviz.plot.baseplot.</span></span><span class="sig-name descname"><span class="pre">BasePlot</span></span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for plots, proviridisding some functions to share.</p>
 <p>Init method.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.contourlevels">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contourlevels</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.contourlevels" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contourlevels</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.contourlevels" title="Link to this definition"></a></dt>
 <dd><p>Get or set the number of contour levels.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.colormap">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.colormap" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colormap</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.colormap" title="Link to this definition"></a></dt>
 <dd><p>Get or set the color table as a matplot cmap object.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.pagesize">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pagesize</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.pagesize" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pagesize</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.pagesize" title="Link to this definition"></a></dt>
 <dd><p>Returns page size.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.define_any_colormap">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">define_any_colormap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorlist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.define_any_colormap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.define_any_colormap" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">define_any_colormap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorlist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.define_any_colormap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.define_any_colormap" title="Link to this definition"></a></dt>
 <dd><p>Defines any color map from file or a predefined name.</p>
 <p>This is a static method, which returns a matplotlib CM object.</p>
 <dl class="field-list simple">
@@ -134,7 +134,7 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.get_any_colormap_as_table">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_any_colormap_as_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.get_any_colormap_as_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.get_any_colormap_as_table" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_any_colormap_as_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.get_any_colormap_as_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.get_any_colormap_as_table" title="Link to this definition"></a></dt>
 <dd><p>Returns the given color map cmap as a list of RGB tuples.</p>
 </dd></dl>
 

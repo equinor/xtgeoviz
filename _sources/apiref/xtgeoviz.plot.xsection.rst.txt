@@ -3,5 +3,5 @@ xtgeoviz.plot.xsection module
 
 .. automodule:: xtgeoviz.plot.xsection
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

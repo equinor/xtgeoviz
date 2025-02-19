@@ -3,5 +3,5 @@ xtgeoviz.frontends.xsectplotting module
 
 .. automodule:: xtgeoviz.frontends.xsectplotting
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

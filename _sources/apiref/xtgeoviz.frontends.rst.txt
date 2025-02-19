@@ -3,8 +3,8 @@ xtgeoviz.frontends package
 
 .. automodule:: xtgeoviz.frontends
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------
