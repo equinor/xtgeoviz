@@ -143,11 +143,7 @@ class _Xsections:
     def set_logger_verbosity(self):
         """Use config setting to set eventual logging output."""
 
-        actual_verbosity = "normal"
-        if self.verbosity:
-            actual_verbosity = self.verbosity
-        else:
-            actual_verbosity = self.config["verbosity"]
+        actual_verbosity = self.verbosity or self.config["verbosity"]
 
         if actual_verbosity == "silent":
             logging.basicConfig(
