@@ -1,7 +1,7 @@
 # xtgeoviz
 
 [![tests](https://github.com/equinor/xtgeoviz/actions/workflows/ci-xtgeoviz.yml/badge.svg)](https://github.com/equinor/xtgeoviz/actions/workflows/ci-xtgeoviz.yml)
-![Python Version](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue.svg)
+![Python Version](https://img.shields.io/badge/python-3.11%20|%203.12%20|%203.13.svg)
 [![License: LGPL v3](https://img.shields.io/github/license/equinor/fmu-tools)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![PyPI](https://img.shields.io/pypi/v/xtgeoviz.svg)](https://pypi.org/project/xtgeoviz/)
