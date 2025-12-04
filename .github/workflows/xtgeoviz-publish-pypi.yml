@@ -24,10 +24,10 @@ jobs:
           python-version: 3.12
 
       - name: Install dependencies
-        run: uv run pip install -U setuptools build twine
+        run: uv pip install -U setuptools build twine
 
       - name: Build package
-        run: uv run python -m build
+        run: uv build
 
       - name: Upload deploy
         env:
