@@ -50,7 +50,7 @@ dependencies = [
     "matplotlib>=3.3.2",
     "numpy",
     "scipy>=1.5.3",
-    "xtgeo==4.19.0",
+    "xtgeo>=4.19.0",
 ]
 
 [project.optional-dependencies]
