@@ -18,19 +18,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
 
       - name: Install dependencies
-        run: uv pip install -U setuptools build twine
+        run: pip install -U setuptools build twine
 
       - name: Build package
-        run: uv build
+        run: python -m build
 
       - name: Upload deploy
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_SECRET }}
-        run: uv run python -m twine upload dist/*
+        run: python -m twine upload dist/*
