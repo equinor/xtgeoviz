@@ -5,8 +5,6 @@ from __future__ import annotations
 import matplotlib
 import scipy
 
-# pylint: disable=no-member
-
 
 def _version_ge_than(proposed, comparewith):
     """Simple version checker, assuming version on form x.y.z
