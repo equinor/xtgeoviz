@@ -123,3 +123,11 @@ testpaths = "tests"
 markers = [
     "integration: Integration tests",
 ]
+
+[tool.uv]
+exclude-newer = "1 week"
+# Exclude specific package(s) we maintain for quick iteration
+
+[tool.uv.exclude-newer-package]
+"xtgeo" = false
+
