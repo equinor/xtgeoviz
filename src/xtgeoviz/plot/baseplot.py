@@ -56,6 +56,7 @@ class BasePlot:
 
     @contourlevels.setter
     def contourlevels(self, num: int) -> None:
+        """Set the number of contour levels."""
         self._contourlevels = num
 
     @property
@@ -65,6 +66,11 @@ class BasePlot:
 
     @colormap.setter
     def colormap(self, cmap: Colormap | str) -> None:
+        """Set the active colormap from an object or registered name.
+
+        Args:
+            cmap: Colormap object or name to activate.
+        """
         if isinstance(cmap, LinearSegmentedColormap):
             self._colormap = cmap
         elif isinstance(cmap, ListedColormap):

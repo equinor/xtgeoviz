@@ -154,8 +154,10 @@ def config_defaults(as_yaml: bool = True) -> str | dict[str, Any]:
     """Return the complete default cross-section configuration.
 
     Args:
-        as_yaml: If True, then return as string on YAML format, else, return a
-            python dict.
+        as_yaml: If true, return the YAML text; otherwise, return the parsed mapping.
+
+    Returns:
+        The default configuration as YAML text or a nested dictionary.
     """
     logger.info("Configure default settings with as_yaml set to: %s", as_yaml)
     if as_yaml:
@@ -165,7 +167,18 @@ def config_defaults(as_yaml: bool = True) -> str | dict[str, Any]:
 
 
 def _invalid_key(superset: object, subset: object) -> str:
-    """Simple test if keyword in subset is present in superset."""
+    """Find the first key present in ``subset`` but absent from ``superset``.
+
+    The check recurses into values that are dictionaries on both sides.
+
+    Args:
+        superset: Mapping that defines the accepted configuration keys.
+        subset: Mapping whose keys are being validated.
+
+    Returns:
+        The first invalid key converted to a string, or an empty string when
+        all checked keys are valid or either value is not a dictionary.
+    """
     if not isinstance(superset, dict) or not isinstance(subset, dict):
         return ""
 
@@ -184,12 +197,25 @@ def _invalid_key(superset: object, subset: object) -> str:
 
 # Borrowed from https://stackoverflow.com/a/15836901
 def data_merge(superset: Any, subset: Any, recursive: bool = False) -> Any:
-    """Merges subset into superset and return merged result
+    """Merge configuration values from ``subset`` into ``superset``.
 
-    The `recursive` flag is just to be able to detect the state for logging msg.
+    Dictionary values are merged recursively. Existing lists are extended (or
+    appended to when ``subset`` is not a list); scalar defaults are replaced.
+    Dictionary and list supersets may be mutated in place.
 
-    NOTE: tuples and arbitrary objects are not handled as it is totally
-    ambiguous what should happen
+    Args:
+        superset: Default or existing value to merge into.
+        subset: User-provided value that overrides or extends the default.
+        recursive: Whether this call is part of a nested merge, used to limit
+            top-level logging.
+
+    Returns:
+        The merged value. For mutable dictionary or list inputs, this may be
+        the same object as ``superset``.
+
+    Raises:
+        ValueError: If a dictionary contains keys absent from the default mapping.
+        ConfigError: If the values cannot be merged or the superset type is unsupported.
     """
     if not recursive:
         logger.info("Merging user settings with default settings.")
@@ -236,7 +262,14 @@ def data_merge(superset: Any, subset: Any, recursive: bool = False) -> Any:
 
 
 def config_complete(x_sections: _Xsections) -> None:
-    """Improving the config to make all sorts of defaults and smart stuff."""
+    """Complete settings that depend on the loaded cross-section data.
+
+    Fills empty color dictionaries and derives depth, cube, and grid ranges from
+    the loaded surfaces, wells, and volumes.
+
+    Args:
+        x_sections: Cross-section application holding config and loaded objects.
+    """
 
     newcfg = deepcopy(x_sections.config)
     oldcfg = x_sections.config
@@ -302,7 +335,15 @@ def config_complete(x_sections: _Xsections) -> None:
 
 
 def _config_smart0_zrange(primary: list[xtgeo.RegularSurface]) -> list[float]:
-    """If no zrange is given, try to guess from surfaces"""
+    """Estimate a depth range from the first and last primary surfaces.
+
+    Args:
+        primary: Ordered primary surfaces used to establish the shallow and
+            deep limits.
+
+    Returns:
+        A two-item range expanded by ten units and rounded to tens.
+    """
     minv = primary[0].values.min()
     maxv = primary[-1].values.max()
 
@@ -315,6 +356,16 @@ def _config_smart0_zrange(primary: list[xtgeo.RegularSurface]) -> list[float]:
 def _config_smart1_zrange(
     wlist: list[xtgeo.Well], primary: list[xtgeo.RegularSurface]
 ) -> list[float]:
+    """Estimate a surface depth range and cap it using the well paths.
+
+    Args:
+        wlist: Wells whose ``Z_TVDSS`` samples constrain the maximum depth.
+        primary: Ordered primary surfaces used to establish the initial range.
+
+    Returns:
+        A two-item depth range expanded and rounded to tens, capped by the
+        deepest rounded well sample when it is shallower than the final surface.
+    """
     minv = primary[0].values.min()
     maxv = primary[-1].values.max()
 
@@ -338,6 +389,16 @@ def _config_smart1_zrange(
 def _config_userdefined_zrange(
     wlist: list[xtgeo.Well], _zrange: dict[str, object]
 ) -> dict[str, object]:
+    """Resolve default and regex-specific depth ranges for each well.
+
+    Args:
+        wlist: Wells to assign ranges to.
+        _zrange: Mapping with a ``default`` range and optional regex-keyed
+            overrides.
+
+    Returns:
+        A mapping from well names to their selected depth ranges.
+    """
     zrange_dict = {}
 
     # first set default
@@ -361,7 +422,14 @@ def _config_userdefined_zrange(
 
 
 def _config_default_surf_names(primary: list[xtgeo.RegularSurface]) -> list[str]:
-    """Config default surface name"""
+    """Generate sequential display names for a list of surfaces.
+
+    Args:
+        primary: Surfaces to create names for.
+
+    Returns:
+        Names in the form ``SURF1``, ``SURF2``, and so on.
+    """
     snames = []
     for ino, _surf in enumerate(primary):
         snames.append("SURF" + str(ino + 1))
@@ -370,7 +438,12 @@ def _config_default_surf_names(primary: list[xtgeo.RegularSurface]) -> list[str]
 
 
 def update_plotsettings(settings: _XsectSettings, cfg: dict[str, Any]) -> None:
-    """Update plotsettings and output from the config"""
+    """Copy normalized plotting and output options onto the settings object.
+
+    Args:
+        settings: Plot settings object to update.
+        cfg: Complete merged configuration mapping.
+    """
 
     pcfg = cfg["plotsettings"]
 

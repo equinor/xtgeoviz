@@ -25,7 +25,11 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 def plotting(x_sections: _Xsections) -> None:
-    """Given the wells, the surfaces, and the config; make plots."""
+    """Render cross-sections using the configured plotting engine.
+
+    Args:
+        x_sections: Cross-section application containing loaded objects and settings.
+    """
 
     pset = x_sections.plotsettings
 
@@ -35,11 +39,14 @@ def plotting(x_sections: _Xsections) -> None:
 
 # def _plotting_mpl(config, wells, surfaces, outline, cube):
 def _plotting_mpl(x_sections: _Xsections, pset: _XsectSettings) -> None:
-    """Plotting of xsections with matplotlib.
+    """Render one matplotlib cross-section per loaded well.
 
-    Support for polylines and multiwells will come later. It might be
-    that instead of calling xtgeo's XSection, a local hidden xsect class here is
-    more practical and flexible.
+    Adds configured surfaces, well logs, optional cube/grid overlays, maps, and
+    output files.
+
+    Args:
+        x_sections: Cross-section application containing loaded wells and objects.
+        pset: Normalized plot settings and output options.
     """
 
     _create_or_clean_folder(pset)
@@ -175,6 +182,16 @@ def _plotting_mpl(x_sections: _Xsections, pset: _XsectSettings) -> None:
 
 
 def _save_fig(well: xtgeo.Well, pset: _XsectSettings, xplot: XSection) -> str:
+    """Save a cross-section figure using the configured output options.
+
+    Args:
+        well: Well whose cross-section is being saved.
+        pset: Plot settings containing output path, name, format, and DPI.
+        xplot: XTGeo cross-section plot object to save.
+
+    Returns:
+        Path to the saved figure.
+    """
     prefix = ""
     if pset.output_prefix:
         prefix = pset.output_prefix
@@ -193,6 +210,15 @@ def _save_fig(well: xtgeo.Well, pset: _XsectSettings, xplot: XSection) -> str:
 
 
 def _collect_pdf(pset: _XsectSettings, plotfiles: list[str]) -> None:
+    """Optionally combine individual PDF plots and remove their source files.
+
+    Args:
+        pset: Plot settings containing the output format and joined PDF name.
+        plotfiles: Paths to the per-well plot files.
+
+    Raises:
+        RuntimeError: If Ghostscript fails to combine the PDF files.
+    """
     if pset.output_format != "pdf":
         return
 
@@ -226,7 +252,11 @@ def _collect_pdf(pset: _XsectSettings, plotfiles: list[str]) -> None:
 
 
 def _create_or_clean_folder(pset: _XsectSettings) -> None:
-    """Create the output folder and optionally remove its existing contents."""
+    """Create the output folder and optionally remove its existing contents.
+
+    Args:
+        pset: Plot settings containing the folder path and cleanup flag.
+    """
     if pset.output_cleanup:
         output_path = Path(pset.output_plotfolder).resolve()
         protected_paths = (Path.cwd().resolve(), Path.home().resolve())
@@ -235,15 +265,12 @@ def _create_or_clean_folder(pset: _XsectSettings) -> None:
             for protected_path in protected_paths
         ):
             raise OSError("Refusing to clean an unsafe output folder")
-
     if pset.output_cleanup and os.path.realpath(
         pset.output_plotfolder
     ) == os.path.realpath("/tmp"):
         raise OSError("Refusing to clean the shared /tmp output folder")
-
     if pset.output_cleanup and os.path.islink(pset.output_plotfolder):
         raise OSError("Refusing to clean a symlinked output folder")
-
     if not os.path.exists(pset.output_plotfolder):
         os.makedirs(pset.output_plotfolder)
 
@@ -259,12 +286,17 @@ def _create_or_clean_folder(pset: _XsectSettings) -> None:
 
 
 def _compute_wellcrossings(pset: _XsectSettings) -> pd.DataFrame | None:
-    """
-    Read CSV with wellcrossing or compute well crossing per well and
-    collect to a Pandas dataframe
+    """Read an optional precomputed well-crossing CSV.
 
-    Note that self.wells_wellcrossing_show can be a pre generated file, or a bool
-    but the bool True is not supported yet...
+    Args:
+        pset: Plot settings containing the crossing CSV path or disabled value.
+
+    Returns:
+        The CSV contents as a pandas DataFrame, or ``None`` when disabled.
+
+    Raises:
+        NotImplementedError: If well crossings are requested with a non-path
+            truthy value; computation is not implemented.
     """
     dfr = None
     if not pset.wells_wellcrossings_show:
