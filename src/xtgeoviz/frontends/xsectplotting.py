@@ -291,22 +291,27 @@ def xsectplot(
     output: dict[str, Any] | None = None,
     verbosity: Optional[str] = None,
 ) -> None:
-    """Frontend function for plotting xsections.
+    """Create cross-section plots from YAML configuration or Python mappings.
 
-    The input can either be in form of command line args parsing a YAML file with
-    additional command line args that overides, or it can be dicts in form of inputdata,
-    plotsettings and output that will be combined with defaults.
-
-    If the input key is not None, then any args will be ignored.
+    When ``inputdata`` is truthy, the ``inputdata``, ``plotsettings``, and
+    ``output`` mappings are merged with defaults. Otherwise, configuration is
+    read from command-line arguments.
 
     Args:
-        args: Optional command-line tokens; omitted values are read from ``sys.argv``.
-        input: A dictionary spesifying minimum required input
-        plotsettings: A dictionary spesifying minimum required plotsettings
-        output: A dictionary spesyfying minimum required output settings
-        verbosity: Default None means that it is set from the config; otherwise a
-            string here will override: "normal" for normal output, "info" for using
-            logging for all modules, and similarly "debug"
+        args: Optional command-line tokens to parse. When omitted and dictionary
+            input is not provided, command-line parsing reads ``sys.argv``.
+        inputdata: Input sources such as wells, surfaces, cube, and outline.
+        plotsettings: Overrides for design, colors, ranges, and overlays.
+        output: Output folder, format, PDF, and cleanup settings.
+        verbosity: Optional logging level override; otherwise the config value is used.
+
+    Returns:
+        None.
+
+    Raises:
+        OSError: If the selected YAML config file does not exist.
+        ValueError: If a supplied configuration contains invalid keys.
+        SystemExit: If command-line arguments are incomplete or invalid.
     """
 
     app = _Xsections(args, inputdata, plotsettings, output, verbosity)

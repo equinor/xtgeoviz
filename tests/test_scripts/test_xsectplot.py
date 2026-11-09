@@ -251,6 +251,11 @@ class TestXsectInputLoading:
     """Tests for loading inputs into the cross-section app."""
 
     def test_load_wells_rejects_empty_folder(self, tmp_path: pathlib.Path) -> None:
+        """Reject a well folder with no files matching the configured pattern.
+
+        Args:
+            tmp_path: Temporary empty directory used as the well source.
+        """
         inputs = {
             "wells": {
                 "folder": str(tmp_path),
@@ -263,6 +268,7 @@ class TestXsectInputLoading:
             xapp.load_wells()
 
     def test_load_preloaded_wells_and_optional_logs(self) -> None:
+        """Use preloaded wells and preserve optional facies and perf logs."""
         wells = [object()]
         inputs = {
             "wells": {
@@ -281,6 +287,11 @@ class TestXsectInputLoading:
         assert xapp.wells["perflog"] == "Perf"
 
     def test_load_wells(self, testdir: pathlib.Path) -> None:
+        """Load matching well files from the XTGeo test-data directory.
+
+        Args:
+            testdir: Root directory containing the well fixtures.
+        """
         inputs = {
             "wells": {
                 "folder": str(testdir / WELLSET1),
@@ -296,6 +307,11 @@ class TestXsectInputLoading:
             assert wname in wellnames
 
     def test_load_surfaces(self, testdir: pathlib.Path) -> None:
+        """Load primary surfaces and apply their configured display names.
+
+        Args:
+            testdir: Root directory containing the surface fixtures.
+        """
         inputs = {
             "surfaces": {
                 "primary": {
@@ -313,6 +329,11 @@ class TestXsectInputLoading:
             assert sname in surfnames
 
     def test_load_surfaces_uses_default_names(self, testdir: pathlib.Path) -> None:
+        """Assign sequential names when no surface names are configured.
+
+        Args:
+            testdir: Root directory containing the surface fixtures.
+        """
         inputs = {
             "surfaces": {
                 "primary": {
@@ -333,6 +354,7 @@ class TestXsectInputLoading:
         ]
 
     def test_load_surfaces_rejects_non_xtgeo_objects(self) -> None:
+        """Reject preloaded surface values that are not XTGeo surfaces."""
         inputs = {"surfaces": {"primary": {"objects": [object()]}}}
         xapp = _Xsections(inputdata=inputs)
 
@@ -340,6 +362,11 @@ class TestXsectInputLoading:
             xapp.load_surfaces()
 
     def test_load_outline_from_preloaded_object(self, testdir: pathlib.Path) -> None:
+        """Keep a preloaded polygons object as the field outline.
+
+        Args:
+            testdir: Root directory containing the polygon fixture.
+        """
         outline = xtgeo.polygons_from_file(testdir / OUTLINE)
         xapp = _Xsections(inputdata={"outline": outline})
 
@@ -348,6 +375,11 @@ class TestXsectInputLoading:
         assert xapp.outline is outline
 
     def test_load_cube_from_path(self, testdir: pathlib.Path) -> None:
+        """Read a cube from its configured file path.
+
+        Args:
+            testdir: Root directory containing the cube fixture.
+        """
         xapp = _Xsections(inputdata={"cube": str(testdir / CUBE)})
 
         xapp.load_cube()
@@ -355,6 +387,7 @@ class TestXsectInputLoading:
         assert isinstance(xapp.cube, xtgeo.Cube)
 
     def test_load_missing_cube_sets_none(self) -> None:
+        """Leave the application cube unset when no cube is configured."""
         xapp = _Xsections(inputdata={"wells": {}})
 
         xapp.load_cube()
@@ -365,6 +398,12 @@ class TestXsectInputLoading:
     def test_load_grid_property_and_optional_geometry(
         self, monkeypatch: pytest.MonkeyPatch, fromgrid: str | None
     ) -> None:
+        """Read grid properties and skip geometry when supplied by surfaces.
+
+        Args:
+            monkeypatch: Replaces XTGeo readers with test doubles.
+            fromgrid: Geometry source already associated with surfaces, if any.
+        """
         inputs = {
             "surfaces": {"fromgrid": fromgrid},
             "grid": {
@@ -396,6 +435,11 @@ class TestXsectInputLoading:
     def test_load_grid_without_complete_inputs_does_nothing(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
+        """Skip grid reads when geometry and property paths are incomplete.
+
+        Args:
+            monkeypatch: Replaces XTGeo readers to assert they are not called.
+        """
         xapp = _Xsections(inputdata={"wells": {}})
         grid_reader = MagicMock()
         property_reader = MagicMock()
@@ -412,6 +456,11 @@ class TestXsectPlotting:
     """End-to-end tests for supported Python plotting inputs."""
 
     def test_parse_config_file_overrides_defaults(self, tmp_path: pathlib.Path) -> None:
+        """Merge a YAML file override while retaining default settings.
+
+        Args:
+            tmp_path: Temporary directory used to create the YAML config file.
+        """
         config_file = tmp_path / "xsect.yml"
         config_file.write_text(
             "input:\n  wells:\n    zonelog: CUSTOM_ZONE\n", encoding="utf-8"
@@ -424,6 +473,11 @@ class TestXsectPlotting:
         assert xapp.config["input"]["wells"]["zonelog"] == "CUSTOM_ZONE"
 
     def test_parse_config_rejects_missing_file(self, tmp_path: pathlib.Path) -> None:
+        """Raise an error when the requested YAML config file is missing.
+
+        Args:
+            tmp_path: Temporary directory used to construct a missing path.
+        """
         xapp = _Xsections(inputdata={"wells": {}})
         xapp.args = Namespace(config=str(tmp_path / "missing.yml"))
 
@@ -431,6 +485,7 @@ class TestXsectPlotting:
             xapp.parse_config()
 
     def test_parse_args_exits_without_required_arguments(self) -> None:
+        """Exit with usage information when command-line arguments are absent."""
         xapp = _Xsections(inputdata={"wells": {}})
         xapp.args = []
 
@@ -501,6 +556,12 @@ class TestXsectPlottingHelpers:
     def test_plotting_skips_well_without_fence(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
     ) -> None:
+        """Skip rendering and saving when XTGeo produces no fence.
+
+        Args:
+            monkeypatch: Replaces the cross-section constructor and save helper.
+            tmp_path: Temporary output directory for the plot.
+        """
         settings = _XsectSettings()
         settings.output_plotfolder = str(tmp_path / "plots")
         well = SimpleNamespace(name="well-1")
@@ -527,6 +588,12 @@ class TestXsectPlottingHelpers:
     def test_plotting_includes_overlays_and_crossings(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
     ) -> None:
+        """Render overlays and pass only the current well's crossing rows.
+
+        Args:
+            monkeypatch: Replaces XTGeo plotting and CSV-reading dependencies.
+            tmp_path: Temporary output directory for the plot.
+        """
         settings = _XsectSettings()
         settings.output_plotfolder = str(tmp_path / "plots")
         settings.design_zrange = {"well-1": (100, 200)}
@@ -580,6 +647,12 @@ class TestXsectPlottingHelpers:
     def test_save_fig_builds_path_and_shows_when_requested(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
     ) -> None:
+        """Apply the output prefix and display the plot when XTG_SHOW is set.
+
+        Args:
+            monkeypatch: Sets the environment variable and isolates the plot.
+            tmp_path: Temporary destination directory.
+        """
         settings = SimpleNamespace(
             output_prefix="prefix_",
             output_plotfolder=str(tmp_path),
@@ -598,7 +671,14 @@ class TestXsectPlottingHelpers:
         xplot.savefig.assert_called_once_with(result, fformat="png", dpi=150)
         xplot.show.assert_called_once()
 
-    def test_folder_work_creates_output_directory(self, tmp_path: pathlib.Path) -> None:
+    def test_create_or_clean_folder_creates_output_directory(
+        self, tmp_path: pathlib.Path
+    ) -> None:
+        """Create the configured output directory when it does not exist.
+
+        Args:
+            tmp_path: Temporary parent directory for plot output.
+        """
         output_folder = tmp_path / "new-plots"
         settings = SimpleNamespace(
             output_plotfolder=str(output_folder), output_cleanup=False
@@ -608,9 +688,14 @@ class TestXsectPlottingHelpers:
 
         assert output_folder.is_dir()
 
-    def test_folder_work_cleans_files_and_subdirectories(
+    def test_create_or_clean_folder_cleans_files_and_subdirectories(
         self, tmp_path: pathlib.Path
     ) -> None:
+        """Remove existing files and nested directories when cleanup is enabled.
+
+        Args:
+            tmp_path: Temporary parent directory containing stale plot output.
+        """
         output_folder = tmp_path / "plots"
         nested_folder = output_folder / "old-run"
         nested_folder.mkdir(parents=True)
@@ -876,6 +961,7 @@ class TestXsectPlottingHelpers:
         directory_listing.assert_not_called()
 
     def test_compute_wellcrossings_disabled(self) -> None:
+        """Return None when well-crossing input is disabled."""
         settings = SimpleNamespace(wells_wellcrossings_show=False)
 
         assert (
@@ -884,6 +970,7 @@ class TestXsectPlottingHelpers:
         )
 
     def test_compute_wellcrossings_rejects_unsupported_compute_mode(self) -> None:
+        """Reject enabled crossings when no CSV path is supplied."""
         settings = SimpleNamespace(wells_wellcrossings_show=True)
 
         with pytest.raises(NotImplementedError, match="not supported yet"):
@@ -893,6 +980,12 @@ class TestXsectPlottingHelpers:
     def test_collect_pdf_returns_without_joining(
         self, monkeypatch: pytest.MonkeyPatch, output_format: str
     ) -> None:
+        """Skip Ghostscript when output is not joined PDF.
+
+        Args:
+            monkeypatch: Replaces the subprocess call with a spy.
+            output_format: Format parameterized between PNG and PDF.
+        """
         settings = SimpleNamespace(output_format=output_format, output_pdfjoin=False)
         subprocess_call = MagicMock()
         monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
@@ -904,6 +997,12 @@ class TestXsectPlottingHelpers:
     def test_collect_pdf_joins_files_and_removes_parts(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
     ) -> None:
+        """Join per-well PDFs and remove the source files after success.
+
+        Args:
+            monkeypatch: Replaces Ghostscript and file removal with spies.
+            tmp_path: Temporary output directory for the joined PDF.
+        """
         output_folder = tmp_path / "plots with spaces"
         plot_files = [
             str(output_folder / "one plot.pdf"),
@@ -1012,6 +1111,12 @@ class TestXsectPlottingHelpers:
     def test_collect_pdf_raises_when_ghostscript_fails(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
     ) -> None:
+        """Raise an error when Ghostscript reports a failed PDF join.
+
+        Args:
+            monkeypatch: Makes the subprocess call return a failure status.
+            tmp_path: Temporary output directory for the joined PDF.
+        """
         settings = SimpleNamespace(
             output_format="pdf",
             output_pdfjoin="joined.pdf",

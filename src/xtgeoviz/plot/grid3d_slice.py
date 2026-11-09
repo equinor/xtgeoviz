@@ -112,6 +112,7 @@ class Grid3DSlice(BasePlot):
             self._plot_layer()
 
     def _plot_layer(self) -> None:
+        """Render the selected grid layer as polygon patches."""
         xyc, ibn = self._grid.get_layer_slice(self._index, activeonly=self._active)
 
         xval = xyc[:, :, 0]
