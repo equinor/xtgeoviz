@@ -410,6 +410,21 @@ class TestXsectPlotting:
         with pytest.raises(SystemExit):
             xapp.parse_args()
 
+    def test_explicit_args_load_configuration(self, tmp_path: pathlib.Path) -> None:
+        """Use explicit command-line arguments to load the selected YAML file.
+
+        Args:
+            tmp_path: Temporary directory used for the config path.
+        """
+        config_file = tmp_path / "xsect.yml"
+        config_file.write_text(
+            "input:\n  wells:\n    zonelog: CLI_ZONE\n", encoding="utf-8"
+        )
+        xapp = _Xsections(args=["--config", str(config_file)])
+
+        assert xapp.args.config == str(config_file)
+        assert xapp.config["input"]["wells"]["zonelog"] == "CLI_ZONE"
+
     def test_plot_from_paths(self, testdir, tmp_path):
         """Make plots using file paths from Python input."""
         inputs = {
