@@ -34,7 +34,7 @@ def _plotting_mpl(self, pset):
     more practical and flexible.
     """
 
-    _folder_work(pset)
+    _create_or_clean_folder(pset)
 
     wellcross = _compute_wellcrossings(pset)
 
@@ -188,21 +188,26 @@ def _collect_pdf(pset, plotfiles):
         return
 
     if pset.output_pdfjoin:
-        masterfile = os.path.join([pset.output_plotfolder, pset.output_pdfjoin])
+        masterfile = os.path.join(pset.output_plotfolder, pset.output_pdfjoin)
 
-        syscommand = (
-            "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 "
-            "-dPDFSETTINGS=/default -dNOPAUSE -dQUIET -dBATCH "
-            "-dDetectDuplicateImages -dCompressFonts=true -r150 "
-            f"-sOutputFile={masterfile} "
-        )
-
-        for pfile in plotfiles:
-            syscommand = syscommand + pfile + " "
+        command = [
+            "gs",
+            "-sDEVICE=pdfwrite",
+            "-dCompatibilityLevel=1.4",
+            "-dPDFSETTINGS=/default",
+            "-dNOPAUSE",
+            "-dQUIET",
+            "-dBATCH",
+            "-dDetectDuplicateImages",
+            "-dCompressFonts=true",
+            "-r150",
+            f"-sOutputFile={masterfile}",
+            *plotfiles,
+        ]
 
         logger.info("Collecting PDF files to %s", masterfile)
-        logger.info(syscommand)
-        ier = subprocess.call(syscommand, shell=True)
+        logger.info("Running Ghostscript with arguments: %s", command)
+        ier = subprocess.call(command, shell=False)
 
         if ier != 0:
             raise RuntimeError(f"Received number != 0 from subprosess: {ier}")
@@ -211,14 +216,28 @@ def _collect_pdf(pset, plotfiles):
             os.remove(pfile)
 
 
-def _folder_work(pset):
+def _create_or_clean_folder(pset):
+    """Create the output folder and optionally remove its existing contents."""
+    if pset.output_cleanup and os.path.realpath(
+        pset.output_plotfolder
+    ) == os.path.realpath("/tmp"):
+        raise OSError("Refusing to clean the shared /tmp output folder")
+
+    if pset.output_cleanup and os.path.islink(pset.output_plotfolder):
+        raise OSError("Refusing to clean a symlinked output folder")
+
     if not os.path.exists(pset.output_plotfolder):
         os.makedirs(pset.output_plotfolder)
 
     if pset.output_cleanup:
         logger.info("Removing previous files in %s", pset.output_plotfolder)
-        with contextlib.suppress(Exception):
-            shutil.rmtree(pset.output_plotfolder + "/*")
+        for entry in os.listdir(pset.output_plotfolder):
+            path = os.path.join(pset.output_plotfolder, entry)
+            with contextlib.suppress(Exception):
+                if os.path.isdir(path) and not os.path.islink(path):
+                    shutil.rmtree(path)
+                else:
+                    os.remove(path)
 
 
 def _compute_wellcrossings(pset):
