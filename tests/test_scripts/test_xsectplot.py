@@ -1,5 +1,6 @@
 """Module for testing stand-alone scripts and/or entrypoints functions."""
 
+import pathlib
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
@@ -535,6 +536,55 @@ class TestXsectPlottingHelpers:
         xplot.savefig.assert_called_once_with(result, fformat="png", dpi=150)
         xplot.show.assert_called_once()
 
+    def test_folder_work_creates_output_directory(self, tmp_path):
+        output_folder = tmp_path / "new-plots"
+        settings = SimpleNamespace(
+            output_plotfolder=str(output_folder), output_cleanup=False
+        )
+
+        plotting_helpers._create_or_clean_folder(settings)
+
+        assert output_folder.is_dir()
+
+    def test_folder_work_cleans_files_and_subdirectories(self, tmp_path):
+        output_folder = tmp_path / "plots"
+        nested_folder = output_folder / "old-run"
+        nested_folder.mkdir(parents=True)
+        (output_folder / "old.png").touch()
+        (nested_folder / "old.png").touch()
+        settings = SimpleNamespace(
+            output_plotfolder=str(output_folder), output_cleanup=True
+        )
+
+        plotting_helpers._create_or_clean_folder(settings)
+
+        assert list(output_folder.iterdir()) == []
+
+    def test_create_or_clean_folder_unlinks_directory_symlinks(
+        self, tmp_path: pathlib.Path
+    ) -> None:
+        """Remove a directory symlink without deleting its target contents."""
+        output_folder = tmp_path / "plots"
+        output_folder.mkdir()
+        target_folder = tmp_path / "preserved"
+        target_folder.mkdir()
+        sentinel = target_folder / "keep.txt"
+        sentinel.touch()
+        directory_link = output_folder / "linked-output"
+        try:
+            directory_link.symlink_to(target_folder, target_is_directory=True)
+        except (NotImplementedError, OSError) as error:
+            pytest.skip(f"Directory symlinks are unavailable: {error}")
+
+        settings = SimpleNamespace(
+            output_plotfolder=str(output_folder), output_cleanup=True
+        )
+
+        plotting_helpers._create_or_clean_folder(settings)
+
+        assert not directory_link.is_symlink()
+        assert sentinel.is_file()
+
     def test_compute_wellcrossings_disabled(self):
         settings = SimpleNamespace(wells_wellcrossings_show=False)
 
@@ -545,6 +595,50 @@ class TestXsectPlottingHelpers:
 
         with pytest.raises(NotImplementedError, match="not supported yet"):
             plotting_helpers._compute_wellcrossings(settings)
+
+    @pytest.mark.parametrize("output_format", ["png", "pdf"])
+    def test_collect_pdf_returns_without_joining(self, monkeypatch, output_format: str):
+        settings = SimpleNamespace(output_format=output_format, output_pdfjoin=False)
+        subprocess_call = MagicMock()
+        monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
+
+        plotting_helpers._collect_pdf(settings, ["plot.pdf"])
+
+        subprocess_call.assert_not_called()
+
+    def test_collect_pdf_joins_files_and_removes_parts(self, monkeypatch, tmp_path):
+        settings = SimpleNamespace(
+            output_format="pdf",
+            output_pdfjoin="joined.pdf",
+            output_plotfolder=str(tmp_path),
+        )
+        subprocess_call = MagicMock(return_value=0)
+        removed_files = []
+        monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
+        monkeypatch.setattr(plotting_helpers.os, "remove", removed_files.append)
+
+        plotting_helpers._collect_pdf(settings, ["one.pdf", "two.pdf"])
+
+        command = subprocess_call.call_args.args[0]
+        assert f"-sOutputFile={tmp_path / 'joined.pdf'}" in command
+        assert "one.pdf" in command
+        assert "two.pdf" in command
+        assert removed_files == ["one.pdf", "two.pdf"]
+
+    def test_collect_pdf_raises_when_ghostscript_fails(self, monkeypatch, tmp_path):
+        settings = SimpleNamespace(
+            output_format="pdf",
+            output_pdfjoin="joined.pdf",
+            output_plotfolder=str(tmp_path),
+        )
+        monkeypatch.setattr(
+            plotting_helpers.subprocess, "call", MagicMock(return_value=1)
+        )
+
+        with pytest.raises(
+            RuntimeError, match="Received number != 0 from subprosess: 1"
+        ):
+            plotting_helpers._collect_pdf(settings, ["one.pdf"])
 
     def test_plot_with_preloaded_objects(self, testdir, tmp_path):
         """Make plots using preloaded well and surface objects."""

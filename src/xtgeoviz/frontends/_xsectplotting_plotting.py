@@ -34,7 +34,7 @@ def _plotting_mpl(self, pset):
     more practical and flexible.
     """
 
-    _folder_work(pset)
+    _create_or_clean_folder(pset)
 
     wellcross = _compute_wellcrossings(pset)
 
@@ -188,7 +188,7 @@ def _collect_pdf(pset, plotfiles):
         return
 
     if pset.output_pdfjoin:
-        masterfile = os.path.join([pset.output_plotfolder, pset.output_pdfjoin])
+        masterfile = os.path.join(pset.output_plotfolder, pset.output_pdfjoin)
 
         syscommand = (
             "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 "
@@ -211,14 +211,20 @@ def _collect_pdf(pset, plotfiles):
             os.remove(pfile)
 
 
-def _folder_work(pset):
+def _create_or_clean_folder(pset):
+    """Create the output folder and optionally remove its existing contents."""
     if not os.path.exists(pset.output_plotfolder):
         os.makedirs(pset.output_plotfolder)
 
     if pset.output_cleanup:
         logger.info("Removing previous files in %s", pset.output_plotfolder)
-        with contextlib.suppress(Exception):
-            shutil.rmtree(pset.output_plotfolder + "/*")
+        for entry in os.listdir(pset.output_plotfolder):
+            path = os.path.join(pset.output_plotfolder, entry)
+            with contextlib.suppress(Exception):
+                if os.path.isdir(path) and not os.path.islink(path):
+                    shutil.rmtree(path)
+                else:
+                    os.remove(path)
 
 
 def _compute_wellcrossings(pset):
