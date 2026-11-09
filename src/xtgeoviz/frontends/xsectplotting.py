@@ -111,11 +111,11 @@ class _Xsections:
     surfaces: dict = field(default_factory=dict, init=False)
 
     def __post_init__(self):
-        self.args = None  # command line args
         self.plotsettings = _XsectSettings()  # plotsettings
 
         if not self.inputdata:
             self.parse_args()
+            self.parse_config()
         else:
             self.parse_dicts()
 
@@ -268,7 +268,7 @@ def xsectplot(
     If the input key is not None, then any args will be ignored.
 
     Args:
-        args: Command line args
+        args: Optional command-line tokens; omitted values are read from ``sys.argv``.
         input: A dictionary spesifying minimum required input
         plotsettings: A dictionary spesifying minimum required plotsettings
         output: A dictionary spesyfying minimum required output settings
