@@ -133,6 +133,11 @@ class XSection(BasePlot):
 
     @legendsize.setter
     def legendsize(self, lsize: int) -> None:
+        """Set the legend text size.
+
+        Args:
+            lsize: Font size for legend labels.
+        """
         self._legendsize = lsize
 
     @property
@@ -142,6 +147,11 @@ class XSection(BasePlot):
 
     @has_legend.setter
     def has_legend(self, value: bool) -> None:
+        """Set whether the plot includes a legend.
+
+        Args:
+            value: Whether to show the legend.
+        """
         if not isinstance(value, bool):
             raise ValueError("Input is not a bool")
 
@@ -154,6 +164,11 @@ class XSection(BasePlot):
 
     @has_axes.setter
     def has_axes(self, value: bool) -> None:
+        """Set whether plot axes are displayed.
+
+        Args:
+            value: Whether to show the axes.
+        """
         if not isinstance(value, bool):
             raise ValueError("Input is not a bool")
 
@@ -166,6 +181,11 @@ class XSection(BasePlot):
 
     @colormap_facies.setter
     def colormap_facies(self, cmap: str) -> None:
+        """Set the facies colormap by name.
+
+        Args:
+            cmap: Colormap name or color-table file path.
+        """
         self._colormap_facies = self.define_any_colormap(cmap)
 
     @property
@@ -175,6 +195,11 @@ class XSection(BasePlot):
 
     @colormap_zonelog.setter
     def colormap_zonelog(self, cmap: str) -> None:
+        """Set the zonelog colormap by name.
+
+        Args:
+            cmap: Colormap name or color-table file path.
+        """
         self._colormap_zonelog = self.define_any_colormap(cmap)
 
     @property
@@ -184,6 +209,11 @@ class XSection(BasePlot):
 
     @colormap_perf.setter
     def colormap_perf(self, cmap: str) -> None:
+        """Set the perforation colormap by name.
+
+        Args:
+            cmap: Colormap name or color-table file path.
+        """
         self._colormap_perf = self.define_any_colormap(cmap)
 
     @property
@@ -193,6 +223,11 @@ class XSection(BasePlot):
 
     @colormap_facies_dict.setter
     def colormap_facies_dict(self, xdict: dict[int, int | str]) -> None:
+        """Set the facies-value to color-index mapping.
+
+        Args:
+            xdict: Mapping from facies values to palette indices or color names.
+        """
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
         self._colormap_facies_dict = xdict
@@ -204,6 +239,11 @@ class XSection(BasePlot):
 
     @colormap_perf_dict.setter
     def colormap_perf_dict(self, xdict: dict[int, int | str]) -> None:
+        """Set the perforation-value to color-index mapping.
+
+        Args:
+            xdict: Mapping from perforation values to indices or color names.
+        """
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
         self._colormap_perf_dict = xdict
@@ -215,6 +255,11 @@ class XSection(BasePlot):
 
     @colormap_zonelog_dict.setter
     def colormap_zonelog_dict(self, xdict: dict[int, int | str]) -> None:
+        """Set the zone-value to color-index mapping.
+
+        Args:
+            xdict: Mapping from zone values to palette indices or color names.
+        """
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
         self._colormap_zonelog_dict = xdict
@@ -237,6 +282,11 @@ class XSection(BasePlot):
 
     @fence.setter
     def fence(self, myfence: np.ndarray | None) -> None:
+        """Set the cross-section fence polyline.
+
+        Args:
+            myfence: Fence coordinates, or ``None`` to clear the fence.
+        """
         # this can be extended with checks and various types of input...
         self._fence = myfence
 
@@ -808,6 +858,14 @@ class XSection(BasePlot):
         items: dict[str, Any],
         title: str | None = None,
     ) -> None:
+        """Draw a legend from labeled proxy lines.
+
+        Args:
+            ax: Axes on which to place the legend.
+            bba: Legend anchor coordinates.
+            items: Legend labels mapped to their colors.
+            title: Optional legend title.
+        """
         proxies = []
         labels = []
 
@@ -829,6 +887,13 @@ class XSection(BasePlot):
     def _drawlegend(
         self, ax: plt.Axes, bba: tuple[float, ...], title: str | None = None
     ) -> None:
+        """Draw the axes' existing legend with thicker line samples.
+
+        Args:
+            ax: Axes whose legend should be drawn.
+            bba: Legend anchor coordinates.
+            title: Optional legend title.
+        """
         leg = ax.legend(
             loc="upper left",
             bbox_to_anchor=bba,
@@ -884,7 +949,7 @@ class XSection(BasePlot):
         Args:
             colormap (ColorMap): Name of color map (default 'seismic')
             vmin (float): Minimum value in plot.
-            vmax (float); Maximum value in plot
+            vmax (float): Maximum value in plot.
             alpha (float): Alpah blending number beween 0 and 1.
             interpolation (str): Interpolation for plotting, cf. matplotlib
                 documentation on this. Also gaussianN is allowed, where
@@ -957,7 +1022,7 @@ class XSection(BasePlot):
         Args:
             colormap (ColorMap): Name of color map (default 'rainbow')
             vmin (float): Minimum value in plot.
-            vmax (float); Maximum value in plot
+            vmax (float): Maximum value in plot.
             alpha (float): Alpha blending number beween 0 and 1.
             zinc (float): Sampling vertically, default is 0.5
             interpolation (str): Interpolation for plotting, cf. matplotlib

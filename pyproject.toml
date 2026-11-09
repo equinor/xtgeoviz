@@ -104,11 +104,20 @@ select = [
     "SIM",  # flake8-simplify
     "TCH",  # flake8-type-checking
     "TID",  # flake8-tidy-imports
+    "D101",  # Public class docstrings
+    "D102",  # Public method docstrings
+    "D103",  # Public function docstrings
+    "D105",  # Magic method docstrings
+    "D107",  # __init__ docstrings
+    "D417",  # Document function arguments
     # "UP",  # pyupgrade
 ]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.mypy]
 ignore_missing_imports = true
