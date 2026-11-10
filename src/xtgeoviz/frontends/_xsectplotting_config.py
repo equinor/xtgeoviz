@@ -7,7 +7,6 @@ import re
 from copy import deepcopy
 from typing import Optional, Union
 
-import six
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -186,9 +185,7 @@ def data_merge(superset, subset, recursive=False):
 
     key = None
     try:
-        if superset is None or isinstance(
-            superset, (six.string_types, six.integer_types, float)
-        ):
+        if superset is None or isinstance(superset, (str, int, float)):
             # border case for first run or if a is a primitive
             superset = subset
         elif isinstance(superset, list):
