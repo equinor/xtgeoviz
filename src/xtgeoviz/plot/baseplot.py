@@ -102,6 +102,7 @@ class BasePlot:
         if cfile is None:
             cfile = "rainbow"
             cmap = plt.get_cmap("rainbow")
+            colors = [cmap(index) for index in range(cmap.N)]
 
         elif cfile == "xtgeo":
             colors = _ctable.xtgeocolors()
@@ -140,13 +141,13 @@ class BasePlot:
 
         if colorlist:
             for entry in colorlist:
-                if entry < len(colors):
-                    ctable.append(colors[entry])
-                else:
-                    logger.warning("Color list out of range")
-                    ctable.append(colors[0])
+                if entry < 0 or entry >= len(colors):
+                    raise ValueError(
+                        f"colorlist index {entry} is outside the palette range"
+                    )
+                ctable.append(colors[entry])
 
-            cmap = LinearSegmentedColormap.from_list(ctable, colors, N=len(colors))
+            cmap = LinearSegmentedColormap.from_list("user", ctable, N=len(ctable))
             cmap.name = "user"
 
         return cmap
