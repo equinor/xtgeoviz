@@ -73,3 +73,45 @@ class TestBasePlot:
         assert cmap.name == str(palette_file)
         assert cmap.N == 2
         assert cmap(0.0) == pytest.approx((0.1, 0.2, 0.3, 1.0))
+
+    def test_colormap_colorlist_selects_and_reorders_colors(self):
+        """Use colorlist indices to select and order the resulting palette."""
+        base_cmap = BasePlot.define_any_colormap("xtgeo")
+        base_colors = [
+            base_cmap(index / (base_cmap.N - 1)) for index in range(base_cmap.N)
+        ]
+        indices = [2, 0, 2]
+
+        cmap = BasePlot.define_any_colormap("xtgeo", colorlist=indices)
+
+        assert cmap.name == "user"
+        assert len(indices) == cmap.N
+        for position, color_index in enumerate(indices):
+            assert cmap(position / 2) == pytest.approx(base_colors[color_index])
+
+    def test_colorlist_uses_default_rainbow_palette(self):
+        """Allow color selection when no colormap name is provided."""
+        base_cmap = BasePlot.define_any_colormap("rainbow")
+        indices = [5, 1]
+
+        cmap = BasePlot.define_any_colormap(None, colorlist=indices)
+
+        assert len(indices) == cmap.N
+        for position, color_index in enumerate(indices):
+            expected = base_cmap(color_index / (base_cmap.N - 1))
+            assert cmap(position) == pytest.approx(expected)
+
+    def test_colorlist_singleton_selection_can_be_sampled(self):
+        """Allow sampling a selected palette with only one color."""
+        base_cmap = BasePlot.define_any_colormap("rainbow")
+
+        cmap = BasePlot.define_any_colormap("rainbow", colorlist=[5])
+
+        assert cmap.N == 1
+        assert cmap(0.0) == pytest.approx(base_cmap(5))
+
+    @pytest.mark.parametrize("color_index", [-1, 256])
+    def test_colorlist_rejects_out_of_range_indices(self, color_index):
+        """Reject negative and too-large palette indices."""
+        with pytest.raises(ValueError, match="colorlist"):
+            BasePlot.define_any_colormap("rainbow", colorlist=[color_index])
