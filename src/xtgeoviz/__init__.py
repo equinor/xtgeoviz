@@ -3,6 +3,8 @@ from xtgeoviz.frontends import xsectplotting
 from xtgeoviz.frontends.xsectplotting import xsectplot
 from xtgeoviz.plot.quickplot import quickplot
 
+__version__: str
+
 try:
     from .version import version
 

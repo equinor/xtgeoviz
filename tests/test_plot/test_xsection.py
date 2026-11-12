@@ -2,6 +2,7 @@ import glob
 import pathlib
 from os.path import join
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock
 
 import matplotlib.pyplot as plt
@@ -33,8 +34,11 @@ class TestXSection:
         [("3.3.2", False), ("3.5.0", True)],
     )
     def test_matplotlib_set_xticks_uses_compatibility_api(
-        self, monkeypatch, matplotlib_version, combined_labels
-    ):
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        matplotlib_version: str,
+        combined_labels: bool,
+    ) -> None:
         """Use the tick-label API supported by the installed Matplotlib version."""
         monkeypatch.setattr(_libwrapper.matplotlib, "__version__", matplotlib_version)
         axes = MagicMock()
@@ -50,12 +54,14 @@ class TestXSection:
             axes.set_xticks.assert_called_once_with(ticks)
             axes.set_xticklabels.assert_called_once_with(labels)
 
-    def test_xsection_init(self):
+    def test_xsection_init(self) -> None:
         """Trigger XSection class, basically."""
         xsect = XSection()
         assert xsect.pagesize == "A4"
 
-    def test_simple_plot(self, tmpdir, show_plot, generate_plot):
+    def test_simple_plot(
+        self, tmpdir: Any, show_plot: bool, generate_plot: bool
+    ) -> None:
         """Test as simple XSECT plot."""
         mywell = xtgeo.well_from_file(USEFILE4)
         mysurfaces = []
@@ -77,7 +83,7 @@ class TestXSection:
         assert "xtgeo" in cfil1
         assert "colfacies" in str(cfil2)
 
-        myplot.colormap = cfil1
+        myplot.colormap = cfil1  # type: ignore[assignment]
         myplot.canvas(title="Manamana", subtitle="My Dear Well")
         myplot.plot_surfaces(fill=False)
         myplot.plot_well(zonelogname="Zonelog")
@@ -214,7 +220,9 @@ class TestXSection:
         finally:
             plt.close(figure)
 
-    def test_simple_plot_with_seismics(self, tmpdir, show_plot, generate_plot):
+    def test_simple_plot_with_seismics(
+        self, tmpdir: Any, show_plot: bool, generate_plot: bool
+    ) -> None:
         """Test as simple XSECT plot with seismic backdrop."""
 
         mywell = xtgeo.well_from_file(USEFILE7)
@@ -248,7 +256,7 @@ class TestXSection:
         assert "xtgeo" in cfil1
         assert "colfacies" in str(cfil2)
 
-        myplot.colormap = cfil1
+        myplot.colormap = cfil1  # type: ignore[assignment]
 
         myplot.canvas(title="Plot with seismics", subtitle="Some well")
 
@@ -267,7 +275,9 @@ class TestXSection:
 
         myplot.close()
 
-    def test_multiple_subplots(self, tmpdir, show_plot, generate_plot):
+    def test_multiple_subplots(
+        self, tmpdir: Any, show_plot: bool, generate_plot: bool
+    ) -> None:
         """Test as simple XSECT plot."""
 
         mywell = xtgeo.well_from_file(USEFILE4)
@@ -280,7 +290,7 @@ class TestXSection:
 
         myplot.close()
 
-    def test_reek1(self, tmpdir, generate_plot):
+    def test_reek1(self, tmpdir: Any, generate_plot: bool) -> None:
         """Test XSect for a Reek well."""
 
         myfield = xtgeo.polygons_from_file(USEFILE3, fformat="xyz")
