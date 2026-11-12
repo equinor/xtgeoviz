@@ -9,25 +9,32 @@ import os.path
 import shutil
 import subprocess
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from xtgeoviz.plot import XSection
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    # xsectplotting imports this module, so these owner types must stay type-only.
+    import xtgeo
+
+    from .xsectplotting import _Xsections, _XsectSettings
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-def plotting(self):
+def plotting(x_sections: _Xsections) -> None:
     """Given the wells, the surfaces, and the config; make plots."""
 
-    pset = self.plotsettings
+    pset = x_sections.plotsettings
 
     if pset.general_engine == "matplotlib":
-        _plotting_mpl(self, pset)
+        _plotting_mpl(x_sections, pset)
 
 
 # def _plotting_mpl(config, wells, surfaces, outline, cube):
-def _plotting_mpl(self, pset):
+def _plotting_mpl(x_sections: _Xsections, pset: _XsectSettings) -> None:
     """Plotting of xsections with matplotlib.
 
     Support for polylines and multiwells will come later. It might be
@@ -35,7 +42,7 @@ def _plotting_mpl(self, pset):
     more practical and flexible.
     """
 
-    app_config = getattr(self, "config", {})
+    app_config = getattr(x_sections, "config", {})
     input_config = app_config.get("input", {}) if isinstance(app_config, dict) else {}
     input_paths: list[Path] = []
 
@@ -64,7 +71,7 @@ def _plotting_mpl(self, pset):
         property_config = grid_config.get("property", {})
         if isinstance(property_config, dict):
             add_input_path(property_config.get("file"))
-    wells = self.wells.get("wlist", [])
+    wells = x_sections.wells.get("wlist", [])
     if pset.output_format == "pdf" and pset.output_pdfjoin:
         prefix = pset.output_prefix or ""
         plotfiles = [
@@ -92,22 +99,22 @@ def _plotting_mpl(self, pset):
             zmin=zrange_min,
             zmax=zrange_max,
             well=well,
-            surfaces=self.surfaces["primary"],
+            surfaces=x_sections.surfaces["primary"],
             zonelogshift=pset.wells_zonelog_zoneshift,
-            outline=self.outline,
+            outline=x_sections.outline,
             colormap=pset.surf_primary_colors,
-            cube=self.cube,
-            grid=self.grid,
-            gridproperty=self.gridproperty,
+            cube=x_sections.cube,
+            grid=x_sections.grid,
+            gridproperty=x_sections.gridproperty,
         )
 
-        xplot.colormap_facies = pset.wells_facieslog_colors
+        xplot.colormap_facies = pset.wells_facieslog_colors  # type: ignore[assignment]
         xplot.colormap_facies_dict = pset.wells_facieslog_colordict
 
-        xplot.colormap_perf = pset.wells_perflog_colors
+        xplot.colormap_perf = pset.wells_perflog_colors  # type: ignore[assignment]
         xplot.colormap_perf_dict = pset.wells_perflog_colordict
 
-        xplot.colormap_zonelog = pset.wells_zonelog_colors
+        xplot.colormap_zonelog = pset.wells_zonelog_colors  # type: ignore[assignment]
         xplot.colormap_zonelog_dict = pset.wells_zonelog_colordict
 
         xplot.legendsize = pset.design_legendsize
@@ -118,7 +125,7 @@ def _plotting_mpl(self, pset):
 
         xplot.canvas(title=well.xwellname, subtitle=pset.design_subtitle)
 
-        if self.cube:
+        if x_sections.cube:
             logger.info("Plot cube backdrop")
             vmin, vmax = (None, None)
             if pset.cube_range:
@@ -133,7 +140,7 @@ def _plotting_mpl(self, pset):
                 sampling=pset.cube_sampling,
             )
 
-        if self.grid:
+        if x_sections.grid:
             vmin, vmax = (None, None)
             if pset.grid_range:
                 vmin, vmax = pset.grid_range
@@ -162,9 +169,9 @@ def _plotting_mpl(self, pset):
 
         logger.info("Plot well path")
         xplot.plot_well(
-            zonelogname=self.wells["zonelog"],
-            facieslogname=self.wells["facieslog"],
-            perflogname=self.wells["perflog"],
+            zonelogname=x_sections.wells["zonelog"],
+            facieslogname=x_sections.wells["facieslog"],
+            perflogname=x_sections.wells["perflog"],
             wellcrossings=wcdf,
         )
 
@@ -173,19 +180,19 @@ def _plotting_mpl(self, pset):
             fill=False, axisname="lines", legend=False, linewidth=0.3, onecolor="black"
         )
 
-        if self.surfaces["contacts"]:
+        if x_sections.surfaces["contacts"]:
             xplot.plot_surfaces(
-                surfaces=self.surfaces["contacts"],
+                surfaces=x_sections.surfaces["contacts"],
                 legendtitle="Contacts",
                 colormap=pset.surf_contacts_colors,
                 axisname="contacts",
                 legend=pset.design_legends,
             )
 
-        if self.surfaces["secondary"]:
+        if x_sections.surfaces["secondary"]:
             logger.info("Plot secondary surfaces")
             xplot.plot_surfaces(
-                surfaces=self.surfaces["secondary"],
+                surfaces=x_sections.surfaces["secondary"],
                 legendtitle=pset.surf_secondary_legend,
                 colormap=pset.surf_secondary_colors,
                 axisname="second",
@@ -196,7 +203,8 @@ def _plotting_mpl(self, pset):
         if pset.design_legends:
             xplot.plot_map()
             xplot.plot_wellmap(
-                expand=pset.wellmap_expand, otherwells=pset.wellmap_otherwells
+                expand=pset.wellmap_expand,
+                otherwells=pset.wellmap_otherwells,  # type: ignore[arg-type]
             )
 
         pname = _save_fig(well, pset, xplot)
@@ -205,7 +213,7 @@ def _plotting_mpl(self, pset):
     _collect_pdf(pset, plotfiles)
 
 
-def _save_fig(well, pset, xplot):
+def _save_fig(well: xtgeo.Well, pset: _XsectSettings, xplot: XSection) -> str:
     prefix = ""
     if pset.output_prefix:
         prefix = pset.output_prefix
@@ -223,7 +231,7 @@ def _save_fig(well, pset, xplot):
     return pname
 
 
-def _collect_pdf(pset, plotfiles):
+def _collect_pdf(pset: _XsectSettings, plotfiles: list[str]) -> None:
     if pset.output_format != "pdf":
         return
 
@@ -257,8 +265,16 @@ def _collect_pdf(pset, plotfiles):
             os.remove(pfile)
 
 
-def _validate_pdf_join_paths(masterfile, plotfiles):
-    """Reject a joined PDF destination that aliases one of its input files."""
+def _validate_pdf_join_paths(masterfile: str, plotfiles: list[str]) -> None:
+    """Reject a joined PDF destination that aliases one of its input files.
+
+    Args:
+        masterfile: Joined PDF destination.
+        plotfiles: Per-well PDF inputs.
+
+    Raises:
+        ValueError: If the output resolves to an input or shares its inode.
+    """
     output_path = Path(masterfile)
     input_paths = [Path(plotfile) for plotfile in plotfiles]
     resolved_output = output_path.resolve()
@@ -273,7 +289,8 @@ def _validate_pdf_join_paths(masterfile, plotfiles):
 
 
 def _create_or_clean_folder(
-    pset, input_paths: list[str | os.PathLike[str]] | None = None
+    pset: _XsectSettings,
+    input_paths: list[str | os.PathLike[str]] | None = None,
 ) -> None:
     """Create the output folder and optionally remove its existing contents."""
     if pset.output_cleanup:
@@ -328,7 +345,7 @@ def _create_or_clean_folder(
                     os.remove(path)
 
 
-def _compute_wellcrossings(pset):
+def _compute_wellcrossings(pset: _XsectSettings) -> pd.DataFrame | None:
     """
     Read CSV with wellcrossing or compute well crossing per well and
     collect to a Pandas dataframe

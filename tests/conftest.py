@@ -1,16 +1,27 @@
 import os
 import pathlib
+from typing import Any
 
 import pytest
 
 
-def pytest_configure(config):
+def pytest_configure(config: pytest.Config) -> None:
+    """Select a non-interactive matplotlib backend for pytest.
+
+    Args:
+        config: Pytest configuration object supplied by the test runner.
+    """
     import matplotlib as mpl
 
     mpl.use("Agg")
 
 
-def pytest_addoption(parser):
+def pytest_addoption(parser: Any) -> None:
+    """Register command-line options used by the test suite.
+
+    Args:
+        parser: Pytest parser receiving the custom options.
+    """
     parser.addoption(
         "--testdatapath",
         help="path to xtgeo-testdata, defaults to ../xtgeo-testdata"
@@ -30,14 +41,25 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture(name="generate_plot")
-def fixture_generate_plot(request):
+def fixture_generate_plot(request: pytest.FixtureRequest) -> bool:
+    """Return whether tests should generate plot files.
+
+    Args:
+        request: Pytest fixture request providing command-line options.
+
+    Returns:
+        True when ``--generate-plots`` was supplied.
+
+    Raises:
+        pytest.skip.Exception: When running in the ROXAR environment.
+    """
     if "ROXENV" in os.environ:
         pytest.skip("Skip plotting tests in roxar environment")
     return request.config.getoption("--generate-plots")
 
 
 @pytest.fixture(name="show_plot")
-def fixture_xtgshow():
+def fixture_xtgshow() -> bool:
     """For eventual plotting, to be uses in an if sence inside a test."""
     if "ROXENV" in os.environ:
         pytest.skip("Skip plotting tests in roxar environment")
@@ -45,7 +67,7 @@ def fixture_xtgshow():
 
 
 @pytest.fixture(name="testdir")
-def fixure_testdir():
+def fixure_testdir() -> pathlib.Path:
     """Relative path to xtgeo-testdata, defaulted to ../xtgeo-testdata."""
     relative_path_default = "../xtgeo-testdata"
 

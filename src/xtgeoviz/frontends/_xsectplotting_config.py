@@ -5,13 +5,19 @@ from __future__ import annotations
 import logging
 import re
 from copy import deepcopy
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 import yaml
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    import xtgeo
 
-DEFAULT_CONFIG = """
+    # xsectplotting imports this module, so its owner types must stay type-only.
+    from .xsectplotting import _Xsections, _XsectSettings
+
+logger: logging.Logger = logging.getLogger(__name__)
+
+DEFAULT_CONFIG: str = """
 title: UnknownField
 
 verbosity: normal  # alt: silent, info, debug
@@ -136,8 +142,16 @@ class ConfigError(Exception):
     """Exception for config reading error."""
 
 
-def config_defaults(as_yaml: Optional[bool] = True) -> Union[str, dict]:
-    """The YAML file full spec with defaults!
+@overload
+def config_defaults(as_yaml: Literal[True] = True) -> str: ...
+
+
+@overload
+def config_defaults(as_yaml: Literal[False]) -> dict[str, Any]: ...
+
+
+def config_defaults(as_yaml: bool = True) -> str | dict[str, Any]:
+    """Return the complete default cross-section configuration.
 
     Args:
         as_yaml: If True, then return as string on YAML format, else, return a
@@ -150,7 +164,7 @@ def config_defaults(as_yaml: Optional[bool] = True) -> Union[str, dict]:
     return yaml.safe_load(DEFAULT_CONFIG)
 
 
-def _invalid_key(superset, subset):
+def _invalid_key(superset: object, subset: object) -> str:
     """Simple test if keyword in subset is present in superset."""
     if not isinstance(superset, dict) or not isinstance(subset, dict):
         return ""
@@ -169,7 +183,7 @@ def _invalid_key(superset, subset):
 
 
 # Borrowed from https://stackoverflow.com/a/15836901
-def data_merge(superset, subset, recursive=False):
+def data_merge(superset: Any, subset: Any, recursive: bool = False) -> Any:
     """Merges subset into superset and return merged result
 
     The `recursive` flag is just to be able to detect the state for logging msg.
@@ -221,13 +235,13 @@ def data_merge(superset, subset, recursive=False):
     return superset
 
 
-def config_complete(self):
+def config_complete(x_sections: _Xsections) -> None:
     """Improving the config to make all sorts of defaults and smart stuff."""
 
-    newcfg = deepcopy(self.config)
-    oldcfg = self.config
+    newcfg = deepcopy(x_sections.config)
+    oldcfg = x_sections.config
 
-    prm = self.surfaces["primary"]
+    prm = x_sections.surfaces["primary"]
 
     # PLOTSETTINGS
     # ----------------------------------------------------------------------------------
@@ -256,12 +270,12 @@ def config_complete(self):
             newcfg_plt["design"]["zrange"] = _config_smart0_zrange(prm)
         elif _zrange == "smart1":
             newcfg_plt["design"]["zrange"] = _config_smart1_zrange(
-                self.wells["wlist"], prm
+                x_sections.wells["wlist"], prm
             )
     elif isinstance(_zrange, dict):
         # process zrange per well, with a global default
         newcfg_plt["design"]["zrange"] = _config_userdefined_zrange(
-            self.wells["wlist"], _zrange
+            x_sections.wells["wlist"], _zrange
         )
 
     elif isinstance(_zrange, list) and len(_zrange) == 2:
@@ -272,19 +286,22 @@ def config_complete(self):
 
     # Z RANGES
     # ----------------------------------------------------------------------------------
-    if self.cube and not newcfg_plt["cube"]["range"]:
-        newcfg_plt["cube"]["range"] = [self.cube.values.min(), self.cube.values.max()]
-
-    if self.grid and not newcfg_plt["grid"]["range"]:
-        newcfg_plt["grid"]["range"] = [
-            self.gridproperty.values.min(),
-            self.gridproperty.values.max(),
+    if x_sections.cube and not newcfg_plt["cube"]["range"]:
+        newcfg_plt["cube"]["range"] = [
+            x_sections.cube.values.min(),
+            x_sections.cube.values.max(),
         ]
 
-    self.config = newcfg
+    if x_sections.grid and not newcfg_plt["grid"]["range"]:
+        newcfg_plt["grid"]["range"] = [
+            x_sections.gridproperty.values.min(),
+            x_sections.gridproperty.values.max(),
+        ]
+
+    x_sections.config = newcfg
 
 
-def _config_smart0_zrange(primary):
+def _config_smart0_zrange(primary: list[xtgeo.RegularSurface]) -> list[float]:
     """If no zrange is given, try to guess from surfaces"""
     minv = primary[0].values.min()
     maxv = primary[-1].values.max()
@@ -295,7 +312,9 @@ def _config_smart0_zrange(primary):
     return [minv, maxv]
 
 
-def _config_smart1_zrange(wlist, primary):
+def _config_smart1_zrange(
+    wlist: list[xtgeo.Well], primary: list[xtgeo.RegularSurface]
+) -> list[float]:
     minv = primary[0].values.min()
     maxv = primary[-1].values.max()
 
@@ -316,7 +335,9 @@ def _config_smart1_zrange(wlist, primary):
     return [minv, maxv]
 
 
-def _config_userdefined_zrange(wlist: list, _zrange: dict) -> dict:
+def _config_userdefined_zrange(
+    wlist: list[xtgeo.Well], _zrange: dict[str, object]
+) -> dict[str, object]:
     zrange_dict = {}
 
     # first set default
@@ -339,7 +360,7 @@ def _config_userdefined_zrange(wlist: list, _zrange: dict) -> dict:
     return zrange_dict
 
 
-def _config_default_surf_names(primary):
+def _config_default_surf_names(primary: list[xtgeo.RegularSurface]) -> list[str]:
     """Config default surface name"""
     snames = []
     for ino, _surf in enumerate(primary):
@@ -348,58 +369,56 @@ def _config_default_surf_names(primary):
     return snames
 
 
-def update_plotsettings(self, cfg):
+def update_plotsettings(settings: _XsectSettings, cfg: dict[str, Any]) -> None:
     """Update plotsettings and output from the config"""
-
-    # note that 'self' here is a XsectsSettings() instance!
 
     pcfg = cfg["plotsettings"]
 
-    self.title = cfg["title"]
+    settings.title = cfg["title"]
 
-    self.design_style = pcfg["design"]["style"]
-    self.design_zrange = pcfg["design"]["zrange"]
-    self.design_gridlines = pcfg["design"]["gridlines"]
-    self.design_subtitle = pcfg["design"]["subtitle"]
-    self.design_legendsize = pcfg["design"]["legendsize"]
-    self.design_legends = pcfg["design"]["legends"]
-    self.design_dpi = pcfg["design"]["dpi"]
+    settings.design_style = pcfg["design"]["style"]
+    settings.design_zrange = pcfg["design"]["zrange"]
+    settings.design_gridlines = pcfg["design"]["gridlines"]
+    settings.design_subtitle = pcfg["design"]["subtitle"]
+    settings.design_legendsize = pcfg["design"]["legendsize"]
+    settings.design_legends = pcfg["design"]["legends"]
+    settings.design_dpi = pcfg["design"]["dpi"]
 
-    self.wellmap_otherwells = pcfg["wellmap"]["otherwells"]
-    self.wellmap_expand = pcfg["wellmap"]["expand"]
+    settings.wellmap_otherwells = pcfg["wellmap"]["otherwells"]
+    settings.wellmap_expand = pcfg["wellmap"]["expand"]
 
-    self.surf_primary_colors = pcfg["surfaces"]["primary"]["colors"]
-    self.surf_primary_fill = pcfg["surfaces"]["primary"]["fill"]
+    settings.surf_primary_colors = pcfg["surfaces"]["primary"]["colors"]
+    settings.surf_primary_fill = pcfg["surfaces"]["primary"]["fill"]
 
-    self.surf_secondary_colors = pcfg["surfaces"]["secondary"]["colors"]
-    self.surf_secondary_legend = pcfg["surfaces"]["secondary"]["legend"]
+    settings.surf_secondary_colors = pcfg["surfaces"]["secondary"]["colors"]
+    settings.surf_secondary_legend = pcfg["surfaces"]["secondary"]["legend"]
 
-    self.surf_contacts_colors = pcfg["surfaces"]["contacts"]["colors"]
+    settings.surf_contacts_colors = pcfg["surfaces"]["contacts"]["colors"]
 
-    self.cube_colors = pcfg["cube"]["colors"]
-    self.cube_range = pcfg["cube"]["range"]
-    self.cube_interpolation = pcfg["cube"]["interpolation"]
-    self.cube_alpha = pcfg["cube"]["alpha"]
-    self.cube_sampling = pcfg["cube"]["sampling"]
+    settings.cube_colors = pcfg["cube"]["colors"]
+    settings.cube_range = pcfg["cube"]["range"]
+    settings.cube_interpolation = pcfg["cube"]["interpolation"]
+    settings.cube_alpha = pcfg["cube"]["alpha"]
+    settings.cube_sampling = pcfg["cube"]["sampling"]
 
-    self.grid_colors = pcfg["grid"]["colors"]
-    self.grid_range = pcfg["grid"]["range"]
-    self.grid_alpha = pcfg["grid"]["alpha"]
-    self.grid_zinc = pcfg["grid"]["zinc"]
+    settings.grid_colors = pcfg["grid"]["colors"]
+    settings.grid_range = pcfg["grid"]["range"]
+    settings.grid_alpha = pcfg["grid"]["alpha"]
+    settings.grid_zinc = pcfg["grid"]["zinc"]
 
-    self.wells_zonelog_colors = pcfg["wells"]["zonelog"]["colors"]
-    self.wells_zonelog_zoneshift = pcfg["wells"]["zonelog"]["zoneshift"]
-    self.wells_zonelog_colordict = pcfg["wells"]["zonelog"]["colordict"]
-    self.wells_facieslog_colors = pcfg["wells"]["facieslog"]["colors"]
-    self.wells_facieslog_colordict = pcfg["wells"]["facieslog"]["colordict"]
-    self.wells_perflog_colors = pcfg["wells"]["perflog"]["colors"]
-    self.wells_perflog_colordict = pcfg["wells"]["perflog"]["colordict"]
-    self.wells_wellcrossings_show = pcfg["wells"]["wellcrossings"]["show"]
-    self.wells_wellcrossings_sampling = pcfg["wells"]["wellcrossings"]["sampling"]
-    self.wells_wellcrossings_wfilter = pcfg["wells"]["wellcrossings"]["wfilter"]
+    settings.wells_zonelog_colors = pcfg["wells"]["zonelog"]["colors"]
+    settings.wells_zonelog_zoneshift = pcfg["wells"]["zonelog"]["zoneshift"]
+    settings.wells_zonelog_colordict = pcfg["wells"]["zonelog"]["colordict"]
+    settings.wells_facieslog_colors = pcfg["wells"]["facieslog"]["colors"]
+    settings.wells_facieslog_colordict = pcfg["wells"]["facieslog"]["colordict"]
+    settings.wells_perflog_colors = pcfg["wells"]["perflog"]["colors"]
+    settings.wells_perflog_colordict = pcfg["wells"]["perflog"]["colordict"]
+    settings.wells_wellcrossings_show = pcfg["wells"]["wellcrossings"]["show"]
+    settings.wells_wellcrossings_sampling = pcfg["wells"]["wellcrossings"]["sampling"]
+    settings.wells_wellcrossings_wfilter = pcfg["wells"]["wellcrossings"]["wfilter"]
 
-    self.output_plotfolder = cfg["output"]["plotfolder"]
-    self.output_format = cfg["output"]["format"]
-    self.output_prefix = cfg["output"]["prefix"]
-    self.output_pdfjoin = cfg["output"]["pdfjoin"]
-    self.output_cleanup = cfg["output"]["cleanup"]
+    settings.output_plotfolder = cfg["output"]["plotfolder"]
+    settings.output_format = cfg["output"]["format"]
+    settings.output_prefix = cfg["output"]["prefix"]
+    settings.output_pdfjoin = cfg["output"]["pdfjoin"]
+    settings.output_cleanup = cfg["output"]["cleanup"]

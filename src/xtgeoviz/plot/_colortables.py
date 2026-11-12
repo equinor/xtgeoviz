@@ -6,10 +6,10 @@ import logging
 import os
 import random
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-def random40():
+def random40() -> list[tuple[float, float, float]]:
     """Random but fixed color table with 40 entries, mostly for testing."""
 
     return [
@@ -56,7 +56,7 @@ def random40():
     ]
 
 
-def randomc(nlen):
+def randomc(nlen: int) -> list[tuple[float, float, float]]:
     """Get a truly random color table with nlen entries."""
 
     ctable = []
@@ -69,7 +69,7 @@ def randomc(nlen):
     return ctable
 
 
-def xtgeocolors():
+def xtgeocolors() -> list[tuple[float, float, float]]:
     """Get the XTGeo color table which is basic inherited from old IRAP."""
 
     return [
@@ -332,7 +332,9 @@ def xtgeocolors():
     ]
 
 
-def colorsfromfile(fname, fformat="rms"):
+def colorsfromfile(
+    fname: str | os.PathLike[str], fformat: str = "rms"
+) -> list[tuple[float, float, float]]:
     """Read a color table from a file."""
 
     logger.debug("Default style is %s", fformat)

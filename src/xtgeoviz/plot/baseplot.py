@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import warnings
+from typing import TYPE_CHECKING, Any, Sequence
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
@@ -11,19 +12,25 @@ from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from . import _colortables as _ctable
 from ._libwrapper import matplotlib_colormap
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    import os
+
+    from matplotlib.colors import Colormap
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class BasePlot:
     """Base class for plots, proviridisding some functions to share."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Init method."""
 
         self._contourlevels = 3
 
         # wants self._color to be LinearSegmentedColormap instance
         viridis = matplotlib_colormap("viridis")
+        self._colormap: Colormap
         if isinstance(viridis, ListedColormap):
             self._colormap = LinearSegmentedColormap.from_list(
                 "viridis", viridis.colors, N=viridis.N
@@ -33,31 +40,31 @@ class BasePlot:
         else:
             raise ValueError("Cannot initialize color attribute")
 
-        self._ax = None
+        self._ax: Any = None
         self._tight = False
         self._showok = True
-        self._fig = None
-        self._allfigs = []
+        self._fig: Any = None
+        self._allfigs: list[Any] = []
         self._pagesize = "A4"
 
         logger.debug("Ran __init__ for BasePlot")
 
     @property
-    def contourlevels(self):
+    def contourlevels(self) -> int:
         """Get or set the number of contour levels."""
         return self._contourlevels
 
     @contourlevels.setter
-    def contourlevels(self, num):
+    def contourlevels(self, num: int) -> None:
         self._contourlevels = num
 
     @property
-    def colormap(self):
+    def colormap(self) -> Colormap:
         """Get or set the color table as a matplot cmap object."""
         return self._colormap
 
     @colormap.setter
-    def colormap(self, cmap):
+    def colormap(self, cmap: Colormap | str) -> None:
         if isinstance(cmap, LinearSegmentedColormap):
             self._colormap = cmap
         elif isinstance(cmap, ListedColormap):
@@ -73,12 +80,14 @@ class BasePlot:
         logger.debug("Colormap: %s", self._colormap)
 
     @property
-    def pagesize(self):
+    def pagesize(self) -> str:
         """Returns page size."""
         return self._pagesize
 
     @staticmethod
-    def define_any_colormap(cfile, colorlist=None):
+    def define_any_colormap(
+        cfile: str | None, colorlist: Sequence[int] | None = None
+    ) -> Colormap:
         """Defines any color map from file or a predefined name.
 
         This is a static method, which returns a matplotlib CM object.
@@ -91,11 +100,11 @@ class BasePlot:
                 from 0 index. Default is just keep the linear sequence as is.
 
         """
-        valid_maps = sorted(m for m in plt.cm.datad)
+        valid_maps = sorted(m for m in plt.cm.datad)  # type: ignore[attr-defined]
 
         logger.debug("Valid color maps: %s", valid_maps)
 
-        colors = []
+        colors: list[Any] = []
 
         cmap = plt.get_cmap("rainbow")
 
@@ -137,7 +146,7 @@ class BasePlot:
             for i in range(cmap.N):
                 colors.append(cmap(i))
 
-        ctable = []
+        ctable: list[Any] = []
 
         if colorlist:
             for entry in colorlist:
@@ -156,15 +165,19 @@ class BasePlot:
         return cmap
 
     @staticmethod
-    def get_any_colormap_as_table(cmap):
+    def get_any_colormap_as_table(
+        cmap: Colormap,
+    ) -> list[tuple[float, float, float, float]]:
         """Returns the given color map cmap as a list of RGB tuples."""
         return [cmap(i) for i in range(cmap.N)]
 
-    def get_colormap_as_table(self):
+    def get_colormap_as_table(self) -> list[tuple[float, float, float, float]]:
         """Get the current color map as a list of RGB tuples."""
         return self.get_any_colormap_as_table(self._colormap)
 
-    def define_colormap(self, cfile, colorlist=None):
+    def define_colormap(
+        self, cfile: str | None, colorlist: Sequence[int] | None = None
+    ) -> None:
         """Defines a color map from file or a predefined name.
 
         Args:
@@ -182,7 +195,13 @@ class BasePlot:
         self.contourlevels = cmap.N
         self._colormap = cmap
 
-    def canvas(self, title=None, subtitle=None, infotext=None, figscaling=1.0):
+    def canvas(
+        self,
+        title: str | None = None,
+        subtitle: str | None = None,
+        infotext: str | None = None,
+        figscaling: float = 1.0,
+    ) -> None:
         """Prepare the canvas to plot on, with title and subtitle.
 
         Args:
@@ -204,7 +223,7 @@ class BasePlot:
         if infotext is not None:
             self._fig.text(0.01, 0.02, infotext, ha="left", va="center", fontsize=8)
 
-    def show(self):
+    def show(self) -> bool:
         """Call to matplotlib.pyplot show method.
 
         Returns:
@@ -221,7 +240,7 @@ class BasePlot:
         logger.warning("Nothing to plot (well outside Z range?)")
         return False
 
-    def close(self):
+    def close(self) -> None:
         """
         Explicitly closes the plot, meaning that memory will be cleared.
         After close is called, no more operations can be performed on the plot.
@@ -229,7 +248,13 @@ class BasePlot:
         for fig in self._allfigs:
             plt.close(fig)
 
-    def savefig(self, filename, fformat="png", last=True, **kwargs):
+    def savefig(
+        self,
+        filename: str | os.PathLike[str],
+        fformat: str = "png",
+        last: bool = True,
+        **kwargs: Any,
+    ) -> bool:
         """Call to matplotlib.pyplot savefig method.
 
         Args:

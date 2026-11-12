@@ -10,13 +10,13 @@ TPATH = pathlib.Path("../xtgeo-testdata")
 class TestColorTables:
     """Tests for built-in and file-based color tables."""
 
-    def test_readfromfile(self):
+    def test_readfromfile(self) -> None:
         """Read color table from RMS file."""
         cfile = TPATH / "etc/colortables/colfacies.txt"
         ctable = ct.colorsfromfile(cfile)
         assert ctable[5] == (0.49019608, 0.38431373, 0.05882353)
 
-    def test_xtgeo_colors(self):
+    def test_xtgeo_colors(self) -> None:
         """Read the XTGeo color table."""
         ctable = ct.xtgeocolors()
         assert ctable[5] == (0.000, 1.000, 1.000)

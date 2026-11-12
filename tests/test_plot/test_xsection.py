@@ -2,6 +2,7 @@ import glob
 import pathlib
 from os.path import join
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock
 
 import matplotlib.pyplot as plt
@@ -10,8 +11,9 @@ import pandas as pd
 import pytest
 import xtgeo
 from matplotlib.collections import LineCollection
+from matplotlib.colors import ListedColormap
 
-from xtgeoviz.plot import XSection, _libwrapper
+from xtgeoviz.plot import XSection, _libwrapper, xsection as xsection_module
 
 TPATH = pathlib.Path("../xtgeo-testdata")
 
@@ -33,8 +35,11 @@ class TestXSection:
         [("3.3.2", False), ("3.5.0", True)],
     )
     def test_matplotlib_set_xticks_uses_compatibility_api(
-        self, monkeypatch, matplotlib_version, combined_labels
-    ):
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        matplotlib_version: str,
+        combined_labels: bool,
+    ) -> None:
         """Use the tick-label API supported by the installed Matplotlib version."""
         monkeypatch.setattr(_libwrapper.matplotlib, "__version__", matplotlib_version)
         axes = MagicMock()
@@ -50,12 +55,31 @@ class TestXSection:
             axes.set_xticks.assert_called_once_with(ticks)
             axes.set_xticklabels.assert_called_once_with(labels)
 
-    def test_xsection_init(self):
+    def test_xsection_init(self) -> None:
         """Trigger XSection class, basically."""
         xsect = XSection()
         assert xsect.pagesize == "A4"
 
-    def test_simple_plot(self, tmpdir, show_plot, generate_plot):
+    @pytest.mark.parametrize("use_default", [False, True])
+    def test_xsection_preserves_listed_colormap_object(
+        self, monkeypatch: pytest.MonkeyPatch, use_default: bool
+    ) -> None:
+        """Keep the default or caller-supplied ListedColormap object intact.
+
+        Args:
+            monkeypatch: Supplies a known ListedColormap for the default case.
+            use_default: Whether to exercise the default-colormap branch.
+        """
+        colormap = ListedColormap(["red", "blue"])
+        monkeypatch.setattr(xsection_module, "matplotlib_colormap", lambda _: colormap)
+
+        xsect = XSection() if use_default else XSection(colormap=colormap)
+
+        assert xsect.colormap is colormap
+
+    def test_simple_plot(
+        self, tmpdir: Any, show_plot: bool, generate_plot: bool
+    ) -> None:
         """Test as simple XSECT plot."""
         mywell = xtgeo.well_from_file(USEFILE4)
         mysurfaces = []
@@ -77,7 +101,7 @@ class TestXSection:
         assert "xtgeo" in cfil1
         assert "colfacies" in str(cfil2)
 
-        myplot.colormap = cfil1
+        myplot.colormap = cfil1  # type: ignore[assignment]
         myplot.canvas(title="Manamana", subtitle="My Dear Well")
         myplot.plot_surfaces(fill=False)
         myplot.plot_well(zonelogname="Zonelog")
@@ -214,7 +238,9 @@ class TestXSection:
         finally:
             plt.close(figure)
 
-    def test_simple_plot_with_seismics(self, tmpdir, show_plot, generate_plot):
+    def test_simple_plot_with_seismics(
+        self, tmpdir: Any, show_plot: bool, generate_plot: bool
+    ) -> None:
         """Test as simple XSECT plot with seismic backdrop."""
 
         mywell = xtgeo.well_from_file(USEFILE7)
@@ -248,7 +274,7 @@ class TestXSection:
         assert "xtgeo" in cfil1
         assert "colfacies" in str(cfil2)
 
-        myplot.colormap = cfil1
+        myplot.colormap = cfil1  # type: ignore[assignment]
 
         myplot.canvas(title="Plot with seismics", subtitle="Some well")
 
@@ -267,7 +293,9 @@ class TestXSection:
 
         myplot.close()
 
-    def test_multiple_subplots(self, tmpdir, show_plot, generate_plot):
+    def test_multiple_subplots(
+        self, tmpdir: Any, show_plot: bool, generate_plot: bool
+    ) -> None:
         """Test as simple XSECT plot."""
 
         mywell = xtgeo.well_from_file(USEFILE4)
@@ -280,7 +308,7 @@ class TestXSection:
 
         myplot.close()
 
-    def test_reek1(self, tmpdir, generate_plot):
+    def test_reek1(self, tmpdir: Any, generate_plot: bool) -> None:
         """Test XSect for a Reek well."""
 
         myfield = xtgeo.polygons_from_file(USEFILE3, fformat="xyz")
