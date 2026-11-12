@@ -50,7 +50,7 @@ jobs:
           fi
 
       - name: Run tests
-        run: uv run pytest --disable-warnings
+        run: uv run pytest --disable-warnings --cov=xtgeoviz --cov-report=term-missing
 
       - name: Build documentation
         if: ${{ always() }}

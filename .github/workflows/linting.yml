@@ -50,3 +50,7 @@ jobs:
       - name: Ruff format
         if: ${{ always() }}
         run: uv run ruff format . --check
+
+      - name: Mypy
+        if: ${{ always() }}
+        run: uv run mypy

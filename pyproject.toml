@@ -124,6 +124,12 @@ convention = "google"
 
 [tool.mypy]
 ignore_missing_imports = true
+files = ["src", "tests"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.coverage.report]
+fail_under = 80
 
 [tool.pytest.ini_options]
 minversion = "6.0"
