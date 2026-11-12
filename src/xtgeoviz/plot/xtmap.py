@@ -185,12 +185,11 @@ class Map(BasePlot):
             # make a list [(X,Y) ...];
             af = list(zip(myfault["X_UTME"].values, myfault["Y_UTMN"].values))
 
-            px = mplp.Polygon(af, alpha=alpha, color=color, ec=edgecolor, lw=linewidth)
+            if len(af) < 2 or af[0] != af[-1]:
+                raise IOError(f"A polygon is not closed: {af}")
 
-            if px.get_closed():
-                self._ax.add_artist(px)
-            else:
-                IOError(f"A polygon is not closed: {px}")
+            px = mplp.Polygon(af, alpha=alpha, color=color, ec=edgecolor, lw=linewidth)
+            self._ax.add_artist(px)
 
     def plot_polygons(self, fpoly, idname="POLY_ID", color="k", linewidth=0.8):
         """Plot a polygons instance.

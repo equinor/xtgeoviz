@@ -1,11 +1,14 @@
 import pathlib
 from os.path import join
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import numpy as np
+import pandas as pd
 import pytest
 import xtgeo
 from matplotlib.colors import Colormap, LinearSegmentedColormap, ListedColormap
+from matplotlib.patches import Polygon
 
 from xtgeoviz.plot import Map
 
@@ -156,5 +159,52 @@ class TestMap:
             assert used_colormap.name == colormap.name
             assert used_colormap(0.0) == pytest.approx(colormap(0.0))
             assert used_colormap(1.0) == pytest.approx(colormap(1.0))
+        finally:
+            myplot.close()
+
+    def test_plot_faults_draws_closed_polygons(self) -> None:
+        """Add a closed fault polygon to the map axes."""
+        fault_polygons = SimpleNamespace(
+            get_dataframe=lambda copy=False: pd.DataFrame(
+                {
+                    "POLY_ID": [1, 1, 1, 1],
+                    "X_UTME": [0.0, 1.0, 0.0, 0.0],
+                    "Y_UTMN": [0.0, 0.0, 1.0, 0.0],
+                }
+            )
+        )
+        myplot = Map()
+        myplot.canvas()
+
+        try:
+            myplot.plot_faults(fault_polygons)
+
+            assert any(
+                isinstance(artist, Polygon) for artist in myplot._ax.get_children()
+            )
+        finally:
+            myplot.close()
+
+    def test_plot_faults_raises_for_open_polygons(self) -> None:
+        """Raise when a fault polygon's coordinates are not closed."""
+        fault_polygons = SimpleNamespace(
+            get_dataframe=lambda copy=False: pd.DataFrame(
+                {
+                    "POLY_ID": [1, 1, 1],
+                    "X_UTME": [0.0, 1.0, 0.0],
+                    "Y_UTMN": [0.0, 0.0, 1.0],
+                }
+            )
+        )
+        myplot = Map()
+        myplot.canvas()
+
+        try:
+            with pytest.raises(OSError, match="A polygon is not closed"):
+                myplot.plot_faults(fault_polygons)
+
+            assert not any(
+                isinstance(artist, Polygon) for artist in myplot._ax.get_children()
+            )
         finally:
             myplot.close()
