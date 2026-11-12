@@ -1,6 +1,8 @@
 import pathlib
 from os.path import join
 
+import numpy as np
+import pytest
 import xtgeo
 
 from xtgeoviz.plot import Map
@@ -12,80 +14,115 @@ PFILE1 = TPATH / "polygons/reek/1/top_upper_reek_faultpoly.pol"
 SFILE2 = TPATH / "surfaces/reek/1/reek_perm_lay1.gri"
 
 
-def test_simple_plot(tmpdir, generate_plot):
-    """Test as simple map plot only making an instance++ and plot."""
+class TestMap:
+    """Tests for map plotting."""
 
-    mysurf = xtgeo.surface_from_file(SFILE1)
+    def test_simple_plot(self, tmpdir, generate_plot):
+        """Test as simple map plot only making an instance++ and plot."""
 
-    # just make the instance, with a lot of defaults behind the scene
-    myplot = Map()
-    myplot.canvas(title="My o my")
-    myplot.colormap = "gist_ncar"
-    myplot.plot_surface(mysurf)
+        mysurf = xtgeo.surface_from_file(SFILE1)
 
-    if generate_plot:
-        myplot.savefig(join(tmpdir, "map_simple.png"), last=True)
-    else:
+        # just make the instance, with a lot of defaults behind the scene
+        myplot = Map()
+        myplot.canvas(title="My o my")
+        myplot.colormap = "gist_ncar"
+        myplot.plot_surface(mysurf)
+
+        if generate_plot:
+            myplot.savefig(join(tmpdir, "map_simple.png"), last=True)
+        else:
+            myplot.close()
+
+    def test_map_plot_with_points(self, tmpdir, generate_plot):
+        """Test as simple map plot with underlying points."""
+
+        mysurf = xtgeo.surface_from_file(SFILE1)
+
+        mypoints = xtgeo.points_from_surface(mysurf)
+
+        df = mypoints.get_dataframe()
+        mypoints.set_dataframe(df[::20])
+
+        # just make the instance, with a lot of defaults behind the scene
+        myplot = Map()
+        myplot.canvas(title="My o my")
+        myplot.colormap = "gist_ncar"
+        myplot.plot_surface(mysurf)
+        myplot.plot_points(mypoints)
+
+        if generate_plot:
+            myplot.savefig(join(tmpdir, "map_with_points.png"), last=True)
+        else:
+            myplot.close()
+
+    def test_more_features_plot(self, tmpdir, generate_plot):
+        """Map with some more features added, such as label rotation."""
+
+        mysurf = xtgeo.surface_from_file(SFILE1)
+
+        myfaults = xtgeo.polygons_from_file(PFILE1)
+
+        # just make the instance, with a lot of defaults behind the scene
+        myplot = Map()
+        myplot.canvas(title="Label rotation")
+        myplot.colormap = "rainbow"
+        myplot.plot_surface(mysurf, minvalue=1250, maxvalue=2200, xlabelrotation=45)
+
+        myplot.plot_faults(myfaults)
+
+        if generate_plot:
+            myplot.savefig(join(tmpdir, "map_more1.png"), last=True)
+        else:
+            myplot.close()
+
+    def test_perm_logarithmic_map(self, tmpdir, generate_plot):
+        """Map with PERM, log scale."""
+
+        mysurf = xtgeo.surface_from_file(SFILE2)
+
+        myplot = Map()
+        myplot.canvas(title="PERMX normal scale")
+        myplot.colormap = "rainbow"
+        myplot.plot_surface(
+            mysurf, minvalue=0, maxvalue=6000, xlabelrotation=45, logarithmic=True
+        )
+
+        if generate_plot:
+            myplot.savefig(join(tmpdir, "permx_normal.png"), last=True)
+        else:
+            myplot.close()
+
+    def test_constant_surface_uses_single_contour_level(self) -> None:
+        """Plot a constant-valued surface through the single-level branch."""
+        surface = xtgeo.RegularSurface(
+            ncol=2, nrow=2, xinc=1, yinc=1, values=np.full(4, 5.0)
+        )
+        myplot = Map()
+        myplot.canvas()
+        original_colormap = myplot.colormap
+
+        myplot.plot_surface(surface, colormap="rainbow")
+
+        assert myplot.colormap is original_colormap
         myplot.close()
 
+    def test_plot_surface_restores_colormap_after_contour_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Restore the instance colormap after Matplotlib rejects contours."""
+        surface = xtgeo.RegularSurface(
+            ncol=2, nrow=2, xinc=1, yinc=1, values=np.arange(4, dtype=float)
+        )
+        myplot = Map()
+        myplot.canvas()
+        original_colormap = myplot.colormap
+        monkeypatch.setattr(
+            myplot._ax,
+            "contourf",
+            lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("bad levels")),
+        )
 
-def test_map_plot_with_points(tmpdir, generate_plot):
-    """Test as simple map plot with underlying points."""
+        myplot.plot_surface(surface, colormap="rainbow")
 
-    mysurf = xtgeo.surface_from_file(SFILE1)
-
-    mypoints = xtgeo.points_from_surface(mysurf)
-
-    df = mypoints.get_dataframe()
-    mypoints.set_dataframe(df[::20])
-
-    # just make the instance, with a lot of defaults behind the scene
-    myplot = Map()
-    myplot.canvas(title="My o my")
-    myplot.colormap = "gist_ncar"
-    myplot.plot_surface(mysurf)
-    myplot.plot_points(mypoints)
-
-    if generate_plot:
-        myplot.savefig(join(tmpdir, "map_with_points.png"), last=True)
-    else:
-        myplot.close()
-
-
-def test_more_features_plot(tmpdir, generate_plot):
-    """Map with some more features added, such as label rotation."""
-
-    mysurf = xtgeo.surface_from_file(SFILE1)
-
-    myfaults = xtgeo.polygons_from_file(PFILE1)
-
-    # just make the instance, with a lot of defaults behind the scene
-    myplot = Map()
-    myplot.canvas(title="Label rotation")
-    myplot.colormap = "rainbow"
-    myplot.plot_surface(mysurf, minvalue=1250, maxvalue=2200, xlabelrotation=45)
-
-    myplot.plot_faults(myfaults)
-
-    if generate_plot:
-        myplot.savefig(join(tmpdir, "map_more1.png"), last=True)
-    else:
-        myplot.close()
-
-
-def test_perm_logarithmic_map(tmpdir, generate_plot):
-    """Map with PERM, log scale."""
-
-    mysurf = xtgeo.surface_from_file(SFILE2)
-
-    myplot = Map()
-    myplot.canvas(title="PERMX normal scale")
-    myplot.colormap = "rainbow"
-    myplot.plot_surface(
-        mysurf, minvalue=0, maxvalue=6000, xlabelrotation=45, logarithmic=True
-    )
-
-    if generate_plot:
-        myplot.savefig(join(tmpdir, "permx_normal.png"), last=True)
-    else:
+        assert myplot.colormap is original_colormap
         myplot.close()
