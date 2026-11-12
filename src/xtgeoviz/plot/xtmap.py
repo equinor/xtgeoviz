@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.patches as mplp
 import matplotlib.pyplot as plt
@@ -16,14 +16,13 @@ from .baseplot import BasePlot
 if TYPE_CHECKING:
     import xtgeo
     from matplotlib.colors import Colormap
-
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class Map(BasePlot):
     """Class for plotting a map, using matplotlib."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """The constructor method for a Map object."""
         super().__init__()
 
@@ -39,7 +38,7 @@ class Map(BasePlot):
     # Properties
     # =========================================================================
     @property
-    def pagesize(self):
+    def pagesize(self) -> str:
         """Returns page size."""
         return self._pagesize
 
@@ -131,7 +130,7 @@ class Map(BasePlot):
         logger.debug("Current colormap is %s, requested is %s", self.colormap, colormap)
         logger.debug("Current colormap name is %s", self.colormap.name)
 
-        uselevels = levels if ma.std(zi) > 1e-07 else 1
+        uselevels: np.ndarray | int | None = levels if ma.std(zi) > 1e-07 else 1
 
         try:
             if logarithmic is False:
@@ -157,13 +156,13 @@ class Map(BasePlot):
 
     def plot_faults(
         self,
-        fpoly,
-        idname="POLY_ID",
-        color="k",
-        edgecolor="k",
-        alpha=0.7,
-        linewidth=0.8,
-    ):
+        fpoly: xtgeo.Polygons,
+        idname: str = "POLY_ID",
+        color: Any = "k",
+        edgecolor: Any = "k",
+        alpha: float = 0.7,
+        linewidth: float = 0.8,
+    ) -> None:
         """Plot the faults.
 
         Args:
@@ -191,7 +190,13 @@ class Map(BasePlot):
             px = mplp.Polygon(af, alpha=alpha, color=color, ec=edgecolor, lw=linewidth)
             self._ax.add_artist(px)
 
-    def plot_polygons(self, fpoly, idname="POLY_ID", color="k", linewidth=0.8):
+    def plot_polygons(
+        self,
+        fpoly: xtgeo.Polygons,
+        idname: str = "POLY_ID",
+        color: Any = "k",
+        linewidth: float = 0.8,
+    ) -> None:
         """Plot a polygons instance.
 
         Args:
@@ -214,7 +219,7 @@ class Map(BasePlot):
             self._ax.plot(xarr, yarr, label=pname, lw=linewidth, color=color)
             self._ax.legend()
 
-    def plot_points(self, points):
+    def plot_points(self, points: xtgeo.Points) -> None:
         """Plot a points set on the map.
 
         This can be be useful e.g. for plotting the underlying point set
@@ -232,7 +237,7 @@ class Map(BasePlot):
             dataframe["X_UTME"].values, dataframe["Y_UTMN"].values, marker="x"
         )
 
-    def plot_wells(self, wells):
+    def plot_wells(self, wells: xtgeo.Wells) -> None:
         """Plot wells on the map.
 
         Args:
