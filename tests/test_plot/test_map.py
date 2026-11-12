@@ -1,11 +1,13 @@
 import pathlib
 from os.path import join
+from unittest.mock import MagicMock
 
 import numpy as np
+import pandas as pd
 import pytest
 import xtgeo
 
-from xtgeoviz.plot import Map
+from xtgeoviz.plot import Map, xtmap as xtmap_module
 
 TPATH = pathlib.Path("../xtgeo-testdata")
 
@@ -126,3 +128,60 @@ class TestMap:
 
         assert myplot.colormap is original_colormap
         myplot.close()
+
+    def test_plot_faults_draws_closed_polygons(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Add closed fault polygons to the map axes.
+
+        Args:
+            monkeypatch: Replaces Matplotlib's polygon constructor.
+        """
+        polygon = MagicMock()
+        polygon.get_closed.return_value = True
+        monkeypatch.setattr(
+            xtmap_module.mplp, "Polygon", MagicMock(return_value=polygon)
+        )
+        fault_polygons = MagicMock()
+        fault_polygons.get_dataframe.return_value = pd.DataFrame(
+            {
+                "POLY_ID": [1, 1, 1],
+                "X_UTME": [0.0, 1.0, 0.0],
+                "Y_UTMN": [0.0, 0.0, 1.0],
+            }
+        )
+        myplot = Map()
+        myplot._ax = MagicMock()
+
+        myplot.plot_faults(fault_polygons)
+
+        myplot._ax.add_artist.assert_called_once_with(polygon)
+
+    def test_plot_faults_raises_for_open_polygons(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Raise when a fault polygon is not closed.
+
+        Args:
+            monkeypatch: Replaces Matplotlib's polygon constructor.
+        """
+        polygon = MagicMock()
+        polygon.get_closed.return_value = False
+        monkeypatch.setattr(
+            xtmap_module.mplp, "Polygon", MagicMock(return_value=polygon)
+        )
+        fault_polygons = MagicMock()
+        fault_polygons.get_dataframe.return_value = pd.DataFrame(
+            {
+                "POLY_ID": [1, 1, 1],
+                "X_UTME": [0.0, 1.0, 0.0],
+                "Y_UTMN": [0.0, 0.0, 1.0],
+            }
+        )
+        myplot = Map()
+        myplot._ax = MagicMock()
+
+        with pytest.raises(OSError, match="A polygon is not closed"):
+            myplot.plot_faults(fault_polygons)
+
+        myplot._ax.add_artist.assert_not_called()
