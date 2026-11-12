@@ -1,3 +1,5 @@
+import pathlib
+
 import matplotlib.pyplot as plt
 import matplotlib.testing as mtst
 import numpy as np
@@ -10,14 +12,14 @@ from xtgeoviz.plot.quickplot import quickplot
 class TestRegularSurface:
     """Tests for regular-surface plotting."""
 
-    def test_very_basic_to_file(self, tmp_path):
+    def test_very_basic_to_file(self, tmp_path: pathlib.Path) -> None:
         """Just test that matplotlib works, to a file."""
         plt.title("Hello world")
         plt.savefig(tmp_path / "verysimple.png")
 
         assert (tmp_path / "verysimple.png").is_file() is True
 
-    def test_quickplot(self, tmp_path):
+    def test_quickplot(self, tmp_path: pathlib.Path) -> None:
         """Test quickplot of a regular surface."""
 
         surf = xtgeo.RegularSurface(
@@ -31,6 +33,6 @@ class TestRegularSurface:
         quickplot(surf, filename=tmp_path / "quickplot1.png")
 
         expected = "tests/baseline_images/test_regularsurface/quickplot1.png"
-        actual = tmp_path / "quickplot1.png"
+        actual = str(tmp_path / "quickplot1.png")
 
         assert compare_images(expected, actual, 50.0) is None

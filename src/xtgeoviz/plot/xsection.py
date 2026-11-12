@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import math
 import warnings
-from typing import TYPE_CHECKING, Optional, Union
+from typing import Any, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,6 +13,7 @@ import numpy.ma as ma
 import pandas as pd
 import xtgeo
 from matplotlib import collections as mc
+from matplotlib.colors import Colormap, LinearSegmentedColormap, ListedColormap
 from matplotlib.lines import Line2D
 
 from ._libwrapper import (
@@ -22,11 +23,7 @@ from ._libwrapper import (
 )
 from .baseplot import BasePlot
 
-if TYPE_CHECKING:
-    from matplotlib.colors import LinearSegmentedColormap, ListedColormap
-
-
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class XSection(BasePlot):
@@ -48,20 +45,20 @@ class XSection(BasePlot):
 
     def __init__(
         self,
-        zmin: Optional[float] = 0,
-        zmax: Optional[float] = 9999,
+        zmin: float | None = 0,
+        zmax: float | None = 9999,
         well: Optional[xtgeo.Well] = None,
-        surfaces: Optional[list] = None,
+        surfaces: Optional[list[xtgeo.RegularSurface]] = None,
         sampling: Optional[int] = 20,
         nextend: Optional[int] = 5,
         colormap: Optional[Union[str, LinearSegmentedColormap, ListedColormap]] = None,
         zonelogshift: Optional[int] = 0,
-        surfacenames: Optional[list] = None,
+        surfacenames: Optional[list[str]] = None,
         cube: Optional[xtgeo.Cube] = None,
         grid: Optional[xtgeo.Grid] = None,
         gridproperty: Optional[xtgeo.GridProperty] = None,
         outline: Optional[xtgeo.Polygons] = None,
-    ):
+    ) -> None:
         """Init method."""
         super().__init__()
 
@@ -82,34 +79,42 @@ class XSection(BasePlot):
         self._has_legend = True
 
         self._pagesize = "A4"
-        self._fence = None
+        self._fence: np.ndarray | None = None
         self._legendtitle = "Zones"
         self._legendsize = 5
 
-        self._ax1 = None
-        self._ax2 = None
-        self._ax3 = None
+        self._ax1: dict[str, plt.Axes] | plt.Axes | None = None
+        self._ax2: plt.Axes | None = None
+        self._ax3: plt.Axes | None = None
         self._allfigs = []
 
-        self._colormap_cube = None
+        self._colormap_cube: Colormap | None = None
         self._colorlegend_cube = False
 
-        self._colormap_grid = None
+        self._colormap_grid: Colormap | None = None
         self._colorlegend_grid = False
 
         if colormap is None:
-            self._colormap = matplotlib_colormap("viridis")
+            self.colormap = matplotlib_colormap("viridis")
+        elif isinstance(colormap, (LinearSegmentedColormap, ListedColormap)):
+            self.colormap = colormap
         else:
             self.define_colormap(colormap)
 
-        self._colormap_facies = self.define_any_colormap("xtgeo")
-        self._colormap_facies_dict = {idx: idx for idx in range(100)}
+        self._colormap_facies: Colormap = self.define_any_colormap("xtgeo")
+        self._colormap_facies_dict: dict[int, int | str] = {
+            idx: idx for idx in range(100)
+        }
 
-        self._colormap_perf = self.define_any_colormap("xtgeo")
-        self._colormap_perf_dict = {idx: idx for idx in range(100)}
+        self._colormap_perf: Colormap = self.define_any_colormap("xtgeo")
+        self._colormap_perf_dict: dict[int, int | str] = {
+            idx: idx for idx in range(100)
+        }
 
-        self._colormap_zonelog = None
-        self._colormap_zonelog_dict = {idx: idx for idx in range(100)}
+        self._colormap_zonelog: Colormap | None = None
+        self._colormap_zonelog_dict: dict[int, int | str] = {
+            idx: idx for idx in range(100)
+        }
         logger.debug("Initialized XSection instance")
 
     # ==================================================================================
@@ -117,105 +122,105 @@ class XSection(BasePlot):
     # Notice additonal props in base class
     # ==================================================================================
     @property
-    def pagesize(self):
+    def pagesize(self) -> str:
         """Returns page size."""
         return self._pagesize
 
     @property
-    def legendsize(self):
+    def legendsize(self) -> int:
         """Returns or set the legend size."""
         return self._legendsize
 
     @legendsize.setter
-    def legendsize(self, lsize):
+    def legendsize(self, lsize: int) -> None:
         self._legendsize = lsize
 
     @property
-    def has_legend(self):
+    def has_legend(self) -> bool:
         """Returns or set the legends."""
         return self._has_legend
 
     @has_legend.setter
-    def has_legend(self, value):
+    def has_legend(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise ValueError("Input is not a bool")
 
         self._has_legend = value
 
     @property
-    def has_axes(self):
+    def has_axes(self) -> bool:
         """Returns or set the axes status."""
         return self._has_axes
 
     @has_axes.setter
-    def has_axes(self, value):
+    def has_axes(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise ValueError("Input is not a bool")
 
         self._has_axes = value
 
     @property
-    def colormap_facies(self):
+    def colormap_facies(self) -> Colormap:
         """Set or get the facies colormap."""
         return self._colormap_facies
 
     @colormap_facies.setter
-    def colormap_facies(self, cmap):
+    def colormap_facies(self, cmap: str) -> None:
         self._colormap_facies = self.define_any_colormap(cmap)
 
     @property
-    def colormap_zonelog(self):
+    def colormap_zonelog(self) -> Colormap | None:
         """Set or get the zonelog colormap."""
         return self._colormap_zonelog
 
     @colormap_zonelog.setter
-    def colormap_zonelog(self, cmap):
+    def colormap_zonelog(self, cmap: str) -> None:
         self._colormap_zonelog = self.define_any_colormap(cmap)
 
     @property
-    def colormap_perf(self):
+    def colormap_perf(self) -> Colormap:
         """Set or get the perforations colormap."""
         return self._colormap_perf
 
     @colormap_perf.setter
-    def colormap_perf(self, cmap):
+    def colormap_perf(self, cmap: str) -> None:
         self._colormap_perf = self.define_any_colormap(cmap)
 
     @property
-    def colormap_facies_dict(self):
+    def colormap_facies_dict(self) -> dict[int, int | str]:
         """Set or get the facies colormap actual dict table."""
         return self._colormap_facies_dict
 
     @colormap_facies_dict.setter
-    def colormap_facies_dict(self, xdict):
+    def colormap_facies_dict(self, xdict: dict[int, int | str]) -> None:
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
         self._colormap_facies_dict = xdict
 
     @property
-    def colormap_perf_dict(self):
+    def colormap_perf_dict(self) -> dict[int, int | str]:
         """Set or get the perf colormap actual dict table."""
         return self._colormap_perf_dict
 
     @colormap_perf_dict.setter
-    def colormap_perf_dict(self, xdict):
+    def colormap_perf_dict(self, xdict: dict[int, int | str]) -> None:
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
         self._colormap_perf_dict = xdict
 
     @property
-    def colormap_zonelog_dict(self):
+    def colormap_zonelog_dict(self) -> dict[int, int | str]:
         """Set or get the zonelog colormap actual dict table."""
         return self._colormap_zonelog_dict
 
     @colormap_zonelog_dict.setter
-    def colormap_zonelog_dict(self, xdict):
+    def colormap_zonelog_dict(self, xdict: dict[int, int | str]) -> None:
         if not isinstance(xdict, dict):
             raise ValueError("Input is not a dict")
         self._colormap_zonelog_dict = xdict
 
     @property
-    def fence(self):
+    def fence(self) -> np.ndarray | None:
         """Set or get the fence spesification."""
         if self._fence is None:
             if self._well is not None:
@@ -231,7 +236,7 @@ class XSection(BasePlot):
         return self._fence
 
     @fence.setter
-    def fence(self, myfence):
+    def fence(self, myfence: np.ndarray | None) -> None:
         # this can be extended with checks and various types of input...
         self._fence = myfence
 
@@ -239,7 +244,13 @@ class XSection(BasePlot):
     # Functions methods (public)
     # ==================================================================================
 
-    def canvas(self, title=None, subtitle=None, infotext=None, figscaling=1.0):
+    def canvas(
+        self,
+        title: str | None = None,
+        subtitle: str | None = None,
+        infotext: str | None = None,
+        figscaling: float = 1.0,
+    ) -> None:
         """Prepare the canvas to plot on, with title and subtitle.
 
         Args:
@@ -365,16 +376,18 @@ class XSection(BasePlot):
 
     def plot_well(
         self,
-        zonelogname="ZONELOG",
-        facieslogname=None,
-        perflogname=None,
-        wellcrossings=None,
-        wellcrossingnames=True,
-        wellcrossingyears=False,
-        welltrajcolor="black",
-        welltrajwidth=6,
-    ):
+        zonelogname: str | None = "ZONELOG",
+        facieslogname: str | None = None,
+        perflogname: str | None = None,
+        wellcrossings: pd.DataFrame | None = None,
+        wellcrossingnames: bool = True,
+        wellcrossingyears: bool = False,
+        welltrajcolor: Any = "black",
+        welltrajwidth: float = 6,
+    ) -> None:
         """Input an XTGeo Well object and plot it."""
+        if self._well is None:
+            raise ValueError("Input well is None")
         if self.fence is None:
             return
 
@@ -421,9 +434,11 @@ class XSection(BasePlot):
                 dfr, axx, wellcrossings, wellcrossingnames, wellcrossingyears
             )
 
-    def set_xaxis_md(self, gridlines=False):
+    def set_xaxis_md(self, gridlines: bool = False) -> None:
         """Set x-axis labels to measured depth."""
-        md_start = self._well.get_dataframe(copy=False)["MDEPTH"].iloc[0]
+        if self._well is None:
+            raise ValueError("Input well is None")
+        md_start = float(self._well.get_dataframe(copy=False)["MDEPTH"].iloc[0])
         md_start_round = int(math.floor(md_start / 100.0)) * 100
         md_start_delta = md_start - md_start_round
 
@@ -432,8 +447,8 @@ class XSection(BasePlot):
         auto_ticks_delta = auto_ticks[1] - auto_ticks[0]
         lim = ax.get_xlim()
 
-        new_ticks = []
-        new_tick_labels = []
+        new_ticks: list[float] = []
+        new_tick_labels: list[str] = []
         delta = 0
         for tick in auto_ticks:
             new_ticks.append(int(float(tick) - md_start_delta))
@@ -454,7 +469,14 @@ class XSection(BasePlot):
         ax.set_ylabel("TVD MSL [m]", fontsize=12.0)
         ax.set_xlabel("Measured Depth [m]", fontsize=12)
 
-    def _plot_well_traj(self, ax, zv, hv, welltrajcolor, linewidth):
+    def _plot_well_traj(
+        self,
+        ax: Any,
+        zv: np.ndarray,
+        hv: np.ndarray,
+        welltrajcolor: Any,
+        linewidth: float,
+    ) -> None:
         """Plot the trajectory as a black line."""
         zv_copy = ma.masked_where(zv < self._zmin, zv)
         hv_copy = ma.masked_where(zv < self._zmin, hv)
@@ -462,7 +484,13 @@ class XSection(BasePlot):
         ax.plot(hv_copy, zv_copy, linewidth=linewidth, c=welltrajcolor)
 
     @staticmethod
-    def _line_segments_colors(df, idx, ctable, logname, fillnavalue):
+    def _line_segments_colors(
+        df: pd.DataFrame,
+        idx: dict[int, int | str],
+        ctable: list[tuple[float, float, float, float]],
+        logname: str,
+        fillnavalue: Any,
+    ) -> tuple[list[list[Any]], np.ndarray]:
         """Get segment and color array for plotting matplotlib lineCollection."""
         df_idx = pd.DataFrame(
             {"idx_log": list(idx.keys()), "idx_color": list(idx.values())}
@@ -480,9 +508,9 @@ class XSection(BasePlot):
         dff["point"] = list(zip(dff["R_HLEN"], dff["Z_TVDSS"]))
 
         # find line segments
-        segments = []
+        segments: list[list[Any]] = []
         segments_i = -1
-        colorlist = []
+        colorlist: list[Any] = []
         previous_color = None
 
         for point, color in zip(dff["point"], dff["ctable"]):
@@ -504,11 +532,17 @@ class XSection(BasePlot):
                 previous_color = color
                 segments_i += 1
 
-        colorlist = np.asarray(colorlist, dtype=object)
+        return segments, np.asarray(colorlist, dtype=object)
 
-        return segments, colorlist
-
-    def _plot_well_zlog(self, df, ax, bba, zonelogname, logwidth=4, legend=False):
+    def _plot_well_zlog(
+        self,
+        df: pd.DataFrame,
+        ax: plt.Axes,
+        bba: tuple[float, ...],
+        zonelogname: str,
+        logwidth: float = 4,
+        legend: bool = False,
+    ) -> None:
         """Plot the zone log as colored segments."""
         if zonelogname not in df.columns:
             return
@@ -525,9 +559,7 @@ class XSection(BasePlot):
 
         logger.debug("ZOMIN, ZOMAX %s %s ?", zomin, zomax)  # used for what?
 
-        zshift = 0
-        if self._zonelogshift != 0:
-            zshift = self._zonelogshift
+        zshift = self._zonelogshift or 0
 
         if self.colormap_zonelog is not None:
             cmap = self.colormap_zonelog
@@ -554,18 +586,29 @@ class XSection(BasePlot):
         ax.add_collection(lc)
 
         if legend:
+            if self._well is None:
+                return
             zrecord = self._well.get_logrecord(zonelogname)
             zrecord = {val: zname for val, zname in zrecord.items() if val >= 0}
 
-            zcolors = {}
+            zcolors: dict[str, Any] = {}
             for zone in zrecord:
+                color_index = idx[zone]
                 zcolors[zrecord[zone]] = (
-                    idx[zone] if isinstance(idx[zone], str) else ctable[idx[zone]]
+                    color_index if isinstance(color_index, str) else ctable[color_index]
                 )
 
             self._drawproxylegend(ax, bba, items=zcolors, title="Zonelog")
 
-    def _plot_well_faclog(self, df, ax, bba, facieslogname, logwidth=9, legend=True):
+    def _plot_well_faclog(
+        self,
+        df: pd.DataFrame,
+        ax: plt.Axes,
+        bba: tuple[float, ...],
+        facieslogname: str,
+        logwidth: float = 9,
+        legend: bool = True,
+    ) -> None:
         """Plot the facies log as colored segments.
 
         Args:
@@ -595,21 +638,32 @@ class XSection(BasePlot):
         ax.add_collection(lc)
 
         if legend:
+            if self._well is None:
+                return
             frecord = self._well.get_logrecord(facieslogname)
             frecord = {val: fname for val, fname in frecord.items() if val >= 0}
 
-            fcolors = {}
+            fcolors: dict[str, Any] = {}
             for facies in frecord:
-                if isinstance(idx[facies], str):
-                    color = idx[facies]
+                color_index = idx[facies]
+                if isinstance(color_index, str):
+                    color: Any = color_index
                 else:
-                    color = ctable[idx[facies]]
+                    color = ctable[color_index]
 
                 fcolors[frecord[facies]] = color
 
             self._drawproxylegend(ax, bba, items=fcolors, title="Facies")
 
-    def _plot_well_perflog(self, df, ax, bba, perflogname, logwidth=12, legend=True):
+    def _plot_well_perflog(
+        self,
+        df: pd.DataFrame,
+        ax: plt.Axes,
+        bba: tuple[float, ...],
+        perflogname: str,
+        logwidth: float = 12,
+        legend: bool = True,
+    ) -> None:
         """Plot the perforation log as colored segments.
 
         Args:
@@ -641,19 +695,28 @@ class XSection(BasePlot):
         ax.add_collection(lc)
 
         if legend:
+            if self._well is None:
+                return
             precord = self._well.get_logrecord(perflogname)
             precord = {val: pname for val, pname in precord.items() if val >= 0}
 
-            pcolors = {}
+            pcolors: dict[str, Any] = {}
             for perf in precord:
+                color_index = idx[perf]
                 pcolors[precord[perf]] = (
-                    idx[perf] if isinstance(idx[perf], str) else ctable[idx[perf]]
+                    color_index if isinstance(color_index, str) else ctable[color_index]
                 )
 
             self._drawproxylegend(ax, bba, items=pcolors, title="Perforations")
 
     @staticmethod
-    def _plot_well_crossings(dfr, ax, wcross, names=True, years=False):
+    def _plot_well_crossings(
+        dfr: pd.DataFrame,
+        ax: plt.Axes,
+        wcross: pd.DataFrame,
+        names: bool = True,
+        years: bool = False,
+    ) -> None:
         """Plot well crossing based on dataframe (wcross).
 
         The well crossing coordinates are identified for this well,
@@ -738,7 +801,13 @@ class XSection(BasePlot):
                     color="black",
                 )
 
-    def _drawproxylegend(self, ax, bba, items, title=None):
+    def _drawproxylegend(
+        self,
+        ax: plt.Axes,
+        bba: tuple[float, ...],
+        items: dict[str, Any],
+        title: str | None = None,
+    ) -> None:
         proxies = []
         labels = []
 
@@ -757,7 +826,9 @@ class XSection(BasePlot):
             handlelength=2,
         )
 
-    def _drawlegend(self, ax, bba, title=None):
+    def _drawlegend(
+        self, ax: plt.Axes, bba: tuple[float, ...], title: str | None = None
+    ) -> None:
         leg = ax.legend(
             loc="upper left",
             bbox_to_anchor=bba,
@@ -769,7 +840,7 @@ class XSection(BasePlot):
         for myleg in leg.get_lines():
             myleg.set_linewidth(5)
 
-    def _currentax(self, axisname="main"):
+    def _currentax(self, axisname: str = "main") -> tuple[plt.Axes, tuple[float, ...]]:
         """Keep track of current axis; is needed as one new legend need one new axis."""
         # for multiple legends, bba is dynamic
         bbapos = {
@@ -780,13 +851,15 @@ class XSection(BasePlot):
             "perf": (1.22, 0.45),
         }
 
+        if not isinstance(self._ax1, dict):
+            raise ValueError("Canvas must be initialized before plotting")
         ax1 = self._ax1
 
         if axisname != "main":
             ax1[axisname] = self._ax1["main"].twinx()
 
             # invert min,max to invert the Y axis
-            ax1[axisname].set_ylim([self._zmax, self._zmin])
+            ax1[axisname].set_ylim(self._zmax, self._zmin)
 
             ax1[axisname].set_yticklabels([])
             ax1[axisname].tick_params(axis="y", direction="in")
@@ -799,13 +872,13 @@ class XSection(BasePlot):
 
     def plot_cube(
         self,
-        colormap="seismic",
-        vmin=None,
-        vmax=None,
-        alpha=0.7,
-        interpolation="gaussian",
-        sampling="nearest",
-    ):
+        colormap: str | None = "seismic",
+        vmin: float | None = None,
+        vmax: float | None = None,
+        alpha: float = 0.7,
+        interpolation: str = "gaussian",
+        sampling: str = "nearest",
+    ) -> None:
         """Plot a cube backdrop.
 
         Args:
@@ -848,10 +921,9 @@ class XSection(BasePlot):
             self._colormap_cube = self.define_any_colormap(colormap)
 
         if "gaussian" in interpolation:  # allow gaussian3 etc
-            nnv = interpolation[-1]
             try:
-                nnv = int(nnv)
-                arr = scipy_gaussianfilter(arr, nnv)
+                sigma = int(interpolation[-1])
+                arr = scipy_gaussianfilter(arr, sigma)
                 interpolation = "none"
             except ValueError:
                 interpolation = "gaussian"
@@ -873,13 +945,13 @@ class XSection(BasePlot):
 
     def plot_grid3d(
         self,
-        colormap="rainbow",
-        vmin=None,
-        vmax=None,
-        alpha=0.7,
-        zinc=0.5,
-        interpolation="auto",
-    ):
+        colormap: str | None = "rainbow",
+        vmin: float | None = None,
+        vmax: float | None = None,
+        alpha: float = 0.7,
+        zinc: float = 0.5,
+        interpolation: str = "auto",
+    ) -> None:
         """Plot a sampled grid with gridproperty backdrop.
 
         Args:
@@ -942,19 +1014,19 @@ class XSection(BasePlot):
 
     def plot_surfaces(
         self,
-        fill=False,
-        surfaces=None,
-        surfacenames=None,
-        colormap=None,
-        onecolor=None,
-        linewidth=1.0,
-        linestyle="-",
-        legend=True,
-        legendtitle=None,
-        fancyline=False,
-        axisname="main",
-        gridlines=False,
-    ):
+        fill: bool = False,
+        surfaces: list[xtgeo.RegularSurface] | None = None,
+        surfacenames: list[str] | None = None,
+        colormap: str | None = None,
+        onecolor: Any = None,
+        linewidth: float = 1.0,
+        linestyle: str = "-",
+        legend: bool = True,
+        legendtitle: str | None = None,
+        fancyline: bool = False,
+        axisname: str = "main",
+        gridlines: bool = False,
+    ) -> None:
         """Input a surface list (ordered from top to base) , and plot them."""
         if self.fence is None:
             return
@@ -966,15 +1038,15 @@ class XSection(BasePlot):
         if surfaces is None:
             surfaces = self._surfaces
             surfacenames = self._surfacenames
+        if surfaces is None:
+            raise ValueError("No surfaces are available to plot")
 
         surfacenames = [surf.name for surf in surfaces]
 
         if legendtitle is None:
             legendtitle = self._legendtitle
 
-        if colormap is None:
-            colormap = self._colormap
-        else:
+        if colormap is not None:
             self.define_colormap(colormap)
 
         nlen = len(surfaces)
@@ -1048,7 +1120,7 @@ class XSection(BasePlot):
                 ax.fill_between(x1, y1, y2, facecolor=colortable[i], label=slegend[i])
 
         # invert min,max to invert the Y axis
-        ax.set_ylim([self._zmax, self._zmin])
+        ax.set_ylim(self._zmax, self._zmin)
 
         if legend:
             self._drawlegend(ax, bba, title=legendtitle)
@@ -1063,14 +1135,14 @@ class XSection(BasePlot):
 
     def plot_md_data(
         self,
-        data=None,
-        markersize=10,
-        color="red",
-        linestyle="",
-        label=False,
-        zorder=350,
-        **kwargs,
-    ):
+        data: pd.DataFrame,
+        markersize: int | float = 10,
+        color: Any = "red",
+        linestyle: str = "",
+        label: str | bool = False,
+        zorder: int | float = 350,
+        **kwargs: Any,
+    ) -> None:
         """Plot MD vs TVD data as lines and/or markers.
 
         The input pandas dataframe points shall have the following columns:
@@ -1081,6 +1153,8 @@ class XSection(BasePlot):
         ax, _ = self._currentax(axisname="main")
 
         well = self._well
+        if well is None:
+            raise ValueError("Input well is None")
         data_well = data.copy()
         data_well = data_well.loc[data_well["WELL"] == well.xwellname]
         del data_well["WELL"]
@@ -1102,7 +1176,9 @@ class XSection(BasePlot):
             **kwargs,
         )
 
-    def plot_wellmap(self, otherwells=None, expand=1):
+    def plot_wellmap(
+        self, otherwells: list[xtgeo.Polygons] | None = None, expand: float = 1
+    ) -> None:
         """Plot well map as local view, optionally with nearby wells.
 
         Args:
@@ -1113,17 +1189,22 @@ class XSection(BasePlot):
 
 
         """
+        if self._ax2 is None:
+            raise ValueError("Canvas must be initialized before plotting")
+        if self._well is None:
+            raise ValueError("Input well is None")
         ax = self._ax2
+        fence = self.fence
 
-        if self.fence is not None:
+        if fence is not None:
             xwellarray = self._well.get_dataframe(copy=False)["X_UTME"].values
             ywellarray = self._well.get_dataframe(copy=False)["Y_UTMN"].values
 
             ax.plot(xwellarray, ywellarray, linewidth=4, c="cyan")
 
-            ax.plot(self.fence[:, 0], self.fence[:, 1], linewidth=1, c="black")
-            ax.annotate("A", xy=(self.fence[0, 0], self.fence[0, 1]), fontsize=8)
-            ax.annotate("B", xy=(self.fence[-1, 0], self.fence[-1, 1]), fontsize=8)
+            ax.plot(fence[:, 0], fence[:, 1], linewidth=1, c="black")
+            ax.annotate("A", xy=(fence[0, 0], fence[0, 1]), fontsize=8)
+            ax.annotate("B", xy=(fence[-1, 0], fence[-1, 1]), fontsize=8)
             ax.set_aspect("equal", "datalim")
 
             left, right = ax.get_xlim()
@@ -1148,21 +1229,24 @@ class XSection(BasePlot):
                 ax.plot(xwp, ywp, linewidth=1, c="grey")
                 ax.annotate(poly.name, xy=(xwp[-1], ywp[-1]), color="grey", size=5)
 
-    def plot_map(self):
+    def plot_map(self) -> None:
         """Plot well location map as an overall view (with field outline)."""
         if self.fence is None:
             return
 
-        if not self._outline:
+        if self._outline is None:
             return
 
+        if self._ax3 is None:
+            raise ValueError("Canvas must be initialized before plotting")
         ax = self._ax3
-        if self.fence is not None:
+        fence = self.fence
+        if fence is not None:
             xp = self._outline.get_dataframe(copy=False)["X_UTME"].values
             yp = self._outline.get_dataframe(copy=False)["Y_UTMN"].values
             ip = self._outline.get_dataframe(copy=False)["POLY_ID"].values
 
-            ax.plot(self._fence[:, 0], self._fence[:, 1], linewidth=3, c="red")
+            ax.plot(fence[:, 0], fence[:, 1], linewidth=3, c="red")
 
             for i in range(int(ip.min()), int(ip.max()) + 1):
                 xpc = xp.copy()[ip == i]

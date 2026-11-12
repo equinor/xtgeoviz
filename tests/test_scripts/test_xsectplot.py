@@ -1,7 +1,9 @@
 """Module for testing stand-alone scripts and/or entrypoints functions."""
 
 import pathlib
+from argparse import Namespace
 from types import SimpleNamespace
+from typing import Any, cast
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -26,7 +28,28 @@ OUTLINE = "polygons/reek/1/closedpoly1.pol"
 CUBE = "cubes/drogon/ampl_local_a4.segy"
 
 
-def _config_app(zrange, primary, wells=None, cube=None, grid=None, gridproperty=None):
+def _config_app(
+    zrange: Any,
+    primary: list[SimpleNamespace],
+    wells: list[SimpleNamespace] | None = None,
+    cube: Any = None,
+    grid: Any = None,
+    gridproperty: Any = None,
+) -> SimpleNamespace:
+    """Build a minimal application-like object for config completion tests.
+
+    Args:
+        zrange: Configured depth range or smart-range mode.
+        primary: Primary surface stand-ins used to derive depth ranges.
+        wells: Optional well stand-ins used for per-well ranges.
+        cube: Optional cube stand-in used to derive a value range.
+        grid: Optional grid stand-in that enables grid range completion.
+        gridproperty: Optional property stand-in supplying grid values.
+
+    Returns:
+        A namespace with the config and loaded-data attributes used by
+        ``config_complete``.
+    """
     config = config_defaults(as_yaml=False)
     assert isinstance(config, dict)
     config["plotsettings"]["design"]["zrange"] = zrange
@@ -43,7 +66,7 @@ def _config_app(zrange, primary, wells=None, cube=None, grid=None, gridproperty=
 class TestXsectplottingConfig:
     """Tests for default config creation and recursive overrides."""
 
-    def test_defaults(self):
+    def test_defaults(self) -> None:
         """Config defaults are available as YAML and a Python mapping."""
         yamlresult = config_defaults()
         assert isinstance(yamlresult, str)
@@ -52,7 +75,7 @@ class TestXsectplottingConfig:
         assert isinstance(dictresult, dict)
         assert dictresult["input"]["wells"]["zonelog"] == "ZONELOG"
 
-    def test_dict_merge_ok(self):
+    def test_dict_merge_ok(self) -> None:
         """A valid nested override leaves unspecified defaults intact."""
         userinput = {
             "input": {
@@ -65,7 +88,7 @@ class TestXsectplottingConfig:
         assert update["input"]["wells"]["zonelog"] == "MYZONELOG"
         assert update["plotsettings"]["surfaces"]["contacts"]["colors"] == "rainbow"
 
-    def test_dict_merge_rejects_invalid_top_level_key(self):
+    def test_dict_merge_rejects_invalid_top_level_key(self) -> None:
         """Unknown top-level input keys are rejected."""
         userinput = {
             "input": {
@@ -79,7 +102,7 @@ class TestXsectplottingConfig:
         ):
             data_merge(dictresult, userinput)
 
-    def test_dict_merge_rejects_invalid_nested_key(self):
+    def test_dict_merge_rejects_invalid_nested_key(self) -> None:
         """Unknown keys nested under a valid section are rejected."""
         userinput = {
             "input": {
@@ -93,7 +116,7 @@ class TestXsectplottingConfig:
         ):
             data_merge(dictresult, userinput)
 
-    def test_dict_merge_appends_lists_and_replaces_scalars(self):
+    def test_dict_merge_appends_lists_and_replaces_scalars(self) -> None:
         """List values extend while scalar settings are overridden."""
         defaults = {"settings": {"values": [1, 2], "label": "default"}}
         userinput = {"settings": {"values": [3], "label": "custom"}}
@@ -102,7 +125,7 @@ class TestXsectplottingConfig:
 
         assert merged == {"settings": {"values": [1, 2, 3], "label": "custom"}}
 
-    def test_dict_merge_appends_scalar_to_list(self):
+    def test_dict_merge_appends_scalar_to_list(self) -> None:
         """A scalar override is appended when the existing value is a list."""
         defaults = {"settings": {"values": [1, 2]}}
 
@@ -110,31 +133,31 @@ class TestXsectplottingConfig:
 
         assert merged == {"settings": {"values": [1, 2, 3]}}
 
-    def test_dict_merge_rejects_non_dict_nested_value(self):
+    def test_dict_merge_rejects_non_dict_nested_value(self) -> None:
         """A mapping cannot be replaced with a scalar during recursive merging."""
         with pytest.raises(ConfigError, match="Cannot merge non-dict"):
             data_merge({"settings": {"value": 1}}, {"settings": "invalid"})
 
-    def test_dict_merge_rejects_unsupported_superset(self):
+    def test_dict_merge_rejects_unsupported_superset(self) -> None:
         """Unsupported value types are rejected instead of silently discarded."""
         with pytest.raises(ConfigError, match="NOT IMPLEMENTED"):
             data_merge((1, 2), {})
 
     @pytest.mark.parametrize("superset", [None, "default", 10, 2.5])
-    def test_dict_merge_replaces_scalar_superset(self, superset):
+    def test_dict_merge_replaces_scalar_superset(self, superset: Any) -> None:
         """Null and scalar defaults are replaced by the supplied value."""
         subset = {"replacement": True}
 
         assert data_merge(superset, subset) is subset
 
-    def test_settings_class_defaults(self):
+    def test_settings_class_defaults(self) -> None:
         """The plot settings object starts with documented defaults."""
         settings = _XsectSettings()
 
         assert settings.design_dpi == 100
         assert settings.wells_zonelog_zoneshift == 0
 
-    def test_config_complete_calculates_smart0_range(self):
+    def test_config_complete_calculates_smart0_range(self) -> None:
         """Smart0 expands the first and last surface elevations by ten units."""
         primary = [
             SimpleNamespace(values=np.array([1234.0, 1300.0])),
@@ -142,14 +165,14 @@ class TestXsectplottingConfig:
         ]
         app = _config_app("smart0", primary)
 
-        config_complete(app)
+        config_complete(cast("_Xsections", app))
 
         assert app.config["plotsettings"]["design"]["zrange"] == [1220, 1800]
         assert app.config["plotsettings"]["wells"]["zonelog"]["colordict"] == {
             value: value for value in range(100)
         }
 
-    def test_config_complete_defaults_empty_range_to_smart0(self):
+    def test_config_complete_defaults_empty_range_to_smart0(self) -> None:
         """An empty configured range selects smart0."""
         primary = [
             SimpleNamespace(values=np.array([1234.0])),
@@ -157,11 +180,11 @@ class TestXsectplottingConfig:
         ]
         app = _config_app("", primary)
 
-        config_complete(app)
+        config_complete(cast("_Xsections", app))
 
         assert app.config["plotsettings"]["design"]["zrange"] == [1220, 1800]
 
-    def test_config_complete_caps_smart1_range_to_wells(self):
+    def test_config_complete_caps_smart1_range_to_wells(self) -> None:
         """Smart1 caps the surface range at the highest well elevation."""
         primary = [
             SimpleNamespace(values=np.array([1234.0])),
@@ -176,13 +199,13 @@ class TestXsectplottingConfig:
         ]
         app = _config_app("smart1", primary, wells=wells)
 
-        config_complete(app)
+        config_complete(cast("_Xsections", app))
 
         assert app.config["plotsettings"]["design"]["zrange"] == [1220, 1510]
 
-    def test_config_complete_applies_per_well_regex_ranges(self):
+    def test_config_complete_applies_per_well_regex_ranges(self) -> None:
         """User regex ranges override the global default for matching wells."""
-        primary = []
+        primary: list[SimpleNamespace] = []
         wells = [
             SimpleNamespace(name="55_33-1"),
             SimpleNamespace(name="other-well"),
@@ -193,14 +216,14 @@ class TestXsectplottingConfig:
             wells=wells,
         )
 
-        config_complete(app)
+        config_complete(cast("_Xsections", app))
 
         assert app.config["plotsettings"]["design"]["zrange"] == {
             "55_33-1": [1450, 1750],
             "other-well": [1000, 2000],
         }
 
-    def test_config_complete_uses_cube_and_grid_ranges(self):
+    def test_config_complete_uses_cube_and_grid_ranges(self) -> None:
         """Unset cube and grid ranges are derived from their property values."""
         app = _config_app(
             [1000, 2000],
@@ -210,23 +233,23 @@ class TestXsectplottingConfig:
             gridproperty=SimpleNamespace(values=np.array([10.0, 40.0])),
         )
 
-        config_complete(app)
+        config_complete(cast("_Xsections", app))
 
         assert app.config["plotsettings"]["cube"]["range"] == [-2.0, 5.0]
         assert app.config["plotsettings"]["grid"]["range"] == [10.0, 40.0]
 
-    def test_config_complete_rejects_unknown_zrange_mode(self):
+    def test_config_complete_rejects_unknown_zrange_mode(self) -> None:
         """Unsupported range values fail with an actionable error."""
         app = _config_app(object(), [])
 
         with pytest.raises(RuntimeError, match="Cannot process/understand the zrange"):
-            config_complete(app)
+            config_complete(cast("_Xsections", app))
 
 
 class TestXsectInputLoading:
     """Tests for loading inputs into the cross-section app."""
 
-    def test_load_wells_rejects_empty_folder(self, tmp_path):
+    def test_load_wells_rejects_empty_folder(self, tmp_path: pathlib.Path) -> None:
         inputs = {
             "wells": {
                 "folder": str(tmp_path),
@@ -238,7 +261,7 @@ class TestXsectInputLoading:
         with pytest.raises(SystemExit, match="Cannot plot, no wells as input"):
             xapp.load_wells()
 
-    def test_load_preloaded_wells_and_optional_logs(self):
+    def test_load_preloaded_wells_and_optional_logs(self) -> None:
         wells = [object()]
         inputs = {
             "wells": {
@@ -256,7 +279,7 @@ class TestXsectInputLoading:
         assert xapp.wells["facieslog"] == "Facies"
         assert xapp.wells["perflog"] == "Perf"
 
-    def test_load_wells(self, testdir):
+    def test_load_wells(self, testdir: pathlib.Path) -> None:
         inputs = {
             "wells": {
                 "folder": str(testdir / WELLSET1),
@@ -271,7 +294,7 @@ class TestXsectInputLoading:
         for wname in ["55_33-1", "55_33-2", "55_33-3", "55_33-A-1", "55_33-A-2"]:
             assert wname in wellnames
 
-    def test_load_surfaces(self, testdir):
+    def test_load_surfaces(self, testdir: pathlib.Path) -> None:
         inputs = {
             "surfaces": {
                 "primary": {
@@ -288,7 +311,7 @@ class TestXsectInputLoading:
         for sname in ["TopTherys", "BaseVolantis"]:
             assert sname in surfnames
 
-    def test_load_surfaces_uses_default_names(self, testdir):
+    def test_load_surfaces_uses_default_names(self, testdir: pathlib.Path) -> None:
         inputs = {
             "surfaces": {
                 "primary": {
@@ -308,14 +331,14 @@ class TestXsectInputLoading:
             "Surface_3",
         ]
 
-    def test_load_surfaces_rejects_non_xtgeo_objects(self):
+    def test_load_surfaces_rejects_non_xtgeo_objects(self) -> None:
         inputs = {"surfaces": {"primary": {"objects": [object()]}}}
         xapp = _Xsections(inputdata=inputs)
 
         with pytest.raises(RuntimeError, match="Surface object are not XTGeo objects"):
             xapp.load_surfaces()
 
-    def test_load_outline_from_preloaded_object(self, testdir):
+    def test_load_outline_from_preloaded_object(self, testdir: pathlib.Path) -> None:
         outline = xtgeo.polygons_from_file(testdir / OUTLINE)
         xapp = _Xsections(inputdata={"outline": outline})
 
@@ -323,14 +346,14 @@ class TestXsectInputLoading:
 
         assert xapp.outline is outline
 
-    def test_load_cube_from_path(self, testdir):
+    def test_load_cube_from_path(self, testdir: pathlib.Path) -> None:
         xapp = _Xsections(inputdata={"cube": str(testdir / CUBE)})
 
         xapp.load_cube()
 
         assert isinstance(xapp.cube, xtgeo.Cube)
 
-    def test_load_missing_cube_sets_none(self):
+    def test_load_missing_cube_sets_none(self) -> None:
         xapp = _Xsections(inputdata={"wells": {}})
 
         xapp.load_cube()
@@ -338,7 +361,9 @@ class TestXsectInputLoading:
         assert xapp.cube is None
 
     @pytest.mark.parametrize("fromgrid", [None, "geometry.roff"])
-    def test_load_grid_property_and_optional_geometry(self, monkeypatch, fromgrid):
+    def test_load_grid_property_and_optional_geometry(
+        self, monkeypatch: pytest.MonkeyPatch, fromgrid: str | None
+    ) -> None:
         inputs = {
             "surfaces": {"fromgrid": fromgrid},
             "grid": {
@@ -367,7 +392,9 @@ class TestXsectInputLoading:
         )
         assert xapp.gridproperty is gridproperty
 
-    def test_load_grid_without_complete_inputs_does_nothing(self, monkeypatch):
+    def test_load_grid_without_complete_inputs_does_nothing(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         xapp = _Xsections(inputdata={"wells": {}})
         grid_reader = MagicMock()
         property_reader = MagicMock()
@@ -383,26 +410,26 @@ class TestXsectInputLoading:
 class TestXsectPlotting:
     """End-to-end tests for supported Python plotting inputs."""
 
-    def test_parse_config_file_overrides_defaults(self, tmp_path):
+    def test_parse_config_file_overrides_defaults(self, tmp_path: pathlib.Path) -> None:
         config_file = tmp_path / "xsect.yml"
         config_file.write_text(
             "input:\n  wells:\n    zonelog: CUSTOM_ZONE\n", encoding="utf-8"
         )
         xapp = _Xsections(inputdata={"wells": {}})
-        xapp.args = SimpleNamespace(config=str(config_file))
+        xapp.args = Namespace(config=str(config_file))
 
         xapp.parse_config()
 
         assert xapp.config["input"]["wells"]["zonelog"] == "CUSTOM_ZONE"
 
-    def test_parse_config_rejects_missing_file(self, tmp_path):
+    def test_parse_config_rejects_missing_file(self, tmp_path: pathlib.Path) -> None:
         xapp = _Xsections(inputdata={"wells": {}})
-        xapp.args = SimpleNamespace(config=str(tmp_path / "missing.yml"))
+        xapp.args = Namespace(config=str(tmp_path / "missing.yml"))
 
         with pytest.raises(OSError, match="No such config file exists"):
             xapp.parse_config()
 
-    def test_parse_args_exits_without_required_arguments(self):
+    def test_parse_args_exits_without_required_arguments(self) -> None:
         xapp = _Xsections(inputdata={"wells": {}})
         xapp.args = []
 
@@ -421,10 +448,13 @@ class TestXsectPlotting:
         )
         xapp = _Xsections(args=["--config", str(config_file)])
 
+        assert isinstance(xapp.args, Namespace)
         assert xapp.args.config == str(config_file)
         assert xapp.config["input"]["wells"]["zonelog"] == "CLI_ZONE"
 
-    def test_plot_from_paths(self, testdir, tmp_path):
+    def test_plot_from_paths(
+        self, testdir: pathlib.Path, tmp_path: pathlib.Path
+    ) -> None:
         """Make plots using file paths from Python input."""
         inputs = {
             "wells": {
@@ -458,7 +488,9 @@ class TestXsectPlotting:
 class TestXsectPlottingHelpers:
     """Tests for plotting helpers and optional rendering branches."""
 
-    def test_plotting_skips_well_without_fence(self, monkeypatch, tmp_path):
+    def test_plotting_skips_well_without_fence(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
         settings = _XsectSettings()
         settings.output_plotfolder = str(tmp_path / "plots")
         well = SimpleNamespace(name="well-1")
@@ -477,12 +509,14 @@ class TestXsectPlottingHelpers:
         save_fig = MagicMock()
         monkeypatch.setattr(plotting_helpers, "_save_fig", save_fig)
 
-        plotting_helpers._plotting_mpl(app, settings)
+        plotting_helpers._plotting_mpl(cast("_Xsections", app), settings)
 
         save_fig.assert_not_called()
         xplot.canvas.assert_not_called()
 
-    def test_plotting_includes_overlays_and_crossings(self, monkeypatch, tmp_path):
+    def test_plotting_includes_overlays_and_crossings(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
         settings = _XsectSettings()
         settings.output_plotfolder = str(tmp_path / "plots")
         settings.design_zrange = {"well-1": (100, 200)}
@@ -523,7 +557,7 @@ class TestXsectPlottingHelpers:
         )
         monkeypatch.setattr(plotting_helpers, "_collect_pdf", MagicMock())
 
-        plotting_helpers._plotting_mpl(app, settings)
+        plotting_helpers._plotting_mpl(cast("_Xsections", app), settings)
 
         xplot.plot_cube.assert_called_once()
         xplot.plot_grid3d.assert_called_once()
@@ -533,7 +567,9 @@ class TestXsectPlottingHelpers:
         wellcrossings = xplot.plot_well.call_args.kwargs["wellcrossings"]
         assert wellcrossings.to_dict("list") == {"X": [1]}
 
-    def test_save_fig_builds_path_and_shows_when_requested(self, monkeypatch, tmp_path):
+    def test_save_fig_builds_path_and_shows_when_requested(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
         settings = SimpleNamespace(
             output_prefix="prefix_",
             output_plotfolder=str(tmp_path),
@@ -544,23 +580,27 @@ class TestXsectPlottingHelpers:
         xplot = MagicMock()
         monkeypatch.setenv("XTG_SHOW", "1")
 
-        result = plotting_helpers._save_fig(well, settings, xplot)
+        result = plotting_helpers._save_fig(
+            well, cast("_XsectSettings", settings), xplot
+        )
 
         assert result == str(tmp_path / "prefix_well-1.png")
         xplot.savefig.assert_called_once_with(result, fformat="png", dpi=150)
         xplot.show.assert_called_once()
 
-    def test_folder_work_creates_output_directory(self, tmp_path):
+    def test_folder_work_creates_output_directory(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "new-plots"
         settings = SimpleNamespace(
             output_plotfolder=str(output_folder), output_cleanup=False
         )
 
-        plotting_helpers._create_or_clean_folder(settings)
+        plotting_helpers._create_or_clean_folder(cast("_XsectSettings", settings))
 
         assert output_folder.is_dir()
 
-    def test_folder_work_cleans_files_and_subdirectories(self, tmp_path):
+    def test_folder_work_cleans_files_and_subdirectories(
+        self, tmp_path: pathlib.Path
+    ) -> None:
         output_folder = tmp_path / "plots"
         nested_folder = output_folder / "old-run"
         nested_folder.mkdir(parents=True)
@@ -570,7 +610,7 @@ class TestXsectPlottingHelpers:
             output_plotfolder=str(output_folder), output_cleanup=True
         )
 
-        plotting_helpers._create_or_clean_folder(settings)
+        plotting_helpers._create_or_clean_folder(cast("_XsectSettings", settings))
 
         assert list(output_folder.iterdir()) == []
 
@@ -594,7 +634,7 @@ class TestXsectPlottingHelpers:
             output_plotfolder=str(output_folder), output_cleanup=True
         )
 
-        plotting_helpers._create_or_clean_folder(settings)
+        plotting_helpers._create_or_clean_folder(cast("_XsectSettings", settings))
 
         assert not directory_link.is_symlink()
         assert sentinel.is_file()
@@ -622,11 +662,13 @@ class TestXsectPlottingHelpers:
         )
 
         with pytest.raises(OSError, match="symlinked output folder"):
-            plotting_helpers._create_or_clean_folder(settings)
+            plotting_helpers._create_or_clean_folder(cast("_XsectSettings", settings))
 
         assert sentinel.is_file()
 
-    def test_create_or_clean_folder_rejects_shared_tmp(self, monkeypatch):
+    def test_create_or_clean_folder_rejects_shared_tmp(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Refuse to clean the shared temporary directory."""
         directory_listing = MagicMock(
             side_effect=AssertionError("must reject /tmp before listing it")
@@ -635,7 +677,7 @@ class TestXsectPlottingHelpers:
         settings = SimpleNamespace(output_plotfolder="/tmp", output_cleanup=True)
 
         with pytest.raises(OSError, match="shared /tmp output folder"):
-            plotting_helpers._create_or_clean_folder(settings)
+            plotting_helpers._create_or_clean_folder(cast("_XsectSettings", settings))
 
         directory_listing.assert_not_called()
 
@@ -643,8 +685,10 @@ class TestXsectPlottingHelpers:
         "output_folder", ["/", ".", "..", str(pathlib.Path.home())]
     )
     def test_create_or_clean_folder_rejects_unsafe_ancestors(
-        self, monkeypatch, output_folder
-    ):
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        output_folder: str,
+    ) -> None:
         """Refuse cleanup of roots and directories containing user data."""
         directory_listing = MagicMock()
         monkeypatch.setattr(plotting_helpers.os, "listdir", directory_listing)
@@ -655,28 +699,35 @@ class TestXsectPlottingHelpers:
 
         directory_listing.assert_not_called()
 
-    def test_compute_wellcrossings_disabled(self):
+    def test_compute_wellcrossings_disabled(self) -> None:
         settings = SimpleNamespace(wells_wellcrossings_show=False)
 
-        assert plotting_helpers._compute_wellcrossings(settings) is None
+        assert (
+            plotting_helpers._compute_wellcrossings(cast("_XsectSettings", settings))
+            is None
+        )
 
-    def test_compute_wellcrossings_rejects_unsupported_compute_mode(self):
+    def test_compute_wellcrossings_rejects_unsupported_compute_mode(self) -> None:
         settings = SimpleNamespace(wells_wellcrossings_show=True)
 
         with pytest.raises(NotImplementedError, match="not supported yet"):
-            plotting_helpers._compute_wellcrossings(settings)
+            plotting_helpers._compute_wellcrossings(cast("_XsectSettings", settings))
 
     @pytest.mark.parametrize("output_format", ["png", "pdf"])
-    def test_collect_pdf_returns_without_joining(self, monkeypatch, output_format: str):
+    def test_collect_pdf_returns_without_joining(
+        self, monkeypatch: pytest.MonkeyPatch, output_format: str
+    ) -> None:
         settings = SimpleNamespace(output_format=output_format, output_pdfjoin=False)
         subprocess_call = MagicMock()
         monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
 
-        plotting_helpers._collect_pdf(settings, ["plot.pdf"])
+        plotting_helpers._collect_pdf(cast("_XsectSettings", settings), ["plot.pdf"])
 
         subprocess_call.assert_not_called()
 
-    def test_collect_pdf_joins_files_and_removes_parts(self, monkeypatch, tmp_path):
+    def test_collect_pdf_joins_files_and_removes_parts(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
         output_folder = tmp_path / "plots with spaces"
         plot_files = [
             str(output_folder / "one plot.pdf"),
@@ -688,11 +739,11 @@ class TestXsectPlottingHelpers:
             output_plotfolder=str(output_folder),
         )
         subprocess_call = MagicMock(return_value=0)
-        removed_files = []
+        removed_files: list[str] = []
         monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
         monkeypatch.setattr(plotting_helpers.os, "remove", removed_files.append)
 
-        plotting_helpers._collect_pdf(settings, plot_files)
+        plotting_helpers._collect_pdf(cast("_XsectSettings", settings), plot_files)
 
         command = subprocess_call.call_args.args[0]
         assert command == [
@@ -712,7 +763,9 @@ class TestXsectPlottingHelpers:
         assert subprocess_call.call_args.kwargs == {"shell": False}
         assert removed_files == plot_files
 
-    def test_collect_pdf_raises_when_ghostscript_fails(self, monkeypatch, tmp_path):
+    def test_collect_pdf_raises_when_ghostscript_fails(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
         settings = SimpleNamespace(
             output_format="pdf",
             output_pdfjoin="joined.pdf",
@@ -725,9 +778,11 @@ class TestXsectPlottingHelpers:
         with pytest.raises(
             RuntimeError, match="Received number != 0 from subprosess: 1"
         ):
-            plotting_helpers._collect_pdf(settings, ["one.pdf"])
+            plotting_helpers._collect_pdf(cast("_XsectSettings", settings), ["one.pdf"])
 
-    def test_plot_with_preloaded_objects(self, testdir, tmp_path):
+    def test_plot_with_preloaded_objects(
+        self, testdir: pathlib.Path, tmp_path: pathlib.Path
+    ) -> None:
         """Make plots using preloaded well and surface objects."""
         wells = ["55_33-A-1.rmswell", "55_33-A-4.rmswell"]
         surfaces = [
@@ -772,7 +827,9 @@ class TestXsectPlottingHelpers:
         xsectplot(inputdata=inputs, plotsettings=psettings, output=outputs)
         assert (tmp_path / "55_33-A-4.png").is_file()
 
-    def test_plot_with_cube(self, testdir, tmp_path):
+    def test_plot_with_cube(
+        self, testdir: pathlib.Path, tmp_path: pathlib.Path
+    ) -> None:
         """Make plots with a preloaded cube and custom depth ranges."""
         wells = ["55_33-A-4.rmswell"]
         surfaces = [

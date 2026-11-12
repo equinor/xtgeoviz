@@ -14,7 +14,7 @@ Typically::
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import xtgeo
 
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     import pathlib
 
 
-def quickplot(xobj, **kwargs):
+def quickplot(xobj: xtgeo.RegularSurface, **kwargs: Any) -> None:
     """A common entry point for quickplot."""
     if isinstance(xobj, xtgeo.RegularSurface):
         quickplot_regularsurface(xobj, **kwargs)
@@ -38,10 +38,10 @@ def quickplot_regularsurface(
     infotext: Optional[str] = None,
     minmax: tuple[int | float | None, int | float | None] = (None, None),
     xlabelrotation: Optional[float] = None,
-    colormap: Optional[str] = "rainbow",
+    colormap: str = "rainbow",
     faults: Optional[xtgeo.Polygons] = None,
     logarithmic: Optional[bool] = False,
-):
+) -> None:
     """Quickplot regularsurface."""
 
     ncount = regsurf.values.count()
@@ -56,7 +56,7 @@ def quickplot_regularsurface(
     mymap.canvas(title=title, subtitle=subtitle, infotext=infotext)
 
     minvalue, maxvalue = minmax
-    mymap.colormap = colormap
+    mymap.define_colormap(colormap)
 
     mymap.plot_surface(
         regsurf,

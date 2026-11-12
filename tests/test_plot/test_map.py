@@ -1,6 +1,7 @@
 import pathlib
 from os.path import join
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -22,7 +23,7 @@ SFILE2 = TPATH / "surfaces/reek/1/reek_perm_lay1.gri"
 class TestMap:
     """Tests for map plotting."""
 
-    def test_simple_plot(self, tmpdir, generate_plot):
+    def test_simple_plot(self, tmpdir: Any, generate_plot: bool) -> None:
         """Test as simple map plot only making an instance++ and plot."""
 
         mysurf = xtgeo.surface_from_file(SFILE1)
@@ -30,7 +31,7 @@ class TestMap:
         # just make the instance, with a lot of defaults behind the scene
         myplot = Map()
         myplot.canvas(title="My o my")
-        myplot.colormap = "gist_ncar"
+        myplot.colormap = "gist_ncar"  # type: ignore[assignment]
         myplot.plot_surface(mysurf)
 
         if generate_plot:
@@ -38,7 +39,7 @@ class TestMap:
         else:
             myplot.close()
 
-    def test_map_plot_with_points(self, tmpdir, generate_plot):
+    def test_map_plot_with_points(self, tmpdir: Any, generate_plot: bool) -> None:
         """Test as simple map plot with underlying points."""
 
         mysurf = xtgeo.surface_from_file(SFILE1)
@@ -51,7 +52,7 @@ class TestMap:
         # just make the instance, with a lot of defaults behind the scene
         myplot = Map()
         myplot.canvas(title="My o my")
-        myplot.colormap = "gist_ncar"
+        myplot.colormap = "gist_ncar"  # type: ignore[assignment]
         myplot.plot_surface(mysurf)
         myplot.plot_points(mypoints)
 
@@ -60,7 +61,7 @@ class TestMap:
         else:
             myplot.close()
 
-    def test_more_features_plot(self, tmpdir, generate_plot):
+    def test_more_features_plot(self, tmpdir: Any, generate_plot: bool) -> None:
         """Map with some more features added, such as label rotation."""
 
         mysurf = xtgeo.surface_from_file(SFILE1)
@@ -70,7 +71,7 @@ class TestMap:
         # just make the instance, with a lot of defaults behind the scene
         myplot = Map()
         myplot.canvas(title="Label rotation")
-        myplot.colormap = "rainbow"
+        myplot.colormap = "rainbow"  # type: ignore[assignment]
         myplot.plot_surface(mysurf, minvalue=1250, maxvalue=2200, xlabelrotation=45)
 
         myplot.plot_faults(myfaults)
@@ -80,14 +81,14 @@ class TestMap:
         else:
             myplot.close()
 
-    def test_perm_logarithmic_map(self, tmpdir, generate_plot):
+    def test_perm_logarithmic_map(self, tmpdir: Any, generate_plot: bool) -> None:
         """Map with PERM, log scale."""
 
         mysurf = xtgeo.surface_from_file(SFILE2)
 
         myplot = Map()
         myplot.canvas(title="PERMX normal scale")
-        myplot.colormap = "rainbow"
+        myplot.colormap = "rainbow"  # type: ignore[assignment]
         myplot.plot_surface(
             mysurf, minvalue=0, maxvalue=6000, xlabelrotation=45, logarithmic=True
         )

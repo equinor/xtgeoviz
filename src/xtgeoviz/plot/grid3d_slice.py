@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
@@ -11,13 +12,17 @@ from matplotlib.patches import Polygon
 from ._libwrapper import matplotlib_colormap
 from .baseplot import BasePlot
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    import xtgeo
+    from matplotlib.colors import Colormap
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class Grid3DSlice(BasePlot):
     """Class for plotting a row, a column, or a layer, using matplotlib."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Construct an instance for a Grid3DSlice object."""
         super().__init__()
 
@@ -28,32 +33,32 @@ class Grid3DSlice(BasePlot):
         self._wfence = None
         self._legendtitle = "Map"
 
-        self._colormap = "rainbow"
-        self._linecolor = "black"
+        self.define_colormap("rainbow")
+        self._linecolor: str | tuple[float, ...] = "black"
         self._clist = None
-        self._prop = None
-        self._grid = None
+        self._prop: Any = None
+        self._grid: Any = None
         self._geomlist = None
         self._index = 1
         self._actnum = None
-        self._window = None
+        self._window: tuple[float, float, float, float] | None = None
         self._active = True
-        self._minvalue = None
-        self._maxvalue = None
+        self._minvalue: float | None = None
+        self._maxvalue: float | None = None
 
     def plot_gridslice(
         self,
-        grid,
-        prop=None,
-        mode="layer",
-        minvalue=None,
-        maxvalue=None,
-        colormap=None,
-        linecolor="black",
-        index=1,
-        window=None,
-        activeonly=True,
-    ):
+        grid: xtgeo.Grid,
+        prop: xtgeo.GridProperty | None = None,
+        mode: str = "layer",
+        minvalue: float | None = None,
+        maxvalue: float | None = None,
+        colormap: Colormap | str | None = None,
+        linecolor: str | tuple[float, ...] = "black",
+        index: int = 1,
+        window: tuple[float, float, float, float] | None = None,
+        activeonly: bool = True,
+    ) -> None:
         """Plot a row slice, column slice or layer slice of a grid.
 
         Args:
@@ -106,7 +111,7 @@ class Grid3DSlice(BasePlot):
         else:
             self._plot_layer()
 
-    def _plot_layer(self):
+    def _plot_layer(self) -> None:
         xyc, ibn = self._grid.get_layer_slice(self._index, activeonly=self._active)
 
         xval = xyc[:, :, 0]
@@ -152,7 +157,7 @@ class Grid3DSlice(BasePlot):
             if self._maxvalue is None:
                 pmax = pvalues.max()
 
-            patchcoll.set_clim([pmin, pmax])
+            patchcoll.set_clim(pmin, pmax)
 
         im = self._ax.add_collection(patchcoll)
         self._ax.set_xlim((xmin, xmax))
