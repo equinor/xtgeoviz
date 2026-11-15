@@ -29,6 +29,7 @@ input:
 
     # data to show along xsections
     surfaces:
+        fromgrid: No
         primary:
             objects: No
             folder: No
