@@ -1,5 +1,7 @@
 import os
 import pathlib
+from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 import xtgeo
@@ -16,7 +18,23 @@ USEFILE3 = TPATH / "etc/colortables/rainbow_reverse.rmscolor"
 class TestGrid3DSlice:
     """Tests for three-dimensional grid slice plotting."""
 
-    def test_slice_simple_layer(self, tmpdir, show_plot, generate_plot):
+    @pytest.mark.parametrize(
+        ("colormap", "expected_name"),
+        [("viridis", "viridis"), ("rainbow_r", "rainbow_r"), ("xtgeo", "xtgeo")],
+    )
+    def test_plot_gridslice_resolves_colormap_strings(
+        self, colormap: str, expected_name: str
+    ) -> None:
+        """Resolve registered Matplotlib names and retain XTGeo aliases."""
+        plot = Grid3DSlice()
+
+        plot.plot_gridslice(MagicMock(), mode="row", colormap=colormap)
+
+        assert plot.colormap.name == expected_name
+
+    def test_slice_simple_layer(
+        self, tmpdir: Any, show_plot: bool, generate_plot: bool
+    ) -> None:
         """Trigger XSection class, and do some simple things basically."""
         layslice = Grid3DSlice()
 
