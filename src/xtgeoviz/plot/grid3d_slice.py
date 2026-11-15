@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
 
+from ._libwrapper import matplotlib_colormap
 from .baseplot import BasePlot
 
 logger = logging.getLogger(__name__)
@@ -70,7 +71,12 @@ class Grid3DSlice(BasePlot):
 
         """
         self._index = index
-        if colormap is not None:
+        if isinstance(colormap, str):
+            try:
+                self.colormap = matplotlib_colormap(colormap)
+            except (KeyError, ValueError):
+                self.define_colormap(colormap)
+        elif colormap is not None:
             self._colormap = colormap
 
         self._linecolor = linecolor
