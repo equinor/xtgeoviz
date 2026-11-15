@@ -339,13 +339,13 @@ class TestXsectInputLoading:
     @pytest.mark.parametrize("fromgrid", [None, "geometry.roff"])
     def test_load_grid_property_and_optional_geometry(self, monkeypatch, fromgrid):
         inputs = {
+            "surfaces": {"fromgrid": fromgrid},
             "grid": {
                 "geometry": "geometry.roff",
                 "property": {"file": "property.roff", "name": "PORO"},
-            }
+            },
         }
         xapp = _Xsections(inputdata=inputs)
-        xapp.config["input"]["surfaces"]["fromgrid"] = fromgrid
         grid = object()
         gridproperty = object()
         grid_reader = MagicMock(return_value=grid)
@@ -368,7 +368,6 @@ class TestXsectInputLoading:
 
     def test_load_grid_without_complete_inputs_does_nothing(self, monkeypatch):
         xapp = _Xsections(inputdata={"wells": {}})
-        xapp.config["input"]["surfaces"]["fromgrid"] = None
         grid_reader = MagicMock()
         property_reader = MagicMock()
         monkeypatch.setattr(xtgeo, "grid_from_file", grid_reader)
