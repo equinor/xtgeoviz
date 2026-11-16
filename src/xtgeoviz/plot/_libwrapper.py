@@ -30,6 +30,21 @@ def matplotlib_colormap(name):
     )
 
 
+def matplotlib_set_xticks(axes, ticks, labels):
+    """Set tick locations and labels using the supported Matplotlib API.
+
+    Args:
+        axes: Matplotlib axes receiving the tick locations and labels.
+        ticks: Tick locations to set.
+        labels: Labels corresponding to the tick locations.
+    """
+    if _version_ge_than(matplotlib.__version__, "3.5.0"):
+        axes.set_xticks(ticks, labels=labels)
+    else:
+        axes.set_xticks(ticks)
+        axes.set_xticklabels(labels)
+
+
 def scipy_gaussianfilter(inputv, sigma):
     """Compatibility wrapper for scipy gaussian_filter syntax that change across 1.8."""
     return (
