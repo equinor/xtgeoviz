@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import matplotlib.patches as mplp
 import matplotlib.pyplot as plt
@@ -11,6 +12,10 @@ import numpy.ma as ma
 from matplotlib import ticker
 
 from .baseplot import BasePlot
+
+if TYPE_CHECKING:
+    import xtgeo
+    from matplotlib.colors import Colormap
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +49,14 @@ class Map(BasePlot):
 
     def plot_surface(
         self,
-        surf,
-        minvalue=None,
-        maxvalue=None,
-        contourlevels=None,
-        xlabelrotation=None,
-        colormap=None,
-        logarithmic=False,
-    ):
+        surf: xtgeo.RegularSurface,
+        minvalue: float | None = None,
+        maxvalue: float | None = None,
+        contourlevels: int | None = None,
+        xlabelrotation: float | None = None,
+        colormap: Colormap | str | None = None,
+        logarithmic: bool | None = False,
+    ) -> None:
         """Input a surface and plot it."""
         # need a deep copy to avoid changes in the original surf
 
@@ -113,7 +118,9 @@ class Map(BasePlot):
         # this will override current instance colormap locally, and is
         # therefore reset afterwards
         keepcolor = self.colormap
-        if colormap is not None:
+        if isinstance(colormap, str):
+            self.define_colormap(colormap)
+        elif colormap is not None:
             self.colormap = colormap
 
         levels = np.linspace(minvalue, maxvalue, self.contourlevels)

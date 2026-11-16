@@ -1,9 +1,11 @@
 import pathlib
 from os.path import join
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
 import xtgeo
+from matplotlib.colors import Colormap, LinearSegmentedColormap, ListedColormap
 
 from xtgeoviz.plot import Map
 
@@ -126,3 +128,33 @@ class TestMap:
 
         assert myplot.colormap is original_colormap
         myplot.close()
+
+    @pytest.mark.parametrize(
+        "colormap",
+        [
+            LinearSegmentedColormap.from_list("linear", ["red", "blue"]),
+            ListedColormap(["red", "blue"]),
+        ],
+    )
+    def test_plot_surface_accepts_matplotlib_colormap_objects(
+        self, monkeypatch: pytest.MonkeyPatch, colormap: Colormap
+    ) -> None:
+        """Use Matplotlib colormap objects without routing them through aliases."""
+        surface = xtgeo.RegularSurface(
+            ncol=2, nrow=2, xinc=1, yinc=1, values=np.arange(4, dtype=float)
+        )
+        myplot = Map()
+        myplot.canvas()
+        contourf = MagicMock(return_value=MagicMock())
+        monkeypatch.setattr(myplot._ax, "contourf", contourf)
+        monkeypatch.setattr(myplot._fig, "colorbar", MagicMock())
+
+        try:
+            myplot.plot_surface(surface, colormap=colormap)
+
+            used_colormap = contourf.call_args.kwargs["cmap"]
+            assert used_colormap.name == colormap.name
+            assert used_colormap(0.0) == pytest.approx(colormap(0.0))
+            assert used_colormap(1.0) == pytest.approx(colormap(1.0))
+        finally:
+            myplot.close()
