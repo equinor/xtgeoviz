@@ -15,7 +15,11 @@ import xtgeo
 from matplotlib import collections as mc
 from matplotlib.lines import Line2D
 
-from ._libwrapper import matplotlib_colormap, scipy_gaussianfilter
+from ._libwrapper import (
+    matplotlib_colormap,
+    matplotlib_set_xticks,
+    scipy_gaussianfilter,
+)
 from .baseplot import BasePlot
 
 if TYPE_CHECKING:
@@ -423,22 +427,21 @@ class XSection(BasePlot):
         md_start_round = int(math.floor(md_start / 100.0)) * 100
         md_start_delta = md_start - md_start_round
 
-        auto_ticks = plt.xticks()
-        auto_ticks_delta = auto_ticks[0][1] - auto_ticks[0][0]
-
         ax, _ = self._currentax(axisname="main")
+        auto_ticks = ax.get_xticks()
+        auto_ticks_delta = auto_ticks[1] - auto_ticks[0]
         lim = ax.get_xlim()
 
         new_ticks = []
         new_tick_labels = []
         delta = 0
-        for tick in auto_ticks[0]:
+        for tick in auto_ticks:
             new_ticks.append(int(float(tick) - md_start_delta))
-            new_tick_labels.append(int(md_start_round + delta))
+            new_tick_labels.append(str(int(md_start_round + delta)))
             delta += auto_ticks_delta
 
         # Set new xticks and labels
-        plt.xticks(new_ticks, new_tick_labels)
+        matplotlib_set_xticks(ax, new_ticks, new_tick_labels)
 
         if gridlines:
             ax.tick_params(axis="y", direction="in", which="both")
