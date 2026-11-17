@@ -639,6 +639,22 @@ class TestXsectPlottingHelpers:
 
         directory_listing.assert_not_called()
 
+    @pytest.mark.parametrize(
+        "output_folder", ["/", ".", "..", str(pathlib.Path.home())]
+    )
+    def test_create_or_clean_folder_rejects_unsafe_ancestors(
+        self, monkeypatch, output_folder
+    ):
+        """Refuse cleanup of roots and directories containing user data."""
+        directory_listing = MagicMock()
+        monkeypatch.setattr(plotting_helpers.os, "listdir", directory_listing)
+        settings = SimpleNamespace(output_plotfolder=output_folder, output_cleanup=True)
+
+        with pytest.raises(OSError, match="unsafe output folder"):
+            plotting_helpers._create_or_clean_folder(settings)
+
+        directory_listing.assert_not_called()
+
     def test_compute_wellcrossings_disabled(self):
         settings = SimpleNamespace(wells_wellcrossings_show=False)
 
