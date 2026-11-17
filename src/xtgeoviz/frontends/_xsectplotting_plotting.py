@@ -64,6 +64,15 @@ def _plotting_mpl(self, pset):
         property_config = grid_config.get("property", {})
         if isinstance(property_config, dict):
             add_input_path(property_config.get("file"))
+    wells = self.wells.get("wlist", [])
+    if pset.output_format == "pdf" and pset.output_pdfjoin:
+        prefix = pset.output_prefix or ""
+        plotfiles = [
+            os.path.join(pset.output_plotfolder, f"{prefix}{well.xwellname}.pdf")
+            for well in wells
+        ]
+        masterfile = os.path.join(pset.output_plotfolder, pset.output_pdfjoin)
+        _validate_pdf_join_paths(masterfile, plotfiles)
 
     _create_or_clean_folder(pset, input_paths)
 
@@ -71,7 +80,7 @@ def _plotting_mpl(self, pset):
 
     plotfiles = []
 
-    for well in self.wells["wlist"]:
+    for well in wells:
         logger.info("Plot cross section for well %s", well.name)
 
         if isinstance(pset.design_zrange, dict):
@@ -220,6 +229,7 @@ def _collect_pdf(pset, plotfiles):
 
     if pset.output_pdfjoin:
         masterfile = os.path.join(pset.output_plotfolder, pset.output_pdfjoin)
+        _validate_pdf_join_paths(masterfile, plotfiles)
 
         command = [
             "gs",
@@ -245,6 +255,21 @@ def _collect_pdf(pset, plotfiles):
 
         for pfile in plotfiles:
             os.remove(pfile)
+
+
+def _validate_pdf_join_paths(masterfile, plotfiles):
+    """Reject a joined PDF destination that aliases one of its input files."""
+    output_path = Path(masterfile)
+    input_paths = [Path(plotfile) for plotfile in plotfiles]
+    resolved_output = output_path.resolve()
+    if resolved_output in {input_path.resolve() for input_path in input_paths} or (
+        output_path.exists()
+        and any(
+            input_path.exists() and output_path.samefile(input_path)
+            for input_path in input_paths
+        )
+    ):
+        raise ValueError("Joined PDF output path overlaps a source PDF")
 
 
 def _create_or_clean_folder(

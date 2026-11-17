@@ -700,6 +700,30 @@ class TestXsectPlottingHelpers:
         directory_listing.assert_not_called()
         assert sentinel.is_file()
 
+    def test_plotting_rejects_pdf_collision_before_saving_wells(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
+        """Reject joined-PDF collisions before cleanup or per-well saves.
+
+        Args:
+            monkeypatch: Replaces folder cleanup with a spy.
+            tmp_path: Temporary output directory for the predicted PDF paths.
+        """
+        settings = _XsectSettings(
+            output_plotfolder=str(tmp_path),
+            output_format="pdf",
+            output_pdfjoin="well-1.pdf",
+        )
+        x_sections = _Xsections(inputdata={"wells": {}})
+        x_sections.wells["wlist"] = [SimpleNamespace(xwellname="well-1")]
+        folder_cleanup = MagicMock()
+        monkeypatch.setattr(plotting_helpers, "_create_or_clean_folder", folder_cleanup)
+
+        with pytest.raises(ValueError, match="overlaps a source PDF"):
+            plotting_helpers._plotting_mpl(x_sections, settings)
+
+        folder_cleanup.assert_not_called()
+
     @pytest.mark.parametrize(
         "output_folder", ["/", ".", "..", str(pathlib.Path.home())]
     )
@@ -772,6 +796,30 @@ class TestXsectPlottingHelpers:
         ]
         assert subprocess_call.call_args.kwargs == {"shell": False}
         assert removed_files == plot_files
+
+    @pytest.mark.parametrize(
+        "output_pdfjoin", ["one plot.pdf", "nested/../one plot.pdf"]
+    )
+    def test_collect_pdf_rejects_destination_that_overlaps_source(
+        self, monkeypatch, tmp_path, output_pdfjoin: str
+    ):
+        output_folder = tmp_path / "plots"
+        source_pdf = output_folder / "one plot.pdf"
+        settings = SimpleNamespace(
+            output_format="pdf",
+            output_pdfjoin=output_pdfjoin,
+            output_plotfolder=str(output_folder),
+        )
+        subprocess_call = MagicMock(return_value=0)
+        removed_files = []
+        monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
+        monkeypatch.setattr(plotting_helpers.os, "remove", removed_files.append)
+
+        with pytest.raises(ValueError, match="overlaps a source PDF"):
+            plotting_helpers._collect_pdf(settings, [str(source_pdf)])
+
+        subprocess_call.assert_not_called()
+        assert removed_files == []
 
     def test_collect_pdf_raises_when_ghostscript_fails(self, monkeypatch, tmp_path):
         settings = SimpleNamespace(
