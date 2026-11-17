@@ -73,7 +73,7 @@ class Grid3DSlice(BasePlot):
         self._index = index
         if isinstance(colormap, str):
             try:
-                self.colormap = matplotlib_colormap(colormap)
+                self._colormap = matplotlib_colormap(colormap)
             except (KeyError, ValueError):
                 self.define_colormap(colormap)
         elif colormap is not None:
