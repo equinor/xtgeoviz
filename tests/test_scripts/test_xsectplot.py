@@ -648,6 +648,74 @@ class TestXsectPlottingHelpers:
 
         directory_listing.assert_not_called()
 
+    def test_plotting_rejects_cleanup_that_overlaps_well_folder(
+        self, tmp_path: pathlib.Path
+    ) -> None:
+        """Refuse cleanup when the configured well folder overlaps output.
+
+        Args:
+            tmp_path: Temporary parent for the output and well input folders.
+        """
+        output_folder = tmp_path / "plots"
+        well_folder = output_folder / "wells"
+        well_folder.mkdir(parents=True)
+        sentinel = well_folder / "well.w"
+        sentinel.touch()
+        settings = _XsectSettings(
+            output_plotfolder=str(output_folder), output_cleanup=True
+        )
+        x_sections = _Xsections(inputdata={"wells": {"folder": str(well_folder)}})
+
+        with pytest.raises(OSError, match="overlapping configured input"):
+            plotting_helpers._plotting_mpl(x_sections, settings)
+
+        assert sentinel.is_file()
+
+    def test_plotting_rejects_cleanup_that_overlaps_surface_folder(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
+        """Refuse cleanup when a configured surface folder is inside output.
+
+        Args:
+            monkeypatch: Spies on output-folder enumeration.
+            tmp_path: Temporary parent for output and surface input folders.
+        """
+        output_folder = tmp_path / "plots"
+        surface_folder = output_folder / "surfaces"
+        surface_folder.mkdir(parents=True)
+        sentinel = surface_folder / "surface.gri"
+        sentinel.touch()
+        directory_listing = MagicMock(return_value=[])
+        monkeypatch.setattr(plotting_helpers.os, "listdir", directory_listing)
+        settings = _XsectSettings(
+            output_plotfolder=str(output_folder), output_cleanup=True
+        )
+        x_sections = _Xsections(
+            inputdata={"surfaces": {"primary": {"folder": str(surface_folder)}}}
+        )
+
+        with pytest.raises(OSError, match="overlapping configured input"):
+            plotting_helpers._plotting_mpl(x_sections, settings)
+
+        directory_listing.assert_not_called()
+        assert sentinel.is_file()
+
+    @pytest.mark.parametrize(
+        "output_folder", ["/", ".", "..", str(pathlib.Path.home())]
+    )
+    def test_create_or_clean_folder_rejects_unsafe_ancestors(
+        self, monkeypatch, output_folder
+    ):
+        """Refuse cleanup of roots and directories containing user data."""
+        directory_listing = MagicMock()
+        monkeypatch.setattr(plotting_helpers.os, "listdir", directory_listing)
+        settings = SimpleNamespace(output_plotfolder=output_folder, output_cleanup=True)
+
+        with pytest.raises(OSError, match="unsafe output folder"):
+            plotting_helpers._create_or_clean_folder(settings)
+
+        directory_listing.assert_not_called()
+
     def test_compute_wellcrossings_disabled(self):
         settings = SimpleNamespace(wells_wellcrossings_show=False)
 

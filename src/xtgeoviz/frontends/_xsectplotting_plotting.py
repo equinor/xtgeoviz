@@ -8,6 +8,7 @@ import os
 import os.path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pandas as pd
 
@@ -34,7 +35,37 @@ def _plotting_mpl(self, pset):
     more practical and flexible.
     """
 
-    _create_or_clean_folder(pset)
+    app_config = getattr(self, "config", {})
+    input_config = app_config.get("input", {}) if isinstance(app_config, dict) else {}
+    input_paths: list[Path] = []
+
+    def add_input_path(value: object) -> None:
+        if isinstance(value, (str, os.PathLike)) and value:
+            input_paths.append(Path(value))
+
+    wells_config = input_config.get("wells", {})
+    if isinstance(wells_config, dict):
+        add_input_path(wells_config.get("folder"))
+
+    surface_config = input_config.get("surfaces", {})
+    if isinstance(surface_config, dict):
+        add_input_path(surface_config.get("fromgrid"))
+        for surface_name in ("primary", "secondary", "contacts"):
+            surface_set = surface_config.get(surface_name, {})
+            if isinstance(surface_set, dict):
+                add_input_path(surface_set.get("folder"))
+
+    add_input_path(input_config.get("outline"))
+    add_input_path(input_config.get("cube"))
+
+    grid_config = input_config.get("grid", {})
+    if isinstance(grid_config, dict):
+        add_input_path(grid_config.get("geometry"))
+        property_config = grid_config.get("property", {})
+        if isinstance(property_config, dict):
+            add_input_path(property_config.get("file"))
+
+    _create_or_clean_folder(pset, input_paths)
 
     wellcross = _compute_wellcrossings(pset)
 
@@ -216,8 +247,27 @@ def _collect_pdf(pset, plotfiles):
             os.remove(pfile)
 
 
-def _create_or_clean_folder(pset):
+def _create_or_clean_folder(
+    pset, input_paths: list[str | os.PathLike[str]] | None = None
+) -> None:
     """Create the output folder and optionally remove its existing contents."""
+    if pset.output_cleanup:
+        output_path = Path(pset.output_plotfolder).resolve()
+        protected_paths = (Path.cwd().resolve(), Path.home().resolve())
+        if output_path.parent == output_path or any(
+            output_path == protected_path or output_path in protected_path.parents
+            for protected_path in protected_paths
+        ):
+            raise OSError("Refusing to clean an unsafe output folder")
+        for input_path in input_paths or []:
+            resolved_input_path = Path(input_path).resolve()
+            if (
+                output_path == resolved_input_path
+                or output_path.is_relative_to(resolved_input_path)
+                or resolved_input_path.is_relative_to(output_path)
+            ):
+                raise OSError("Refusing to clean a folder overlapping configured input")
+
     if pset.output_cleanup and os.path.realpath(
         pset.output_plotfolder
     ) == os.path.realpath("/tmp"):
@@ -225,6 +275,19 @@ def _create_or_clean_folder(pset):
 
     if pset.output_cleanup and os.path.islink(pset.output_plotfolder):
         raise OSError("Refusing to clean a symlinked output folder")
+
+    wellcrossings_path = getattr(pset, "wells_wellcrossings_show", None)
+    if pset.output_cleanup and isinstance(wellcrossings_path, str):
+        output_path = Path(pset.output_plotfolder)
+        input_path = Path(wellcrossings_path)
+        resolved_output_path = output_path.resolve()
+        resolved_input_path = input_path.resolve()
+        if input_path.is_relative_to(output_path) or resolved_input_path.is_relative_to(
+            resolved_output_path
+        ):
+            raise OSError(
+                "Refusing to clean output folder containing well-crossings CSV"
+            )
 
     if not os.path.exists(pset.output_plotfolder):
         os.makedirs(pset.output_plotfolder)
