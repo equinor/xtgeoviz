@@ -1,5 +1,6 @@
 """Module for testing stand-alone scripts and/or entrypoints functions."""
 
+import os
 import pathlib
 from types import SimpleNamespace
 from unittest.mock import MagicMock
@@ -608,13 +609,15 @@ class TestXsectPlottingHelpers:
         assert not directory_link.is_symlink()
         assert sentinel.is_file()
 
+    @pytest.mark.parametrize("trailing_separator", [False, True])
     def test_create_or_clean_folder_rejects_symlinked_output_root(
-        self, tmp_path: pathlib.Path
+        self, tmp_path: pathlib.Path, trailing_separator: bool
     ) -> None:
         """Refuse cleanup when the output folder itself is a symlink.
 
         Args:
             tmp_path: Temporary parent directory for the symlink and its target.
+            trailing_separator: Whether to append a separator to the symlink path.
         """
         target_folder = tmp_path / "preserved"
         target_folder.mkdir()
@@ -626,9 +629,10 @@ class TestXsectPlottingHelpers:
         except (NotImplementedError, OSError) as error:
             pytest.skip(f"Directory symlinks are unavailable: {error}")
 
-        settings = SimpleNamespace(
-            output_plotfolder=str(output_folder), output_cleanup=True
-        )
+        output_path = str(output_folder)
+        if trailing_separator:
+            output_path += os.sep
+        settings = SimpleNamespace(output_plotfolder=output_path, output_cleanup=True)
 
         with pytest.raises(OSError, match="symlinked output folder"):
             plotting_helpers._create_or_clean_folder(settings)
