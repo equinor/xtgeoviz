@@ -121,7 +121,7 @@ class Map(BasePlot):
         if isinstance(colormap, str):
             self.define_colormap(colormap)
         elif colormap is not None:
-            self.colormap = colormap
+            self._colormap = colormap
 
         levels = np.linspace(minvalue, maxvalue, self.contourlevels)
         logger.debug("Number of contour levels: %s", levels)
@@ -153,7 +153,7 @@ class Map(BasePlot):
             logger.warning("Could not make plot: %s", err)
 
         plt.gca().set_aspect("equal", adjustable="box")
-        self.colormap = keepcolor
+        self._colormap = keepcolor
 
     def plot_faults(
         self,

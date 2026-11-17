@@ -146,6 +146,11 @@ class TestMap:
         surface = xtgeo.RegularSurface(
             ncol=2, nrow=2, xinc=1, yinc=1, values=np.arange(4, dtype=float)
         )
+        if isinstance(colormap, ListedColormap):
+            colormap.set_under("green")
+            colormap.set_over("yellow")
+            colormap.set_bad("black")
+
         myplot = Map()
         myplot.canvas()
         contourf = MagicMock(return_value=MagicMock())
@@ -156,9 +161,15 @@ class TestMap:
             myplot.plot_surface(surface, colormap=colormap)
 
             used_colormap = contourf.call_args.kwargs["cmap"]
+            assert used_colormap is colormap
             assert used_colormap.name == colormap.name
             assert used_colormap(0.0) == pytest.approx(colormap(0.0))
             assert used_colormap(1.0) == pytest.approx(colormap(1.0))
+            np.testing.assert_array_equal(
+                used_colormap.get_under(), colormap.get_under()
+            )
+            np.testing.assert_array_equal(used_colormap.get_over(), colormap.get_over())
+            np.testing.assert_array_equal(used_colormap.get_bad(), colormap.get_bad())
         finally:
             myplot.close()
 
