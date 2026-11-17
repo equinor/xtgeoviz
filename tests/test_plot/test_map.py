@@ -136,7 +136,7 @@ class TestMap:
         "colormap",
         [
             LinearSegmentedColormap.from_list("linear", ["red", "blue"]),
-            ListedColormap(["red", "blue"]),
+            ListedColormap(["red", "blue"], under="green", over="yellow", bad="black"),
         ],
     )
     def test_plot_surface_accepts_matplotlib_colormap_objects(
@@ -156,9 +156,15 @@ class TestMap:
             myplot.plot_surface(surface, colormap=colormap)
 
             used_colormap = contourf.call_args.kwargs["cmap"]
+            assert used_colormap is colormap
             assert used_colormap.name == colormap.name
             assert used_colormap(0.0) == pytest.approx(colormap(0.0))
             assert used_colormap(1.0) == pytest.approx(colormap(1.0))
+            np.testing.assert_array_equal(
+                used_colormap.get_under(), colormap.get_under()
+            )
+            np.testing.assert_array_equal(used_colormap.get_over(), colormap.get_over())
+            np.testing.assert_array_equal(used_colormap.get_bad(), colormap.get_bad())
         finally:
             myplot.close()
 
