@@ -190,6 +190,10 @@ def _collect_pdf(pset, plotfiles):
 
     if pset.output_pdfjoin:
         masterfile = os.path.join(pset.output_plotfolder, pset.output_pdfjoin)
+        output_path = Path(masterfile).resolve()
+        input_paths = {Path(plotfile).resolve() for plotfile in plotfiles}
+        if output_path in input_paths:
+            raise ValueError("Joined PDF output path overlaps a source PDF")
 
         command = [
             "gs",

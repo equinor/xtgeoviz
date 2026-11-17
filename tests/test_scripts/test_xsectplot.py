@@ -712,6 +712,30 @@ class TestXsectPlottingHelpers:
         assert subprocess_call.call_args.kwargs == {"shell": False}
         assert removed_files == plot_files
 
+    @pytest.mark.parametrize(
+        "output_pdfjoin", ["one plot.pdf", "nested/../one plot.pdf"]
+    )
+    def test_collect_pdf_rejects_destination_that_overlaps_source(
+        self, monkeypatch, tmp_path, output_pdfjoin: str
+    ):
+        output_folder = tmp_path / "plots"
+        source_pdf = output_folder / "one plot.pdf"
+        settings = SimpleNamespace(
+            output_format="pdf",
+            output_pdfjoin=output_pdfjoin,
+            output_plotfolder=str(output_folder),
+        )
+        subprocess_call = MagicMock(return_value=0)
+        removed_files = []
+        monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
+        monkeypatch.setattr(plotting_helpers.os, "remove", removed_files.append)
+
+        with pytest.raises(ValueError, match="overlaps a source PDF"):
+            plotting_helpers._collect_pdf(settings, [str(source_pdf)])
+
+        subprocess_call.assert_not_called()
+        assert removed_files == []
+
     def test_collect_pdf_raises_when_ghostscript_fails(self, monkeypatch, tmp_path):
         settings = SimpleNamespace(
             output_format="pdf",
