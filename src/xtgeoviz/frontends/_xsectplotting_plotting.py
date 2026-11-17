@@ -298,7 +298,7 @@ def _create_or_clean_folder(
     ) == os.path.realpath("/tmp"):
         raise OSError("Refusing to clean the shared /tmp output folder")
 
-    if pset.output_cleanup and os.path.islink(pset.output_plotfolder):
+    if pset.output_cleanup and os.path.islink(os.path.normpath(pset.output_plotfolder)):
         raise OSError("Refusing to clean a symlinked output folder")
 
     wellcrossings_path = getattr(pset, "wells_wellcrossings_show", None)
