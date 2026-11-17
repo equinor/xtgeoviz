@@ -740,6 +740,42 @@ class TestXsectPlottingHelpers:
         subprocess_call.assert_not_called()
         assert removed_files == []
 
+    def test_collect_pdf_rejects_hard_link_to_source(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: pathlib.Path
+    ) -> None:
+        """Reject a joined destination that is a hard link to an input PDF.
+
+        Args:
+            monkeypatch: Replaces Ghostscript and file removal with spies.
+            tmp_path: Temporary directory for the linked source and destination.
+        """
+        output_folder = tmp_path / "plots"
+        output_folder.mkdir()
+        source_pdf = output_folder / "source.pdf"
+        source_pdf.write_bytes(b"source PDF")
+        joined_pdf = output_folder / "joined.pdf"
+        try:
+            joined_pdf.hardlink_to(source_pdf)
+        except (NotImplementedError, OSError) as error:
+            pytest.skip(f"Hard links are unavailable: {error}")
+
+        settings = SimpleNamespace(
+            output_format="pdf",
+            output_pdfjoin=joined_pdf.name,
+            output_plotfolder=str(output_folder),
+        )
+        subprocess_call = MagicMock(return_value=0)
+        removed_files: list[str] = []
+        monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
+        monkeypatch.setattr(plotting_helpers.os, "remove", removed_files.append)
+
+        with pytest.raises(ValueError, match="overlaps a source PDF"):
+            plotting_helpers._collect_pdf(settings, [str(source_pdf)])
+
+        subprocess_call.assert_not_called()
+        assert removed_files == []
+        assert source_pdf.read_bytes() == b"source PDF"
+
     def test_collect_pdf_raises_when_ghostscript_fails(self, monkeypatch, tmp_path):
         settings = SimpleNamespace(
             output_format="pdf",
