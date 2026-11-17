@@ -247,6 +247,19 @@ def _create_or_clean_folder(pset):
     if pset.output_cleanup and os.path.islink(os.path.normpath(pset.output_plotfolder)):
         raise OSError("Refusing to clean a symlinked output folder")
 
+    wellcrossings_path = getattr(pset, "wells_wellcrossings_show", None)
+    if pset.output_cleanup and isinstance(wellcrossings_path, str):
+        output_path = Path(os.path.abspath(pset.output_plotfolder))
+        input_path = Path(os.path.abspath(wellcrossings_path))
+        resolved_output_path = output_path.resolve()
+        resolved_input_path = input_path.resolve()
+        if input_path.is_relative_to(output_path) or resolved_input_path.is_relative_to(
+            resolved_output_path
+        ):
+            raise OSError(
+                "Refusing to clean output folder containing well-crossings CSV"
+            )
+
     if not os.path.exists(pset.output_plotfolder):
         os.makedirs(pset.output_plotfolder)
 

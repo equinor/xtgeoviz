@@ -643,6 +643,64 @@ class TestXsectPlottingHelpers:
 
         directory_listing.assert_not_called()
 
+    @pytest.mark.parametrize("nested", [False, True])
+    def test_create_or_clean_folder_rejects_wellcrossings_input(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: pathlib.Path,
+        nested: bool,
+    ) -> None:
+        """Reject cleanup when the configured well-crossings CSV is inside it.
+
+        Args:
+            monkeypatch: Replaces directory enumeration with a spy.
+            tmp_path: Temporary parent for output and input files.
+            nested: Whether to place the input CSV in a subdirectory.
+        """
+        output_folder = tmp_path / "plots"
+        input_folder = output_folder / "nested" if nested else output_folder
+        input_folder.mkdir(parents=True)
+        crossings_file = input_folder / "crossings.csv"
+        crossings_file.write_text("WELL,VALUE\nwell-1,1\n", encoding="utf-8")
+        directory_listing = MagicMock()
+        monkeypatch.setattr(plotting_helpers.os, "listdir", directory_listing)
+        settings = SimpleNamespace(
+            output_plotfolder=str(output_folder),
+            output_cleanup=True,
+            wells_wellcrossings_show=str(crossings_file),
+        )
+
+        with pytest.raises(OSError, match="well-crossings CSV"):
+            plotting_helpers._create_or_clean_folder(settings)
+
+        directory_listing.assert_not_called()
+        assert crossings_file.is_file()
+
+    def test_create_or_clean_folder_keeps_external_wellcrossings_input(
+        self, tmp_path: pathlib.Path
+    ) -> None:
+        """Allow cleanup when the well-crossings CSV is outside the output tree.
+
+        Args:
+            tmp_path: Temporary parent for output and the external input CSV.
+        """
+        output_folder = tmp_path / "plots"
+        output_folder.mkdir()
+        stale_plot = output_folder / "old.svg"
+        stale_plot.touch()
+        crossings_file = tmp_path / "crossings.csv"
+        crossings_file.write_text("WELL,VALUE\nwell-1,1\n", encoding="utf-8")
+        settings = SimpleNamespace(
+            output_plotfolder=str(output_folder),
+            output_cleanup=True,
+            wells_wellcrossings_show=str(crossings_file),
+        )
+
+        plotting_helpers._create_or_clean_folder(settings)
+
+        assert not stale_plot.exists()
+        assert crossings_file.is_file()
+
     @pytest.mark.parametrize(
         "output_folder", ["/", ".", "..", str(pathlib.Path.home())]
     )
@@ -730,7 +788,7 @@ class TestXsectPlottingHelpers:
             output_plotfolder=str(output_folder),
         )
         subprocess_call = MagicMock(return_value=0)
-        removed_files = []
+        removed_files: list[str] = []
         monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
         monkeypatch.setattr(plotting_helpers.os, "remove", removed_files.append)
 
