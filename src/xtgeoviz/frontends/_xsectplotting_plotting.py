@@ -8,6 +8,7 @@ import os
 import os.path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pandas as pd
 
@@ -218,6 +219,15 @@ def _collect_pdf(pset, plotfiles):
 
 def _create_or_clean_folder(pset):
     """Create the output folder and optionally remove its existing contents."""
+    if pset.output_cleanup:
+        output_path = Path(pset.output_plotfolder).resolve()
+        protected_paths = (Path.cwd().resolve(), Path.home().resolve())
+        if output_path.parent == output_path or any(
+            output_path == protected_path or output_path in protected_path.parents
+            for protected_path in protected_paths
+        ):
+            raise OSError("Refusing to clean an unsafe output folder")
+
     if pset.output_cleanup and os.path.realpath(
         pset.output_plotfolder
     ) == os.path.realpath("/tmp"):
