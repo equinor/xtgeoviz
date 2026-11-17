@@ -237,7 +237,7 @@ def _create_or_clean_folder(pset):
     ) == os.path.realpath("/tmp"):
         raise OSError("Refusing to clean the shared /tmp output folder")
 
-    if pset.output_cleanup and os.path.islink(pset.output_plotfolder):
+    if pset.output_cleanup and os.path.islink(os.path.normpath(pset.output_plotfolder)):
         raise OSError("Refusing to clean a symlinked output folder")
 
     if not os.path.exists(pset.output_plotfolder):
