@@ -2,6 +2,7 @@ import glob
 import pathlib
 from os.path import join
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,7 +11,7 @@ import pytest
 import xtgeo
 from matplotlib.collections import LineCollection
 
-from xtgeoviz.plot import XSection
+from xtgeoviz.plot import XSection, _libwrapper
 
 TPATH = pathlib.Path("../xtgeo-testdata")
 
@@ -26,6 +27,28 @@ USEFILE7 = TPATH / "wells/reek/1/OP_2.w"
 
 class TestXSection:
     """Tests for cross-section plotting."""
+
+    @pytest.mark.parametrize(
+        ("matplotlib_version", "combined_labels"),
+        [("3.3.2", False), ("3.5.0", True)],
+    )
+    def test_matplotlib_set_xticks_uses_compatibility_api(
+        self, monkeypatch, matplotlib_version, combined_labels
+    ):
+        """Use the tick-label API supported by the installed Matplotlib version."""
+        monkeypatch.setattr(_libwrapper.matplotlib, "__version__", matplotlib_version)
+        axes = MagicMock()
+        ticks = [0.0, 50.0, 100.0]
+        labels = ["1200", "1250", "1300"]
+
+        _libwrapper.matplotlib_set_xticks(axes, ticks, labels)
+
+        if combined_labels:
+            axes.set_xticks.assert_called_once_with(ticks, labels=labels)
+            axes.set_xticklabels.assert_not_called()
+        else:
+            axes.set_xticks.assert_called_once_with(ticks)
+            axes.set_xticklabels.assert_called_once_with(labels)
 
     def test_xsection_init(self):
         """Trigger XSection class, basically."""

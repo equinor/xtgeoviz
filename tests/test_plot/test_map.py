@@ -1,9 +1,14 @@
 import pathlib
 from os.path import join
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import numpy as np
+import pandas as pd
 import pytest
 import xtgeo
+from matplotlib.colors import Colormap, LinearSegmentedColormap, ListedColormap
+from matplotlib.patches import Polygon
 
 from xtgeoviz.plot import Map
 
@@ -126,3 +131,86 @@ class TestMap:
 
         assert myplot.colormap is original_colormap
         myplot.close()
+
+    @pytest.mark.parametrize(
+        "colormap",
+        [
+            LinearSegmentedColormap.from_list("linear", ["red", "blue"]),
+            ListedColormap(["red", "blue"], under="green", over="yellow", bad="black"),
+        ],
+    )
+    def test_plot_surface_accepts_matplotlib_colormap_objects(
+        self, monkeypatch: pytest.MonkeyPatch, colormap: Colormap
+    ) -> None:
+        """Use Matplotlib colormap objects without routing them through aliases."""
+        surface = xtgeo.RegularSurface(
+            ncol=2, nrow=2, xinc=1, yinc=1, values=np.arange(4, dtype=float)
+        )
+        myplot = Map()
+        myplot.canvas()
+        contourf = MagicMock(return_value=MagicMock())
+        monkeypatch.setattr(myplot._ax, "contourf", contourf)
+        monkeypatch.setattr(myplot._fig, "colorbar", MagicMock())
+
+        try:
+            myplot.plot_surface(surface, colormap=colormap)
+
+            used_colormap = contourf.call_args.kwargs["cmap"]
+            assert used_colormap is colormap
+            assert used_colormap.name == colormap.name
+            assert used_colormap(0.0) == pytest.approx(colormap(0.0))
+            assert used_colormap(1.0) == pytest.approx(colormap(1.0))
+            np.testing.assert_array_equal(
+                used_colormap.get_under(), colormap.get_under()
+            )
+            np.testing.assert_array_equal(used_colormap.get_over(), colormap.get_over())
+            np.testing.assert_array_equal(used_colormap.get_bad(), colormap.get_bad())
+        finally:
+            myplot.close()
+
+    def test_plot_faults_draws_closed_polygons(self) -> None:
+        """Add a closed fault polygon to the map axes."""
+        fault_polygons = SimpleNamespace(
+            get_dataframe=lambda copy=False: pd.DataFrame(
+                {
+                    "POLY_ID": [1, 1, 1, 1],
+                    "X_UTME": [0.0, 1.0, 0.0, 0.0],
+                    "Y_UTMN": [0.0, 0.0, 1.0, 0.0],
+                }
+            )
+        )
+        myplot = Map()
+        myplot.canvas()
+
+        try:
+            myplot.plot_faults(fault_polygons)
+
+            assert any(
+                isinstance(artist, Polygon) for artist in myplot._ax.get_children()
+            )
+        finally:
+            myplot.close()
+
+    def test_plot_faults_raises_for_open_polygons(self) -> None:
+        """Raise when a fault polygon's coordinates are not closed."""
+        fault_polygons = SimpleNamespace(
+            get_dataframe=lambda copy=False: pd.DataFrame(
+                {
+                    "POLY_ID": [1, 1, 1],
+                    "X_UTME": [0.0, 1.0, 0.0],
+                    "Y_UTMN": [0.0, 0.0, 1.0],
+                }
+            )
+        )
+        myplot = Map()
+        myplot.canvas()
+
+        try:
+            with pytest.raises(OSError, match="A polygon is not closed"):
+                myplot.plot_faults(fault_polygons)
+
+            assert not any(
+                isinstance(artist, Polygon) for artist in myplot._ax.get_children()
+            )
+        finally:
+            myplot.close()

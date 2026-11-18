@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import matplotlib.patches as mplp
 import matplotlib.pyplot as plt
@@ -11,6 +12,10 @@ import numpy.ma as ma
 from matplotlib import ticker
 
 from .baseplot import BasePlot
+
+if TYPE_CHECKING:
+    import xtgeo
+    from matplotlib.colors import Colormap
 
 logger = logging.getLogger(__name__)
 
@@ -44,14 +49,14 @@ class Map(BasePlot):
 
     def plot_surface(
         self,
-        surf,
-        minvalue=None,
-        maxvalue=None,
-        contourlevels=None,
-        xlabelrotation=None,
-        colormap=None,
-        logarithmic=False,
-    ):
+        surf: xtgeo.RegularSurface,
+        minvalue: float | None = None,
+        maxvalue: float | None = None,
+        contourlevels: int | None = None,
+        xlabelrotation: float | None = None,
+        colormap: Colormap | str | None = None,
+        logarithmic: bool | None = False,
+    ) -> None:
         """Input a surface and plot it."""
         # need a deep copy to avoid changes in the original surf
 
@@ -113,8 +118,10 @@ class Map(BasePlot):
         # this will override current instance colormap locally, and is
         # therefore reset afterwards
         keepcolor = self.colormap
-        if colormap is not None:
-            self.colormap = colormap
+        if isinstance(colormap, str):
+            self.define_colormap(colormap)
+        elif colormap is not None:
+            self._colormap = colormap
 
         levels = np.linspace(minvalue, maxvalue, self.contourlevels)
         logger.debug("Number of contour levels: %s", levels)
@@ -146,7 +153,7 @@ class Map(BasePlot):
             logger.warning("Could not make plot: %s", err)
 
         plt.gca().set_aspect("equal", adjustable="box")
-        self.colormap = keepcolor
+        self._colormap = keepcolor
 
     def plot_faults(
         self,
@@ -178,12 +185,11 @@ class Map(BasePlot):
             # make a list [(X,Y) ...];
             af = list(zip(myfault["X_UTME"].values, myfault["Y_UTMN"].values))
 
-            px = mplp.Polygon(af, alpha=alpha, color=color, ec=edgecolor, lw=linewidth)
+            if len(af) < 2 or af[0] != af[-1]:
+                raise IOError(f"A polygon is not closed: {af}")
 
-            if px.get_closed():
-                self._ax.add_artist(px)
-            else:
-                IOError(f"A polygon is not closed: {px}")
+            px = mplp.Polygon(af, alpha=alpha, color=color, ec=edgecolor, lw=linewidth)
+            self._ax.add_artist(px)
 
     def plot_polygons(self, fpoly, idname="POLY_ID", color="k", linewidth=0.8):
         """Plot a polygons instance.

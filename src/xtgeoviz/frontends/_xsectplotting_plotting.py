@@ -8,6 +8,7 @@ import os
 import os.path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pandas as pd
 
@@ -34,7 +35,7 @@ def _plotting_mpl(self, pset):
     more practical and flexible.
     """
 
-    _folder_work(pset)
+    _create_or_clean_folder(pset)
 
     wellcross = _compute_wellcrossings(pset)
 
@@ -188,21 +189,37 @@ def _collect_pdf(pset, plotfiles):
         return
 
     if pset.output_pdfjoin:
-        masterfile = os.path.join([pset.output_plotfolder, pset.output_pdfjoin])
+        masterfile = os.path.join(pset.output_plotfolder, pset.output_pdfjoin)
+        output_path = Path(masterfile)
+        input_paths = [Path(plotfile) for plotfile in plotfiles]
+        resolved_output = output_path.resolve()
+        if resolved_output in {input_path.resolve() for input_path in input_paths} or (
+            output_path.exists()
+            and any(
+                input_path.exists() and output_path.samefile(input_path)
+                for input_path in input_paths
+            )
+        ):
+            raise ValueError("Joined PDF output path overlaps a source PDF")
 
-        syscommand = (
-            "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 "
-            "-dPDFSETTINGS=/default -dNOPAUSE -dQUIET -dBATCH "
-            "-dDetectDuplicateImages -dCompressFonts=true -r150 "
-            f"-sOutputFile={masterfile} "
-        )
-
-        for pfile in plotfiles:
-            syscommand = syscommand + pfile + " "
+        command = [
+            "gs",
+            "-sDEVICE=pdfwrite",
+            "-dCompatibilityLevel=1.4",
+            "-dPDFSETTINGS=/default",
+            "-dNOPAUSE",
+            "-dQUIET",
+            "-dBATCH",
+            "-dDetectDuplicateImages",
+            "-dCompressFonts=true",
+            "-r150",
+            f"-sOutputFile={masterfile}",
+            *plotfiles,
+        ]
 
         logger.info("Collecting PDF files to %s", masterfile)
-        logger.info(syscommand)
-        ier = subprocess.call(syscommand, shell=True)
+        logger.info("Running Ghostscript with arguments: %s", command)
+        ier = subprocess.call(command, shell=False)
 
         if ier != 0:
             raise RuntimeError(f"Received number != 0 from subprosess: {ier}")
@@ -211,14 +228,50 @@ def _collect_pdf(pset, plotfiles):
             os.remove(pfile)
 
 
-def _folder_work(pset):
+def _create_or_clean_folder(pset):
+    """Create the output folder and optionally remove its existing contents."""
+    if pset.output_cleanup:
+        output_path = Path(pset.output_plotfolder).resolve()
+        protected_paths = (Path.cwd().resolve(), Path.home().resolve())
+        if output_path.parent == output_path or any(
+            output_path == protected_path or output_path in protected_path.parents
+            for protected_path in protected_paths
+        ):
+            raise OSError("Refusing to clean an unsafe output folder")
+
+    if pset.output_cleanup and os.path.realpath(
+        pset.output_plotfolder
+    ) == os.path.realpath("/tmp"):
+        raise OSError("Refusing to clean the shared /tmp output folder")
+
+    if pset.output_cleanup and os.path.islink(os.path.normpath(pset.output_plotfolder)):
+        raise OSError("Refusing to clean a symlinked output folder")
+
+    wellcrossings_path = getattr(pset, "wells_wellcrossings_show", None)
+    if pset.output_cleanup and isinstance(wellcrossings_path, str):
+        output_path = Path(os.path.abspath(pset.output_plotfolder))
+        input_path = Path(os.path.abspath(wellcrossings_path))
+        resolved_output_path = output_path.resolve()
+        resolved_input_path = input_path.resolve()
+        if input_path.is_relative_to(output_path) or resolved_input_path.is_relative_to(
+            resolved_output_path
+        ):
+            raise OSError(
+                "Refusing to clean output folder containing well-crossings CSV"
+            )
+
     if not os.path.exists(pset.output_plotfolder):
         os.makedirs(pset.output_plotfolder)
 
     if pset.output_cleanup:
         logger.info("Removing previous files in %s", pset.output_plotfolder)
-        with contextlib.suppress(Exception):
-            shutil.rmtree(pset.output_plotfolder + "/*")
+        for entry in os.listdir(pset.output_plotfolder):
+            path = os.path.join(pset.output_plotfolder, entry)
+            with contextlib.suppress(Exception):
+                if os.path.isdir(path) and not os.path.islink(path):
+                    shutil.rmtree(path)
+                else:
+                    os.remove(path)
 
 
 def _compute_wellcrossings(pset):
