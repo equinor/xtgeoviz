@@ -4,28 +4,43 @@ from __future__ import annotations
 
 import logging
 import pathlib
+from typing import TYPE_CHECKING
 
 import xtgeo
 
-logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    # xsectplotting imports this module, so the owner type must stay type-only.
+    from .xsectplotting import _Xsections
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-def load_wells(self):
-    """Load wells from files, return as XTGeo well objects."""
+def load_wells(x_sections: _Xsections) -> None:
+    """Load wells and associated log settings into the application state.
+
+    Uses preloaded objects when supplied; otherwise reads matching files from
+    the configured well folder.
+
+    Args:
+        x_sections: Cross-section application receiving the loaded wells and logs.
+
+    Raises:
+        SystemExit: If no preloaded wells or matching files are available.
+    """
     wlist = []
 
-    if self.config["input"]["wells"]["objects"]:
-        wlist = self.config["input"]["wells"]["objects"]
+    if x_sections.config["input"]["wells"]["objects"]:
+        wlist = x_sections.config["input"]["wells"]["objects"]
 
     else:
-        wellfolder = pathlib.Path(self.config["input"]["wells"]["folder"])
-        wcard = self.config["input"]["wells"]["wildcard"]
+        wellfolder = pathlib.Path(x_sections.config["input"]["wells"]["folder"])
+        wcard = x_sections.config["input"]["wells"]["wildcard"]
 
         for well in sorted(wellfolder.glob(wcard)):
             logger.info("Read well file: %s", well)
             wobj = xtgeo.well_from_file(
                 well,
-                zonelogname=self.config["input"]["wells"]["zonelog"],
+                zonelogname=x_sections.config["input"]["wells"]["zonelog"],
                 strict=False,
             )
             wlist.append(wobj)
@@ -33,33 +48,35 @@ def load_wells(self):
         if not wlist:
             raise SystemExit("Cannot plot, no wells as input")
 
-    self.wells["wlist"] = wlist
+    x_sections.wells["wlist"] = wlist
 
-    self.wells["zonelog"] = self.config["input"]["wells"]["zonelog"]
+    x_sections.wells["zonelog"] = x_sections.config["input"]["wells"]["zonelog"]
 
-    self.wells["facieslog"] = None
-    if self.config["input"]["wells"]["facieslog"]:
-        self.wells["facieslog"] = self.config["input"]["wells"]["facieslog"]
+    x_sections.wells["facieslog"] = None
+    if x_sections.config["input"]["wells"]["facieslog"]:
+        x_sections.wells["facieslog"] = x_sections.config["input"]["wells"]["facieslog"]
 
-    self.wells["perflog"] = None
-    if self.config["input"]["wells"]["perflog"]:
-        self.wells["perflog"] = self.config["input"]["wells"]["perflog"]
+    x_sections.wells["perflog"] = None
+    if x_sections.config["input"]["wells"]["perflog"]:
+        x_sections.wells["perflog"] = x_sections.config["input"]["wells"]["perflog"]
 
 
-def _load_surfaces_generic(self, case="primary"):
-    """Load surfaces from files or grid, return as XTGeo RegularSurface objects.
-    Note that the return is a dictionary with several possible surface
-    sets: 'primary', 'secondary', 'tertiary', 'contacts'
-    ::
-    sdict:
-       primary:
-         [surfaceinstance1, surfaceinstance2, ...]
-       contacts:
-         [surfacieinstancex, surfacieinstancey, ...]
-    Note the surface.name attribute is used to store the display surface name.
+def _load_surfaces_generic(x_sections: _Xsections, case: str = "primary") -> None:
+    """Load and name one configured set of XTGeo regular surfaces.
+
+    Preloaded objects take precedence over file paths. Loaded surfaces are
+    stored in ``x_sections.surfaces[case]``.
+
+    Args:
+        x_sections: Cross-section application receiving the surfaces.
+        case: Surface-set key to load, such as ``primary``, ``secondary``, or
+            ``contacts``.
+
+    Raises:
+        RuntimeError: If a preloaded object is not an XTGeo regular surface.
     """
-    config = self.config
-    sdict = {}
+    config = x_sections.config
+    sdict = []
     names = config["input"]["surfaces"][case]["names"]
 
     if config["input"]["surfaces"][case]["objects"]:
@@ -93,60 +110,85 @@ def _load_surfaces_generic(self, case="primary"):
         else:
             srf.name = "Surface_" + str(inum)
 
-    self.surfaces[case] = sdict
+    x_sections.surfaces[case] = sdict
 
 
-def load_surfaces(self):
+def load_surfaces(x_sections: _Xsections) -> None:
+    """Load the primary, secondary, and contact surface sets.
+
+    Args:
+        x_sections: Cross-section application receiving the loaded surfaces.
+    """
     for casename in ["primary", "secondary", "contacts"]:
-        _load_surfaces_generic(self, case=casename)
+        _load_surfaces_generic(x_sections, case=casename)
 
 
-def load_outline(self):
-    """Load field outline from file, return as XTGeo Polygons objects."""
+def load_outline(x_sections: _Xsections) -> None:
+    """Load the field outline from a path or use a supplied polygons object.
 
-    outline = self.config["input"]["outline"]
+    Args:
+        x_sections: Cross-section application receiving the outline.
+    """
+
+    outline = x_sections.config["input"]["outline"]
 
     if isinstance(outline, str):
         logger.info("Read outline: %s", outline)
-        self.outline = xtgeo.polygons_from_file(outline)
+        x_sections.outline = xtgeo.polygons_from_file(outline)
     elif isinstance(outline, xtgeo.Polygons):
-        self.outline = outline
+        x_sections.outline = outline
 
 
-def load_cube(self):
-    """Apply a current cube or load a cube, both as XTGeo Cube"""
+def load_cube(x_sections: _Xsections) -> None:
+    """Load the backdrop cube or use a supplied XTGeo cube object.
 
-    cube = self.config["input"]["cube"]
+    Sets ``x_sections.cube`` to ``None`` when no cube is configured.
+
+    Args:
+        x_sections: Cross-section application receiving the cube.
+    """
+
+    cube = x_sections.config["input"]["cube"]
 
     if cube and isinstance(cube, str):
         logger.info("Reading cube: %s", cube)
-        self.cube = xtgeo.cube_from_file(cube)
+        x_sections.cube = xtgeo.cube_from_file(cube)
         logger.info("Reading cube done")
     elif cube and isinstance(cube, xtgeo.Cube):
-        self.cube = cube
+        x_sections.cube = cube
         logger.info("Apply an existing Cube instance: %s", type(cube))
     else:
-        self.cube = None
+        x_sections.cube = None
 
 
-def load_grid(self):
-    """Load a grid with property"""
+def load_grid(x_sections: _Xsections) -> None:
+    """Load configured grid geometry and its property.
 
-    gfile = self.config["input"]["grid"]["geometry"]
-    pfile = self.config["input"]["grid"]["property"]["file"]
-    pname = self.config["input"]["grid"]["property"]["name"]
-    pdate = self.config["input"]["grid"]["property"]["date"]
+    Reads the geometry only when it is not already supplied through a surface
+    source, and reads the property when both geometry and property paths are
+    configured.
+
+    Args:
+        x_sections: Cross-section application receiving the grid and property.
+    """
+
+    gfile = x_sections.config["input"]["grid"]["geometry"]
+    pfile = x_sections.config["input"]["grid"]["property"]["file"]
+    pname = x_sections.config["input"]["grid"]["property"]["name"]
+    pdate = x_sections.config["input"]["grid"]["property"]["date"]
 
     read_grid = True
-    if gfile == self.config["input"]["surfaces"]["fromgrid"]:
+    if gfile == x_sections.config["input"]["surfaces"]["fromgrid"]:
         # skip reading grid once more
         read_grid = False
 
     if gfile and pfile:
         if read_grid:
             logger.info("Reading grid geometry: %s", gfile)
-            self.grid = xtgeo.grid_from_file(gfile)
+            x_sections.grid = xtgeo.grid_from_file(gfile)
             logger.info("Reading grid geometry done")
         logger.info("Reading grid property: %s", pfile)
-        self.gridproperty = xtgeo.gridproperty_from_file(pfile, name=pname, date=pdate)
+        x_sections.gridproperty = xtgeo.gridproperty_from_file(
+            pfile, name=pname, date=pdate
+        )
         logger.info("Reading grid property done")

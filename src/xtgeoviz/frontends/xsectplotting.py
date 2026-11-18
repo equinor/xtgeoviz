@@ -8,7 +8,7 @@ import logging
 import os.path
 import sys
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Union
+from typing import Any, Literal, Optional, cast
 
 import yaml
 
@@ -18,12 +18,17 @@ from . import (
     _xsectplotting_plotting as _plt,
 )
 
-APPNAME = "xtgeoviz.xsectplot"
+APPNAME: str = "xtgeoviz.xsectplot"
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
-def _prettyprint(anydict):
+def _prettyprint(anydict: Any) -> None:
+    """Print a value as indented JSON when it is serializable.
+
+    Args:
+        anydict: Value to serialize and print.
+    """
     try:
         print(json.dumps(anydict, indent=4, ensure_ascii=False))
     except TypeError:
@@ -39,7 +44,10 @@ class _XsectSettings:
     general_engine: str = "matplotlib"
 
     design_style: int = 1
-    design_zrange: Union[tuple, list, dict] = (1000, 2000)
+    design_zrange: tuple[int | float, ...] | list[int | float] | dict[str, Any] = (
+        1000,
+        2000,
+    )
     design_gridlines: str = "both"
     design_subtitle: Optional[str] = None
     design_legendsize: int = 6
@@ -58,33 +66,50 @@ class _XsectSettings:
     surf_secondary_colors: str = "xtgeo"
     surf_secondary_legend: str = "?"
 
+    grid_colors: str = "rainbow"
+    grid_range: list[int | float] | tuple[int | float, ...] | None = None
+    grid_alpha: float = 0.8
+    grid_zinc: float = 0.5
+
     cube_colors: str = "seismic"
-    cube_range: Any = None
+    cube_range: list[int | float] | tuple[int | float, ...] | None = None
     cube_interpolation: str = "gaussian"
     cube_alpha: float = 0.8
     cube_sampling: str = "nearest"
 
     wells_zonelog_colors: str = "random40"
     wells_zonelog_zoneshift: int = 0
-    wells_zonelog_colordict: dict = field(default_factory=dict, init=False)
+    wells_zonelog_colordict: dict[int, int | str] = field(
+        default_factory=dict, init=False
+    )
     wells_facieslog_colors: str = "xtgeo"
-    wells_facieslog_colordict: dict = field(default_factory=dict, init=False)
+    wells_facieslog_colordict: dict[int, int | str] = field(
+        default_factory=dict, init=False
+    )
     wells_perflog_colors: str = "xtgeo"
-    wells_perflog_colordict: dict = field(default_factory=dict, init=False)
-    wells_wellcrossings_show: bool = False
+    wells_perflog_colordict: dict[int, int | str] = field(
+        default_factory=dict, init=False
+    )
+    wells_wellcrossings_show: bool | str = False
     wells_wellcrossings_sampling: int = 20
     wells_wellcrossings_wfilter: int = 5
 
     output_plotfolder: str = "/tmp"
     output_format: str = "svg"
     output_prefix: str = ""
-    output_pdfjoin: bool = False
+    output_pdfjoin: str | Literal[False] = False
     output_cleanup: bool = False
 
-    def __post_init__(self):
-        logger.info("Initilize class: %s", __class__.__name__)
+    def __post_init__(self) -> None:
+        """Log initialization of the plot settings object."""
+        logger.info("Initilize class: %s", type(self).__name__)
 
-    def update_plotsettings(self, config):
+    def update_plotsettings(self, config: dict[str, Any]) -> None:
+        """Populate plot settings from the merged configuration.
+
+        Args:
+            config: Complete configuration mapping produced by the frontend.
+        """
         logger.info("Update plotsettings")
         _cfg.update_plotsettings(self, config)
 
@@ -93,24 +118,25 @@ class _XsectSettings:
 class _Xsections:
     """Private class for XSections plotting"""
 
-    args: Optional[list] = None
-    inputdata: dict = field(default_factory=dict)
-    psettings: dict = field(default_factory=dict)
-    output: dict = field(default_factory=dict)
+    args: list[str] | argparse.Namespace | None = None
+    inputdata: dict[str, Any] | None = field(default_factory=dict)
+    psettings: dict[str, Any] | None = field(default_factory=dict)
+    output: dict[str, Any] | None = field(default_factory=dict)
     verbosity: str | None = None
 
-    config: dict = field(default_factory=dict, init=False)  # resulting YAML config
-    polylines: list = field(default_factory=list, init=False)
-    multiwells: list = field(default_factory=list, init=False)  # list of multiwells
-    wells: dict = field(default_factory=dict, init=False)
+    config: dict[str, Any] = field(default_factory=dict, init=False)
+    polylines: list[Any] = field(default_factory=list, init=False)
+    multiwells: list[Any] = field(default_factory=list, init=False)
+    wells: dict[str, Any] = field(default_factory=dict, init=False)
     cube: Any = field(default=None, init=False)
     grid: Any = field(default=None, init=False)
     gridproperty: Any = field(default=None, init=False)
     outline: Any = field(default=None, init=False)
     contacts: Any = field(default=None, init=False)
-    surfaces: dict = field(default_factory=dict, init=False)
+    surfaces: dict[str, Any] = field(default_factory=dict, init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        """Create plot settings and parse CLI or dictionary input."""
         self.plotsettings = _XsectSettings()  # plotsettings
 
         if not self.inputdata:
@@ -119,8 +145,14 @@ class _Xsections:
         else:
             self.parse_dicts()
 
-    def parse_args(self):
-        """Parse the command line arguments."""
+    def parse_args(self) -> None:
+        """Parse command-line arguments and store the resulting namespace.
+
+        Reads arguments from ``sys.argv`` and requires a config option and path.
+
+        Raises:
+            SystemExit: If arguments are incomplete or argument parsing fails.
+        """
         parser = argparse.ArgumentParser(
             description="Make beautiful cross sections in seconds",
             usage="xsections --config some.yaml ... ",
@@ -130,18 +162,17 @@ class _Xsections:
             "-c", "--config", dest="config", type=str, help="Config file on YAML format"
         )
 
-        if self.args is None:
-            self.args = sys.argv[1:]
+        args = sys.argv[1:] if self.args is None else cast("list[str]", self.args)
 
-        if len(self.args) < 2:
+        if len(args) < 2:
             parser.print_help()
             print("QUIT")
             sys.exit(0)
 
-        self.args = parser.parse_args(self.args)
+        self.args = parser.parse_args(args)
 
-    def set_logger_verbosity(self):
-        """Use config setting to set eventual logging output."""
+    def set_logger_verbosity(self) -> None:
+        """Configure logging from the explicit or configured verbosity."""
 
         actual_verbosity = self.verbosity or self.config["verbosity"]
 
@@ -172,13 +203,17 @@ class _Xsections:
             for handler in logging.root.handlers:
                 handler.addFilter(logging.Filter("xtgeoviz"))
 
-    def parse_config(self):
-        """Read config from YAML and oveeride with defaults."""
+    def parse_config(self) -> None:
+        """Read a YAML config file and merge it over the defaults.
 
-        args = self.args
+        Raises:
+            OSError: If the configured file does not exist.
+            ValueError: If the YAML contains keys not present in the defaults.
+        """
+        args = cast("argparse.Namespace", self.args)
         inputfile = args.config
 
-        ydefaults = _cfg.config_defaults()
+        ydefaults = cast("str", _cfg.config_defaults())
 
         dconfig = yaml.safe_load(ydefaults)
 
@@ -196,54 +231,51 @@ class _Xsections:
 
         logger.info("Input config YAML file <%s> is read...", inputfile)
 
-    def parse_dicts(self):
-        """Parse settings from dicts given as arguments, and merge with defaults."""
+    def parse_dicts(self) -> None:
+        """Merge Python dictionary inputs into the default configuration."""
         default = _cfg.config_defaults(as_yaml=False)
         # _prettyprint(default)
         update = {
-            "input": self.inputdata,
-            "plotsettings": self.psettings,
-            "output": self.output,
+            "input": self.inputdata or {},
+            "plotsettings": self.psettings or {},
+            "output": self.output or {},
         }
         self.config = _cfg.data_merge(default, update)
         self.set_logger_verbosity()
         # _prettyprint(self.config)
 
-    def load_wells(self):
-        """Load wells as a list of XTGeo Well() instances"""
+    def load_wells(self) -> None:
+        """Load configured well objects and well-log settings."""
 
         _load.load_wells(self)
 
-    def load_surfaces(self):
-        """Load surfaces as a dict of lists of XTGeo Surface() instances"""
+    def load_surfaces(self) -> None:
+        """Load configured primary, secondary, and contact surfaces."""
 
         _load.load_surfaces(self)
 
-    def load_cube(self):
-        """Load cube to plot as backdrop, a XTGeo Cube() instances"""
+    def load_cube(self) -> None:
+        """Load the configured cube or use a supplied XTGeo cube object."""
 
         _load.load_cube(self)
 
-    def load_grid(self):
-        """Load grid with property to plot as backdrop, XTGeo Grid() + GridProperty
-        instances.
-        """
+    def load_grid(self) -> None:
+        """Load configured grid geometry and its property for plotting."""
 
         _load.load_grid(self)
 
-    def load_outline(self):
-        """Load map outline to plot as info"""
+    def load_outline(self) -> None:
+        """Load the configured field outline or a supplied polygons object."""
 
         _load.load_outline(self)
 
-    def config_complete(self):
-        """improve config, better defaults, and some smart settings based on input"""
+    def config_complete(self) -> None:
+        """Fill derived settings using the loaded wells, surfaces, and volumes."""
 
         _cfg.config_complete(self)  # config, wells, surfs["primary"])
 
-    def plot(self):
-        """Do the actual plotting"""
-
+    def plot(self) -> None:
+        """Render cross-sections using the loaded data and plot settings."""
         _plt.plotting(self)
 
 
@@ -253,12 +285,12 @@ class _Xsections:
 
 
 def xsectplot(
-    args: Optional[Dict] = None,
-    inputdata: Optional[Dict] = None,
-    plotsettings: Optional[Dict] = None,
-    output: Optional[Dict] = None,
+    args: list[str] | None = None,
+    inputdata: dict[str, Any] | None = None,
+    plotsettings: dict[str, Any] | None = None,
+    output: dict[str, Any] | None = None,
     verbosity: Optional[str] = None,
-):
+) -> None:
     """Frontend function for plotting xsections.
 
     The input can either be in form of command line args parsing a YAML file with
