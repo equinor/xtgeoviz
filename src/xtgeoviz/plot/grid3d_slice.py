@@ -6,10 +6,10 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
+from matplotlib import colormaps
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
 
-from ._libwrapper import matplotlib_colormap
 from .baseplot import BasePlot
 
 if TYPE_CHECKING:
@@ -78,7 +78,7 @@ class Grid3DSlice(BasePlot):
         self._index = index
         if isinstance(colormap, str):
             try:
-                self._colormap = matplotlib_colormap(colormap)
+                self._colormap = colormaps[colormap]
             except (KeyError, ValueError):
                 self.define_colormap(colormap)
         elif colormap is not None:

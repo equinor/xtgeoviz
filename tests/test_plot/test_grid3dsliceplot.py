@@ -3,11 +3,11 @@ import pathlib
 from typing import Any
 from unittest.mock import MagicMock
 
+import matplotlib
 import pytest
 import xtgeo
 from matplotlib.colors import ListedColormap
 
-import xtgeoviz.plot.grid3d_slice as grid3d_slice_module
 from xtgeoviz.plot import Grid3DSlice
 
 TPATH = pathlib.Path("../xtgeo-testdata")
@@ -34,25 +34,23 @@ class TestGrid3DSlice:
 
         assert plot.colormap.name == expected_name
 
-    def test_plot_gridslice_preserves_registered_colormap_special_colors(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_plot_gridslice_preserves_registered_colormap_special_colors(self) -> None:
         """Preserve a registered colormap's under, over, and bad colors."""
         colormap = ListedColormap(["red", "blue"])
         colormap.set_under("green")
         colormap.set_over("yellow")
         colormap.set_bad("black")
-        monkeypatch.setattr(
-            grid3d_slice_module, "matplotlib_colormap", lambda _: colormap
-        )
-        plot = Grid3DSlice()
+        name = "xtgeoviz_test_special_colors"
+        matplotlib.colormaps.register(colormap, name=name)
+        try:
+            plot = Grid3DSlice()
+            plot.plot_gridslice(MagicMock(), mode="row", colormap=name)
 
-        plot.plot_gridslice(MagicMock(), mode="row", colormap="registered")
-
-        assert plot.colormap is colormap
-        assert tuple(plot.colormap.get_under()) == tuple(colormap.get_under())
-        assert tuple(plot.colormap.get_over()) == tuple(colormap.get_over())
-        assert tuple(plot.colormap.get_bad()) == tuple(colormap.get_bad())
+            assert tuple(plot.colormap.get_under()) == tuple(colormap.get_under())
+            assert tuple(plot.colormap.get_over()) == tuple(colormap.get_over())
+            assert tuple(plot.colormap.get_bad()) == tuple(colormap.get_bad())
+        finally:
+            matplotlib.colormaps.unregister(name)
 
     def test_slice_simple_layer(
         self, tmpdir: Any, show_plot: bool, generate_plot: bool

@@ -7,10 +7,10 @@ import warnings
 from typing import TYPE_CHECKING, Any, Sequence
 
 import matplotlib.pyplot as plt
+from matplotlib import colormaps
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 
 from . import _colortables as _ctable
-from ._libwrapper import matplotlib_colormap
 
 if TYPE_CHECKING:
     import os
@@ -29,7 +29,7 @@ class BasePlot:
         self._contourlevels = 3
 
         # wants self._color to be LinearSegmentedColormap instance
-        viridis = matplotlib_colormap("viridis")
+        viridis = colormaps["viridis"]
         self._colormap: Colormap
         if isinstance(viridis, ListedColormap):
             self._colormap = LinearSegmentedColormap.from_list(

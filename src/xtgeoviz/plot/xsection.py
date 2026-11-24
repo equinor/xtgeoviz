@@ -12,15 +12,11 @@ import numpy as np
 import numpy.ma as ma
 import pandas as pd
 import xtgeo
-from matplotlib import collections as mc
+from matplotlib import collections as mc, colormaps
 from matplotlib.colors import Colormap, LinearSegmentedColormap, ListedColormap
 from matplotlib.lines import Line2D
+from scipy.ndimage import gaussian_filter
 
-from ._libwrapper import (
-    matplotlib_colormap,
-    matplotlib_set_xticks,
-    scipy_gaussianfilter,
-)
 from .baseplot import BasePlot
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -95,7 +91,7 @@ class XSection(BasePlot):
         self._colorlegend_grid = False
 
         if colormap is None:
-            self._colormap = matplotlib_colormap("viridis")
+            self._colormap = colormaps["viridis"]
         elif isinstance(colormap, (LinearSegmentedColormap, ListedColormap)):
             self._colormap = colormap
         else:
@@ -506,7 +502,7 @@ class XSection(BasePlot):
             delta += auto_ticks_delta
 
         # Set new xticks and labels
-        matplotlib_set_xticks(ax, new_ticks, new_tick_labels)
+        ax.set_xticks(new_ticks, labels=new_tick_labels)
 
         if gridlines:
             ax.tick_params(axis="y", direction="in", which="both")
@@ -988,7 +984,7 @@ class XSection(BasePlot):
         if "gaussian" in interpolation:  # allow gaussian3 etc
             try:
                 sigma = int(interpolation[-1])
-                arr = scipy_gaussianfilter(arr, sigma)
+                arr = gaussian_filter(arr, sigma)
                 interpolation = "none"
             except ValueError:
                 interpolation = "gaussian"
