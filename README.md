@@ -16,6 +16,23 @@ xtgeoviz is available from PyPI.
 pip install xtgeoviz
 ```
 
+### Dependency compatibility
+
+xtgeoviz supports current releases of XTGeo, Matplotlib, SciPy, and its other
+dependencies. Older releases are not supported and may not provide APIs used by
+xtgeoviz. The dependency declarations do not prevent an installer from selecting
+an older release, including when another package constrains it.
+
+If an import or plotting operation fails because of an incompatible dependency,
+upgrade the affected package, for example:
+
+```sh
+pip install --upgrade xtgeo matplotlib scipy
+```
+
+The project lockfile is used for reproducible development and CI; scheduled CI
+also tests updated dependencies.
+
 ## Usage
 
 ```python
