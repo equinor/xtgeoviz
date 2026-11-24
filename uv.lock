@@ -3157,7 +3157,7 @@ tests = [
 requires-dist = [
     { name = "autoapi", marker = "extra == 'docs'" },
     { name = "coverage", marker = "extra == 'tests'", specifier = ">=4.1" },
-    { name = "matplotlib", specifier = ">=3.5.0" },
+    { name = "matplotlib" },
     { name = "mypy", marker = "extra == 'tests'" },
     { name = "myst-parser", marker = "extra == 'docs'" },
     { name = "numpy" },
@@ -3169,7 +3169,7 @@ requires-dist = [
     { name = "pyyaml" },
     { name = "rstcheck", marker = "extra == 'tests'" },
     { name = "ruff", marker = "extra == 'tests'" },
-    { name = "scipy", specifier = ">=1.5.3" },
+    { name = "scipy" },
     { name = "sphinx", marker = "extra == 'docs'" },
     { name = "sphinx-argparse", marker = "extra == 'docs'" },
     { name = "sphinx-autodoc-typehints", marker = "extra == 'docs'", specifier = "<2.4" },
@@ -3178,6 +3178,6 @@ requires-dist = [
     { name = "sphinx-togglebutton", marker = "extra == 'docs'" },
     { name = "sphinxcontrib-apidoc", marker = "extra == 'docs'" },
     { name = "types-pyyaml", marker = "extra == 'tests'" },
-    { name = "xtgeo", specifier = ">=4.19.0" },
+    { name = "xtgeo" },
 ]
 provides-extras = ["tests", "docs"]

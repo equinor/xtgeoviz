@@ -50,10 +50,10 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
     "PyYAML",
-    "matplotlib>=3.5.0",
+    "matplotlib",
     "numpy",
-    "scipy>=1.5.3",
-    "xtgeo>=4.19.0",
+    "scipy",
+    "xtgeo",
 ]
 
 [project.optional-dependencies]
