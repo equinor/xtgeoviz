@@ -3157,7 +3157,7 @@ tests = [
 requires-dist = [
     { name = "autoapi", marker = "extra == 'docs'" },
     { name = "coverage", marker = "extra == 'tests'", specifier = ">=4.1" },
-    { name = "matplotlib", specifier = ">=3.3.2" },
+    { name = "matplotlib", specifier = ">=3.5.0" },
     { name = "mypy", marker = "extra == 'tests'" },
     { name = "myst-parser", marker = "extra == 'docs'" },
     { name = "numpy" },

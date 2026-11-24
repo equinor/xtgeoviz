@@ -12,8 +12,9 @@ import pytest
 import xtgeo
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap
+from scipy.ndimage import gaussian_filter
 
-from xtgeoviz.plot import XSection, _libwrapper, xsection as xsection_module
+from xtgeoviz.plot import XSection, xsection as xsection_module
 
 TPATH = pathlib.Path("../xtgeo-testdata")
 
@@ -29,31 +30,6 @@ USEFILE7 = TPATH / "wells/reek/1/OP_2.w"
 
 class TestXSection:
     """Tests for cross-section plotting."""
-
-    @pytest.mark.parametrize(
-        ("matplotlib_version", "combined_labels"),
-        [("3.3.2", False), ("3.5.0", True)],
-    )
-    def test_matplotlib_set_xticks_uses_compatibility_api(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        matplotlib_version: str,
-        combined_labels: bool,
-    ) -> None:
-        """Use the tick-label API supported by the installed Matplotlib version."""
-        monkeypatch.setattr(_libwrapper.matplotlib, "__version__", matplotlib_version)
-        axes = MagicMock()
-        ticks = [0.0, 50.0, 100.0]
-        labels = ["1200", "1250", "1300"]
-
-        _libwrapper.matplotlib_set_xticks(axes, ticks, labels)
-
-        if combined_labels:
-            axes.set_xticks.assert_called_once_with(ticks, labels=labels)
-            axes.set_xticklabels.assert_not_called()
-        else:
-            axes.set_xticks.assert_called_once_with(ticks)
-            axes.set_xticklabels.assert_called_once_with(labels)
 
     def test_xsection_init(self) -> None:
         """Trigger XSection class, basically."""
@@ -71,7 +47,7 @@ class TestXSection:
             use_default: Whether to exercise the default-colormap branch.
         """
         colormap = ListedColormap(["red", "blue"])
-        monkeypatch.setattr(xsection_module, "matplotlib_colormap", lambda _: colormap)
+        monkeypatch.setattr(xsection_module, "colormaps", {"viridis": colormap})
 
         xsect = XSection() if use_default else XSection(colormap=colormap)
 
@@ -213,6 +189,8 @@ class TestXSection:
         try:
             myplot.set_xaxis_md(gridlines=True)
 
+            np.testing.assert_allclose(axes.get_xticks(), [-34.0, 16.0, 66.0])
+            assert axes.get_xlim() == pytest.approx((0.0, 100.0))
             assert [tick.get_text() for tick in axes.get_xticklabels()] == [
                 "1200",
                 "1250",
@@ -235,6 +213,35 @@ class TestXSection:
         try:
             with pytest.raises(ValueError, match="Too few colors"):
                 myplot.plot_surfaces(surfaces=surfaces)
+        finally:
+            plt.close(figure)
+
+    @pytest.mark.parametrize("interpolation", ["gaussian", "gaussian2"])
+    def test_plot_cube_gaussian_interpolation(self, interpolation: str) -> None:
+        """Filter numbered Gaussian interpolation without changing the default."""
+        values = np.zeros((5, 5))
+        values[2, 2] = 1.0
+        cube = MagicMock()
+        cube.zinc = 2.0
+        cube.get_randomline.return_value = (0, 5, 0, 5, values)
+        myplot = XSection(cube=cube)
+        myplot._fence = np.array([[0.0, 0.0], [1.0, 1.0]])
+        figure, axes = plt.subplots()
+        myplot._ax1 = {"main": axes}
+
+        try:
+            myplot.plot_cube(interpolation=interpolation)
+
+            image = axes.images[0]
+            expected = (
+                gaussian_filter(values, 2) if interpolation == "gaussian2" else values
+            )
+            actual = image.get_array()
+            assert actual is not None
+            np.testing.assert_allclose(actual, expected)
+            assert image.get_interpolation() == (
+                "none" if interpolation == "gaussian2" else "gaussian"
+            )
         finally:
             plt.close(figure)
 
