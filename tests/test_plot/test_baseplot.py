@@ -13,7 +13,12 @@ class TestBasePlot:
     """Tests for the shared plotting base class."""
 
     @pytest.mark.skip(reason="Graphical compare testing immature")
-    @image_comparison(baseline_images=["canvas"], remove_text=False, extensions=["png"])
+    @image_comparison(
+        baseline_images=["canvas"],
+        remove_text=False,
+        extensions=["png"],
+        style=("classic", "_classic_test_patch"),
+    )
     def test_canvas(self) -> None:
         """Test the canvas function."""
 
