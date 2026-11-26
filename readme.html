@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz &mdash; xtgeoviz 0.3.4.dev24+g645d6daaf documentation</title>
+  <title>xtgeoviz &mdash; xtgeoviz 0.3.4.dev25+gf5baedec6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=a353e692"></script>
+      <script src="_static/documentation_options.js?v=e2bd71c6"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -44,7 +44,10 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">xtgeoviz</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependency-compatibility">Dependency compatibility</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#developing-contributing">Developing &amp; Contributing</a></li>
@@ -94,6 +97,20 @@
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>xtgeoviz
 </pre></div>
 </div>
+<section id="dependency-compatibility">
+<h3>Dependency compatibility<a class="headerlink" href="#dependency-compatibility" title="Link to this heading"></a></h3>
+<p>xtgeoviz supports current releases of XTGeo, Matplotlib, SciPy, and its other
+dependencies. Older releases are not supported and may not provide APIs used by
+xtgeoviz. The dependency declarations do not prevent an installer from selecting
+an older release, including when another package constrains it.</p>
+<p>If an import or plotting operation fails because of an incompatible dependency,
+upgrade the affected package, for example:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>xtgeo<span class="w"> </span>matplotlib<span class="w"> </span>scipy
+</pre></div>
+</div>
+<p>The project lockfile is used for reproducible development and CI; scheduled CI
+also tests updated dependencies.</p>
+</section>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
@@ -133,7 +150,7 @@ for more details and instructions for getting started.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev24+g645d6daaf).</p>
+    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev25+gf5baedec6).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
