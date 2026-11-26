@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.plot.xtmap &mdash; xtgeoviz 0.3.4.dev6+g47328f4d3 documentation</title>
+  <title>xtgeoviz.plot.xtmap &mdash; xtgeoviz 0.3.4.dev20+gf33a31a3f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5dabd835"></script>
+      <script src="../../../_static/documentation_options.js?v=6fd25e67"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -76,6 +76,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mplp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -85,7 +86,10 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.baseplot</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePlot</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">xtgeo</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">Colormap</span>
+<span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Map">
@@ -93,7 +97,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Map</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Class for plotting a map, using matplotlib."""</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The constructor method for a Map object."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -109,7 +113,7 @@
     <span class="c1"># Properties</span>
     <span class="c1"># =========================================================================</span>
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pagesize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pagesize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Returns page size."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pagesize</span>
 
@@ -121,14 +125,14 @@
 <a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xtmap.html#xtgeoviz.plot.xtmap.Map.plot_surface">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_surface</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">surf</span><span class="p">,</span>
-        <span class="n">minvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">maxvalue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">contourlevels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">xlabelrotation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">colormap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">logarithmic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">surf</span><span class="p">:</span> <span class="n">xtgeo</span><span class="o">.</span><span class="n">RegularSurface</span><span class="p">,</span>
+        <span class="n">minvalue</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">maxvalue</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">contourlevels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">xlabelrotation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colormap</span><span class="p">:</span> <span class="n">Colormap</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">logarithmic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Input a surface and plot it."""</span>
         <span class="c1"># need a deep copy to avoid changes in the original surf</span>
 
@@ -190,8 +194,10 @@
         <span class="c1"># this will override current instance colormap locally, and is</span>
         <span class="c1"># therefore reset afterwards</span>
         <span class="n">keepcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span>
-        <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">colormap</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colormap</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">define_colormap</span><span class="p">(</span><span class="n">colormap</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">colormap</span>
 
         <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">minvalue</span><span class="p">,</span> <span class="n">maxvalue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contourlevels</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Number of contour levels: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">levels</span><span class="p">)</span>
@@ -201,7 +207,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Current colormap is </span><span class="si">%s</span><span class="s2">, requested is </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="p">,</span> <span class="n">colormap</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Current colormap name is </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">uselevels</span> <span class="o">=</span> <span class="n">levels</span> <span class="k">if</span> <span class="n">ma</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-07</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="n">uselevels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">levels</span> <span class="k">if</span> <span class="n">ma</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-07</span> <span class="k">else</span> <span class="mi">1</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">logarithmic</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
@@ -223,20 +229,20 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Could not make plot: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">"equal"</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s2">"box"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">keepcolor</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">keepcolor</span></div>
 
 
 <div class="viewcode-block" id="Map.plot_faults">
 <a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xtmap.html#xtgeoviz.plot.xtmap.Map.plot_faults">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_faults</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">fpoly</span><span class="p">,</span>
-        <span class="n">idname</span><span class="o">=</span><span class="s2">"POLY_ID"</span><span class="p">,</span>
-        <span class="n">color</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span>
-        <span class="n">edgecolor</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span>
-        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
-        <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">fpoly</span><span class="p">:</span> <span class="n">xtgeo</span><span class="o">.</span><span class="n">Polygons</span><span class="p">,</span>
+        <span class="n">idname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"POLY_ID"</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">"k"</span><span class="p">,</span>
+        <span class="n">edgecolor</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">"k"</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Plot the faults.</span>
 
 <span class="sd">        Args:</span>
@@ -258,17 +264,22 @@
             <span class="c1"># make a list [(X,Y) ...];</span>
             <span class="n">af</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">myfault</span><span class="p">[</span><span class="s2">"X_UTME"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">myfault</span><span class="p">[</span><span class="s2">"Y_UTMN"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
 
-            <span class="n">px</span> <span class="o">=</span> <span class="n">mplp</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="n">edgecolor</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">af</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">af</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">af</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"A polygon is not closed: </span><span class="si">{</span><span class="n">af</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">px</span><span class="o">.</span><span class="n">get_closed</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">px</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"A polygon is not closed: </span><span class="si">{</span><span class="n">px</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
+            <span class="n">px</span> <span class="o">=</span> <span class="n">mplp</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span><span class="n">af</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="n">edgecolor</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">px</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Map.plot_polygons">
 <a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xtmap.html#xtgeoviz.plot.xtmap.Map.plot_polygons">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fpoly</span><span class="p">,</span> <span class="n">idname</span><span class="o">=</span><span class="s2">"POLY_ID"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_polygons</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fpoly</span><span class="p">:</span> <span class="n">xtgeo</span><span class="o">.</span><span class="n">Polygons</span><span class="p">,</span>
+        <span class="n">idname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"POLY_ID"</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="s2">"k"</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Plot a polygons instance.</span>
 
 <span class="sd">        Args:</span>
@@ -294,7 +305,7 @@
 
 <div class="viewcode-block" id="Map.plot_points">
 <a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xtmap.html#xtgeoviz.plot.xtmap.Map.plot_points">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">xtgeo</span><span class="o">.</span><span class="n">Points</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Plot a points set on the map.</span>
 
 <span class="sd">        This can be be useful e.g. for plotting the underlying point set</span>
@@ -315,7 +326,7 @@
 
 <div class="viewcode-block" id="Map.plot_wells">
 <a class="viewcode-back" href="../../../apiref/xtgeoviz.plot.xtmap.html#xtgeoviz.plot.xtmap.Map.plot_wells">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_wells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wells</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_wells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wells</span><span class="p">:</span> <span class="n">xtgeo</span><span class="o">.</span><span class="n">Wells</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Plot wells on the map.</span>
 
 <span class="sd">        Args:</span>
@@ -341,7 +352,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev6+g47328f4d3).</p>
+    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev20+gf33a31a3f).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

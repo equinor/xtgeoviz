@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.plot.baseplot module &mdash; xtgeoviz 0.3.4.dev6+g47328f4d3 documentation</title>
+  <title>xtgeoviz.plot.baseplot module &mdash; xtgeoviz 0.3.4.dev20+gf33a31a3f documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5dabd835"></script>
+      <script src="../_static/documentation_options.js?v=6fd25e67"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -98,19 +98,19 @@
 <p>Init method.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.contourlevels">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">contourlevels</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.contourlevels" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">contourlevels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.contourlevels" title="Link to this definition"></a></dt>
 <dd><p>Get or set the number of contour levels.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.colormap">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">colormap</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.colormap" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">colormap</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Colormap</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.colormap" title="Link to this definition"></a></dt>
 <dd><p>Get or set the color table as a matplot cmap object.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.pagesize">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">pagesize</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.pagesize" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">pagesize</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.pagesize" title="Link to this definition"></a></dt>
 <dd><p>Returns page size.</p>
 </dd></dl>
 
@@ -129,6 +129,9 @@ color entries per zone and/or well, which starts
 from 0 index. Default is just keep the linear sequence as is.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Colormap</span></code></span></p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -136,12 +139,22 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.get_any_colormap_as_table">
 <span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_any_colormap_as_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.get_any_colormap_as_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.get_any_colormap_as_table" title="Link to this definition"></a></dt>
 <dd><p>Returns the given color map cmap as a list of RGB tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xtgeoviz.plot.baseplot.BasePlot.get_colormap_as_table">
 <span class="sig-name descname"><span class="pre">get_colormap_as_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.get_colormap_as_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.get_colormap_as_table" title="Link to this definition"></a></dt>
 <dd><p>Get the current color map as a list of RGB tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -157,6 +170,9 @@ map name, e.g. ‘xtgeo’, or one of matplotlibs numerous tables.</p></li>
 color entries per zone and/or well, which starts
 from 0 index. Default is just keep the linear sequence as is.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -174,6 +190,9 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 <li><p><strong>figscaling</strong> (<em>str</em><em>, </em><em>optional</em>) – Figure scaling, default is 1.0</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -182,8 +201,11 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 <span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.show" title="Link to this definition"></a></dt>
 <dd><p>Call to matplotlib.pyplot show method.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True of plotting is done; otherwise False</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True of plotting is done; otherwise False</p>
 </dd>
 </dl>
 </dd></dl>
@@ -193,6 +215,11 @@ from 0 index. Default is just keep the linear sequence as is.</p></li>
 <span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/plot/baseplot.html#BasePlot.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.plot.baseplot.BasePlot.close" title="Link to this definition"></a></dt>
 <dd><p>Explicitly closes the plot, meaning that memory will be cleared.
 After close is called, no more operations can be performed on the plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -206,12 +233,15 @@ After close is called, no more operations can be performed on the plot.</p>
 <li><p><strong>fformat</strong> (<em>str</em>) – Plot format, e.g. png (default), jpg, svg</p></li>
 <li><p><strong>last</strong> (<em>bool</em>) – Default is true, calls close on the plot, let last
 be False for all except the last plots.</p></li>
-<li><p><strong>kwargs</strong> – Additional keyword arguments that are passed
+<li><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span>) – Additional keyword arguments that are passed
 to matplotlib when saving the figure</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True of plotting is done; otherwise False</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True of plotting is done; otherwise False</p>
 </dd>
 </dl>
 <p>Example:</p>
@@ -239,7 +269,7 @@ to matplotlib when saving the figure</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev6+g47328f4d3).</p>
+    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev20+gf33a31a3f).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
