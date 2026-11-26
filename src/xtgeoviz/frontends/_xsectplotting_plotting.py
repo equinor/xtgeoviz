@@ -17,6 +17,8 @@ from xtgeoviz.plot import XSection
 
 if TYPE_CHECKING:
     # xsectplotting imports this module, so these owner types must stay type-only.
+    from collections.abc import Sequence
+
     import xtgeo
 
     from .xsectplotting import _Xsections, _XsectSettings
@@ -317,7 +319,7 @@ def _validate_pdf_join_paths(masterfile: str, plotfiles: list[str]) -> None:
 
 def _create_or_clean_folder(
     pset: _XsectSettings,
-    input_paths: list[str | os.PathLike[str]] | None = None,
+    input_paths: Sequence[str | os.PathLike[str]] | None = None,
 ) -> None:
     """Create the output folder and optionally remove its existing contents.
 
