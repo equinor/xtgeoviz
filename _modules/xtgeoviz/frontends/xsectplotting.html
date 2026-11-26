@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.frontends.xsectplotting &mdash; xtgeoviz 0.3.4.dev20+gf33a31a3f documentation</title>
+  <title>xtgeoviz.frontends.xsectplotting &mdash; xtgeoviz 0.3.4.dev21+gc5fbb3132 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=6fd25e67"></script>
+      <script src="../../../_static/documentation_options.js?v=7f788d7a"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -366,22 +366,27 @@
     <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">verbosity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Frontend function for plotting xsections.</span>
+<span class="w">    </span><span class="sd">"""Create cross-section plots from YAML configuration or Python mappings.</span>
 
-<span class="sd">    The input can either be in form of command line args parsing a YAML file with</span>
-<span class="sd">    additional command line args that overides, or it can be dicts in form of inputdata,</span>
-<span class="sd">    plotsettings and output that will be combined with defaults.</span>
-
-<span class="sd">    If the input key is not None, then any args will be ignored.</span>
+<span class="sd">    When ``inputdata`` is truthy, the ``inputdata``, ``plotsettings``, and</span>
+<span class="sd">    ``output`` mappings are merged with defaults. Otherwise, configuration is</span>
+<span class="sd">    read from command-line arguments.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        args: Optional command-line tokens; omitted values are read from ``sys.argv``.</span>
-<span class="sd">        input: A dictionary spesifying minimum required input</span>
-<span class="sd">        plotsettings: A dictionary spesifying minimum required plotsettings</span>
-<span class="sd">        output: A dictionary spesyfying minimum required output settings</span>
-<span class="sd">        verbosity: Default None means that it is set from the config; otherwise a</span>
-<span class="sd">            string here will override: "normal" for normal output, "info" for using</span>
-<span class="sd">            logging for all modules, and similarly "debug"</span>
+<span class="sd">        args: Optional command-line tokens to parse. When omitted and dictionary</span>
+<span class="sd">            input is not provided, command-line parsing reads ``sys.argv``.</span>
+<span class="sd">        inputdata: Input sources such as wells, surfaces, cube, and outline.</span>
+<span class="sd">        plotsettings: Overrides for design, colors, ranges, and overlays.</span>
+<span class="sd">        output: Output folder, format, PDF, and cleanup settings.</span>
+<span class="sd">        verbosity: Optional logging level override; otherwise the config value is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        OSError: If the selected YAML config file does not exist.</span>
+<span class="sd">        ValueError: If a supplied configuration contains invalid keys.</span>
+<span class="sd">        SystemExit: If command-line arguments are incomplete or invalid.</span>
 <span class="sd">    """</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">_Xsections</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">inputdata</span><span class="p">,</span> <span class="n">plotsettings</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">verbosity</span><span class="p">)</span>
@@ -411,7 +416,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev20+gf33a31a3f).</p>
+    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev21+gc5fbb3132).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

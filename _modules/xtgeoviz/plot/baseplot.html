@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.plot.baseplot &mdash; xtgeoviz 0.3.4.dev20+gf33a31a3f documentation</title>
+  <title>xtgeoviz.plot.baseplot &mdash; xtgeoviz 0.3.4.dev21+gc5fbb3132 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=6fd25e67"></script>
+      <script src="../../../_static/documentation_options.js?v=7f788d7a"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -131,6 +131,7 @@
 
     <span class="nd">@contourlevels</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">contourlevels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the number of contour levels."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_contourlevels</span> <span class="o">=</span> <span class="n">num</span>
 
     <span class="nd">@property</span>
@@ -140,6 +141,11 @@
 
     <span class="nd">@colormap</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">:</span> <span class="n">Colormap</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the active colormap from an object or registered name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmap: Colormap object or name to activate.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">LinearSegmentedColormap</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span> <span class="o">=</span> <span class="n">cmap</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span> <span class="n">ListedColormap</span><span class="p">):</span>
@@ -396,7 +402,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev20+gf33a31a3f).</p>
+    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev21+gc5fbb3132).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

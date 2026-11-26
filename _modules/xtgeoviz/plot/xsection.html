@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.plot.xsection &mdash; xtgeoviz 0.3.4.dev20+gf33a31a3f documentation</title>
+  <title>xtgeoviz.plot.xsection &mdash; xtgeoviz 0.3.4.dev21+gc5fbb3132 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=6fd25e67"></script>
+      <script src="../../../_static/documentation_options.js?v=7f788d7a"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -208,6 +208,11 @@
 
     <span class="nd">@legendsize</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">legendsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lsize</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the legend text size.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lsize: Font size for legend labels.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_legendsize</span> <span class="o">=</span> <span class="n">lsize</span>
 
     <span class="nd">@property</span>
@@ -217,6 +222,11 @@
 
     <span class="nd">@has_legend</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set whether the plot includes a legend.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: Whether to show the legend.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Input is not a bool"</span><span class="p">)</span>
 
@@ -229,6 +239,11 @@
 
     <span class="nd">@has_axes</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set whether plot axes are displayed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: Whether to show the axes.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Input is not a bool"</span><span class="p">)</span>
 
@@ -241,6 +256,11 @@
 
     <span class="nd">@colormap_facies</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">colormap_facies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the facies colormap by name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmap: Colormap name or color-table file path.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -250,6 +270,11 @@
 
     <span class="nd">@colormap_zonelog</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">colormap_zonelog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the zonelog colormap by name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmap: Colormap name or color-table file path.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -259,6 +284,11 @@
 
     <span class="nd">@colormap_perf</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">colormap_perf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the perforation colormap by name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmap: Colormap name or color-table file path.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">define_any_colormap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -268,6 +298,11 @@
 
     <span class="nd">@colormap_facies_dict</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">colormap_facies_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the facies-value to color-index mapping.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            xdict: Mapping from facies values to palette indices or color names.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Input is not a dict"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_facies_dict</span> <span class="o">=</span> <span class="n">xdict</span>
@@ -279,6 +314,11 @@
 
     <span class="nd">@colormap_perf_dict</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">colormap_perf_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the perforation-value to color-index mapping.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            xdict: Mapping from perforation values to indices or color names.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Input is not a dict"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_perf_dict</span> <span class="o">=</span> <span class="n">xdict</span>
@@ -290,6 +330,11 @@
 
     <span class="nd">@colormap_zonelog_dict</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">colormap_zonelog_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the zone-value to color-index mapping.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            xdict: Mapping from zone values to palette indices or color names.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xdict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Input is not a dict"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_colormap_zonelog_dict</span> <span class="o">=</span> <span class="n">xdict</span>
@@ -312,6 +357,11 @@
 
     <span class="nd">@fence</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">myfence</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set the cross-section fence polyline.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            myfence: Fence coordinates, or ``None`` to clear the fence.</span>
+<span class="sd">        """</span>
         <span class="c1"># this can be extended with checks and various types of input...</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fence</span> <span class="o">=</span> <span class="n">myfence</span>
 
@@ -892,6 +942,14 @@
         <span class="n">items</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Draw a legend from labeled proxy lines.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ax: Axes on which to place the legend.</span>
+<span class="sd">            bba: Legend anchor coordinates.</span>
+<span class="sd">            items: Legend labels mapped to their colors.</span>
+<span class="sd">            title: Optional legend title.</span>
+<span class="sd">        """</span>
         <span class="n">proxies</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -913,6 +971,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_drawlegend</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">bba</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Draw the axes' existing legend with thicker line samples.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ax: Axes whose legend should be drawn.</span>
+<span class="sd">            bba: Legend anchor coordinates.</span>
+<span class="sd">            title: Optional legend title.</span>
+<span class="sd">        """</span>
         <span class="n">leg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
             <span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span>
             <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="n">bba</span><span class="p">,</span>
@@ -970,7 +1035,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            colormap (ColorMap): Name of color map (default 'seismic')</span>
 <span class="sd">            vmin (float): Minimum value in plot.</span>
-<span class="sd">            vmax (float); Maximum value in plot</span>
+<span class="sd">            vmax (float): Maximum value in plot.</span>
 <span class="sd">            alpha (float): Alpah blending number beween 0 and 1.</span>
 <span class="sd">            interpolation (str): Interpolation for plotting, cf. matplotlib</span>
 <span class="sd">                documentation on this. Also gaussianN is allowed, where</span>
@@ -1046,7 +1111,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            colormap (ColorMap): Name of color map (default 'rainbow')</span>
 <span class="sd">            vmin (float): Minimum value in plot.</span>
-<span class="sd">            vmax (float); Maximum value in plot</span>
+<span class="sd">            vmax (float): Maximum value in plot.</span>
 <span class="sd">            alpha (float): Alpha blending number beween 0 and 1.</span>
 <span class="sd">            zinc (float): Sampling vertically, default is 0.5</span>
 <span class="sd">            interpolation (str): Interpolation for plotting, cf. matplotlib</span>
@@ -1367,7 +1432,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev20+gf33a31a3f).</p>
+    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev21+gc5fbb3132).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

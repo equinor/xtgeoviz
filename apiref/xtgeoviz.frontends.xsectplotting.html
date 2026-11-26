@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xtgeoviz.frontends.xsectplotting module &mdash; xtgeoviz 0.3.4.dev20+gf33a31a3f documentation</title>
+  <title>xtgeoviz.frontends.xsectplotting module &mdash; xtgeoviz 0.3.4.dev21+gc5fbb3132 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6fd25e67"></script>
+      <script src="../_static/documentation_options.js?v=7f788d7a"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,25 +93,33 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="xtgeoviz.frontends.xsectplotting.xsectplot">
 <span class="sig-prename descclassname"><span class="pre">xtgeoviz.frontends.xsectplotting.</span></span><span class="sig-name descname"><span class="pre">xsectplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotsettings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xtgeoviz/frontends/xsectplotting.html#xsectplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xtgeoviz.frontends.xsectplotting.xsectplot" title="Link to this definition"></a></dt>
-<dd><p>Frontend function for plotting xsections.</p>
-<p>The input can either be in form of command line args parsing a YAML file with
-additional command line args that overides, or it can be dicts in form of inputdata,
-plotsettings and output that will be combined with defaults.</p>
-<p>If the input key is not None, then any args will be ignored.</p>
+<dd><p>Create cross-section plots from YAML configuration or Python mappings.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">inputdata</span></code> is truthy, the <code class="docutils literal notranslate"><span class="pre">inputdata</span></code>, <code class="docutils literal notranslate"><span class="pre">plotsettings</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">output</span></code> mappings are merged with defaults. Otherwise, configuration is
+read from command-line arguments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Optional command-line tokens; omitted values are read from <code class="docutils literal notranslate"><span class="pre">sys.argv</span></code>.</p></li>
-<li><p><strong>input</strong> – A dictionary spesifying minimum required input</p></li>
-<li><p><strong>plotsettings</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – A dictionary spesifying minimum required plotsettings</p></li>
-<li><p><strong>output</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – A dictionary spesyfying minimum required output settings</p></li>
-<li><p><strong>verbosity</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Default None means that it is set from the config; otherwise a
-string here will override: “normal” for normal output, “info” for using
-logging for all modules, and similarly “debug”</p></li>
+<li><p><strong>args</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Optional command-line tokens to parse. When omitted and dictionary
+input is not provided, command-line parsing reads <code class="docutils literal notranslate"><span class="pre">sys.argv</span></code>.</p></li>
+<li><p><strong>inputdata</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Input sources such as wells, surfaces, cube, and outline.</p></li>
+<li><p><strong>plotsettings</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Overrides for design, colors, ranges, and overlays.</p></li>
+<li><p><strong>output</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Output folder, format, PDF, and cleanup settings.</p></li>
+<li><p><strong>verbosity</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Optional logging level override; otherwise the config value is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>OSError</strong> – If the selected YAML config file does not exist.</p></li>
+<li><p><strong>ValueError</strong> – If a supplied configuration contains invalid keys.</p></li>
+<li><p><strong>SystemExit</strong> – If command-line arguments are incomplete or invalid.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -129,7 +137,7 @@ logging for all modules, and similarly “debug”</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev20+gf33a31a3f).</p>
+    <p>&#169; Copyright Equinor 2019 - 2026 (XTGeo release 0.3.4.dev21+gc5fbb3132).</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
