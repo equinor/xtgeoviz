@@ -1062,7 +1062,7 @@ class TestXsectPlottingHelpers:
             output_plotfolder=str(output_folder),
         )
         subprocess_call = MagicMock(return_value=0)
-        removed_files = []
+        removed_files: list[str] = []
         monkeypatch.setattr(plotting_helpers.subprocess, "call", subprocess_call)
         monkeypatch.setattr(plotting_helpers.os, "remove", removed_files.append)
 
